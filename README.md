@@ -2,7 +2,13 @@
 
 -  I’m currently learning javascript
 -  I’m looking to collaborate on anything related to javaScript
--  How to reach me: Domalbano35@gmail.com
+-  How to reach me: Domalbano35@gmail.com or https://www.linkedin.com/in/dominick-albano-/
+
+
+
+## 🔗 Links
+[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://dev-dominick.github.io/portfolio-page/)
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/dominick-albano-/.)
 
 <!--
 **dev-dominick/dev-dominick** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
@@ -15,6 +21,6 @@ Here are some ideas to get you started:
 - 🤔 I’m looking for help with ...
 - 💬 Ask me about ...
 - 📫 How to reach me: ...
-- 😄 Pronouns: ...
+- 😄 Pronouns: .....
 - ⚡ Fun fact: ...
 -->
