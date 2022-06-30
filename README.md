@@ -1,4 +1,4 @@
-### Hi there 👋
+## Hi there 👋
 
 -  I’m currently learning MERN stack
 -  I’m looking to collaborate on anything related to javaScript
