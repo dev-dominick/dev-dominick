@@ -1,8 +1,14 @@
 ## Hi there 👋
 
--  I’m currently learning MERN stack
--  I’m looking to collaborate on anything related to javaScript
--  How to reach me: Domalbano35@gmail.com
+Welcome to my GitHub!  I am a full-stack web developer working with the MERNG stack.  I am currently looking for work!  In my spare time I like to build React apps.
+
+👯‍♀️ I'm looking to collaborate on Next JS & React JS
+
+🤔 I'm looking for help with large scale backend projects
+
+📫 How to reach me DominicktheDev@gmail.com
+
+⚡️ Fun fact I have 2 dogs and if I am not working on a project I am either at the gym or outside enjoy the sun!
 
 
 
