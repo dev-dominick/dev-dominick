@@ -8,7 +8,7 @@ Welcome to my GitHub!  I am a full-stack web developer working with the MERNG st
 
 📫 How to reach me DominicktheDev@gmail.com
 
-⚡️ Fun fact I have 2 dogs and if I am not working on a project I am either at the gym or outside enjoying the sun!
+⚡️ Fun fact I have 2 dogs!
 
 
 
