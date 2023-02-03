@@ -1,10 +1,10 @@
-## Hi There 👋
+## Hello World! Welcome to my GitHub!  👋
 
-Welcome to my GitHub!  I am a full-stack web developer working with the MERNG stack.  I am currently looking for work!  In my spare time I like to build React apps.
+I am a full-stack developer building applications with MERN stack.
 
-👯‍♀️ I'm looking to collaborate on Next JS & React JS
+📕 I am currently learning Java, Springboot, AWS, and Angular
 
-🤔 I'm looking for help with large scale backend projects
+👯‍♀️ I am looking to collaborate on large-scale projects
 
 📫 How to reach me DominicktheDev@gmail.com
 
