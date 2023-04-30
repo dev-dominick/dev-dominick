@@ -8,7 +8,7 @@ I am a full-stack developer building applications with MERN stack.
 
 📫 How to reach me DominicktheDev@gmail.com
 
-⚡️ Fun fact I have 2 dogs!
+⚡️ Fun fact I have the 1 and only Hunter 🐕!
 
 
 
