@@ -1,6 +1,6 @@
 ## Hello World! Welcome to my GitHub!  👋
 
-I am a full-stack developer building applications with MERN stack.
+I am a full-stack Software Engineer at Comcast.
 
 📕 I am currently learning Java, Springboot, AWS, and Angular
 
@@ -8,7 +8,7 @@ I am a full-stack developer building applications with MERN stack.
 
 📫 How to reach me DominicktheDev@gmail.com
 
-⚡️ Fun fact I have the 1 and only Hunter 🐕!
+⚡️ Fun fact: I have a german shepard-husky mix named Hunter 🐕!
 
 
 
