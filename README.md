@@ -4,8 +4,6 @@ I am a full-stack Software Engineer at Comcast.
 
 📕 I am currently learning Java, Springboot, AWS, and Angular
 
-👯‍♀️ I am looking to collaborate on large-scale projects
-
 📫 How to reach me DominicktheDev@gmail.com
 
 ⚡️ Fun fact: I have a german shepard-husky mix named Hunter 🐕!
