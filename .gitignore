@@ -1,0 +1,145 @@
+# Dependencies (JS/TS)
+/node_modules
+node_modules/
+/.pnp
+.pnp.*
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+frontend/.next/
+/out/
+
+# Production
+/build
+/dist
+
+# Misc
+.DS_Store
+*.pem
+*.backup
+*.old
+*.tmp
+.continue/
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment files - CRITICAL
+.env*
+!.env.example
+!apps/*/.env.example
+*.env.local
+*.env.docker
+.env.local.example
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Prisma
+/src/generated/prisma
+
+# Trading logs & state
+*.jsonl
+*.log
+*.pid
+*_state.json
+*_logs.jsonl
+ai_trader.log
+harvester.log
+cron_fetch.log
+moon_finder*.log
+moon_finder*.pid
+dev-dominick.db
+simulation_results.txt
+month_simulation_results.json
+
+# CRITICAL: Sensitive Credentials
+*.key
+*.pem
+*.p12
+*.pfx
+*_rsa
+*_dsa
+*_ecdsa
+*_ed25519
+
+# Trading Data - NEVER COMMIT
+account*.json
+balance*.json
+position*.json
+orders*.json
+trades*.json
+ticker*.json
+best_strategies.json
+*.jsonl
+
+# Logs
+*.log
+logs/
+data/alerts/
+data/trades/
+data/backtest_result.txt
+data/backtest_trades.json
+generation_logs/
+
+# Database
+*.db
+*.sqlite
+dev.db
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Test Environments
+test_envs/
+test_results*.json
+test_results*.txt
+
+# Personal Files
+*.code-workspace
+homepage*.html
+
+# Scripts
+*.bat
+*.ps1
+rogue-mode.*
+
+# Logs
+*.log
+*.jsonl
+moon_finder.pid
+moon_finder_state.json
+ai_trader_state.json
+market_config.json
+portfolio_state.json
+tournament_state.json
+
+# Build outputs
+*.pid
+*.pyc
+__pycache__/
+.pytest_cache/
+dist/
+build/
+
+# Sensitive
+.env.local
+*.key
+*.pem
+*.crt
+.git.backup
