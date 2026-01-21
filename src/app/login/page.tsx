@@ -14,6 +14,9 @@ export default function LoginPage() {
         email: '',
         password: '',
     })
+    // Bot protection
+    const [honeypot, setHoneypot] = useState('')
+    const [startTime] = useState(Date.now())
 
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -33,6 +36,20 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
+
+        // Bot detection: honeypot field should be empty
+        if (honeypot) {
+            setLoading(false)
+            return
+        }
+
+        // Bot detection: form should take at least 2 seconds to fill
+        const timeTaken = Date.now() - startTime
+        if (timeTaken < 2000) {
+            toast.error('Please slow down')
+            setLoading(false)
+            return
+        }
 
         try {
             const result = await signIn('credentials', {
@@ -107,6 +124,18 @@ export default function LoginPage() {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Honeypot field - hidden from real users */}
+                        <div className="absolute left-[-9999px]" aria-hidden="true">
+                            <input
+                                type="text"
+                                name="website"
+                                tabIndex={-1}
+                                autoComplete="off"
+                                value={honeypot}
+                                onChange={(e) => setHoneypot(e.target.value)}
+                            />
+                        </div>
+
                         <Input
                             id="email"
                             name="email"

@@ -5,6 +5,19 @@ import { signupRateLimiter } from "@/lib/rate-limit";
 import { z } from "zod";
 import { issueSessionResponse } from "@/lib/auth-session";
 
+/**
+ * Signup API Route with Bot Protection
+ * 
+ * Security measures:
+ * - Rate limiting: 3 attempts per hour per IP
+ * - User-Agent validation and bot pattern detection
+ * - Password strength requirements (10+ chars, uppercase, lowercase, number)
+ * - Client-side honeypot field (checked on frontend)
+ * - Client-side timing check (min 3 seconds to fill form)
+ * - Email uniqueness validation
+ * - Bcrypt password hashing (12 rounds)
+ */
+
 // Validation schema
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -24,6 +37,33 @@ export async function POST(request: NextRequest) {
       request.headers.get("x-forwarded-for") ||
       request.headers.get("x-real-ip") ||
       "unknown";
+
+    // Bot detection: Check User-Agent
+    const userAgent = request.headers.get("user-agent") || "";
+    if (!userAgent || userAgent.length < 10) {
+      return NextResponse.json(
+        { error: "Invalid request" },
+        { status: 400 }
+      );
+    }
+
+    // Bot detection: Block common bot user agents
+    const botPatterns = [
+      /bot/i,
+      /crawler/i,
+      /spider/i,
+      /scraper/i,
+      /curl/i,
+      /wget/i,
+      /python-requests/i,
+    ];
+    
+    if (botPatterns.some((pattern) => pattern.test(userAgent))) {
+      return NextResponse.json(
+        { error: "Invalid request" },
+        { status: 400 }
+      );
+    }
 
     // Check rate limit
     const rateLimitResult = signupRateLimiter.check(ip);
