@@ -4,11 +4,7 @@ import { getToken } from "next-auth/jwt";
 
 // Public routes - never require auth
 const PUBLIC_ROUTES = [
-  "/",
-  "/services",
-  "/portfolio",
-  "/pricing",
-  "/contact",
+  "/maintenance",
   "/api/auth",
   "/_next",
   "/favicon.ico",
@@ -40,14 +36,14 @@ function isAppRoute(path: string): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check maintenance mode
-  if (process.env.MAINTENANCE_MODE === "true" && pathname !== "/maintenance") {
-    const maintenanceUrl = request.nextUrl.clone();
-    maintenanceUrl.pathname = "/maintenance";
-    return NextResponse.redirect(maintenanceUrl);
-  }
-
   // Get auth token
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  const isAuthenticated = !!token;
+Get auth token
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
