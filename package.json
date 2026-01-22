@@ -2,9 +2,7 @@
   "name": "dev-dominick",
   "version": "1.0.0",
   "private": true,
-  "author": "dev-dominick",
-  "license": "MIT",
-  "description": "Lightweight Next.js portfolio with eCommerce",
+  "description": "Personal portfolio demonstration project",
   "packageManager": "npm@10.0.0",
   "scripts": {
     "dev": "next dev",
