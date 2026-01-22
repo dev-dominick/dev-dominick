@@ -41,6 +41,13 @@ function isAppRoute(path: string): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Check maintenance mode
+  if (process.env.MAINTENANCE_MODE === "true" && pathname !== "/maintenance") {
+    const maintenanceUrl = request.nextUrl.clone();
+    maintenanceUrl.pathname = "/maintenance";
+    return NextResponse.redirect(maintenanceUrl);
+  }
+
   // Get auth token
   const token = await getToken({
     req: request,
