@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
 - **Auth Routes**: `/login`, `/signup` redirect to `/app` if already logged in
 - **Legacy Redirects**: `/admin/*` → `/app/*` (308 permanent redirect)
 - **Note**: Auth system demonstrates capability; this is a single-user portfolio site
+- **Disable Signups**: Remove `/signup` from `PUBLIC_ROUTES` in `middleware.ts` to block public registration
 
 ### 4. **Database Access**
 Prisma is **lazy-loaded** to avoid build issues:
