@@ -15,10 +15,9 @@ const PUBLIC_ROUTES = [
   "/code-cloud-logo.svg",
 ];
 
-// Auth routes - blocked when logged in
+// Auth routes - blocked when logged in (owner only)
 const AUTH_ROUTES = [
   "/login",
-  "/signup",
   "/forgot-password",
   "/reset-password",
 ];
