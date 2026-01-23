@@ -36,6 +36,13 @@ function isAppRoute(path: string): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Block auth routes completely - redirect to homepage
+  if (isAuthRoute(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
+
   // Get auth token
   const token = await getToken({
     req: request,
@@ -43,29 +50,21 @@ export async function middleware(request: NextRequest) {
   });
 
   const isAuthenticated = !!token;
-Get auth token
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
 
-  const isAuthenticated = !!token;
+  // Check maintenance mode - redirect all unauthenticated traffic to coming soon (PRODUCTION ONLY)
+  const isProduction = process.env.NODE_ENV === "production";
+  if (isProduction && pathname !== "/maintenance" && !isAuthenticated) {
+    const maintenanceUrl = request.nextUrl.clone();
+    maintenanceUrl.pathname = "/maintenance";
+    return NextResponse.redirect(maintenanceUrl);
+  }
 
   // 1. Public routes - always allow
   if (isPublicRoute(pathname)) {
     return NextResponse.next();
   }
 
-  // 2. Auth routes (/login, /signup) - block if logged in
-  if (isAuthRoute(pathname)) {
-    if (isAuthenticated) {
-      // Redirect to app if already logged in
-      const url = request.nextUrl.clone();
-      url.pathname = "/app";
-      return NextResponse.redirect(url);
-    }
-    return NextResponse.next();
-  }
+  // 2. Auth routes - now blocked above
 
   // 3. App routes - require login
   if (isAppRoute(pathname)) {
