@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { ShoppingCart, Search, Filter } from 'lucide-react';
+import { useState } from "react";
+import Link from "next/link";
+import { ShoppingCart, Search, Filter, Shield, Sparkles } from "lucide-react";
+import { AuthModal } from "@/components/shop/AuthModal";
 
 interface Product {
     id: string;
@@ -10,205 +11,230 @@ interface Product {
     price: number;
     description: string;
     category: string;
-    image: string;
-    inStock: boolean;
+    stripePriceId: string;
 }
 
 const products: Product[] = [
     {
-        id: '1',
-        name: 'Premium React Components Pack',
+        id: "1",
+        name: "Premium React Components Pack",
         price: 49.99,
-        description: '50+ production-ready React components with TypeScript',
-        category: 'components',
-        image: '/placeholder-component.jpg',
-        inStock: true
+        description: "50+ production-ready React components with TypeScript",
+        category: "components",
+        stripePriceId: process.env.NEXT_PUBLIC_PRICE_COMPONENTS || "price_placeholder_components",
     },
     {
-        id: '2',
-        name: 'Next.js Dashboard Template',
+        id: "2",
+        name: "Next.js Dashboard Template",
         price: 79.99,
-        description: 'Complete admin dashboard with analytics and dark mode',
-        category: 'templates',
-        image: '/placeholder-dashboard.jpg',
-        inStock: true
+        description: "Complete admin dashboard with analytics and dark mode",
+        category: "templates",
+        stripePriceId: process.env.NEXT_PUBLIC_PRICE_DASHBOARD || "price_placeholder_dashboard",
     },
     {
-        id: '3',
-        name: 'E-commerce Starter Kit',
+        id: "3",
+        name: "E-commerce Starter Kit",
         price: 129.99,
-        description: 'Full-stack e-commerce solution with Stripe integration',
-        category: 'templates',
-        image: '/placeholder-ecommerce.jpg',
-        inStock: true
+        description: "Full-stack e-commerce solution with Stripe integration",
+        category: "templates",
+        stripePriceId: process.env.NEXT_PUBLIC_PRICE_ECOMMERCE || "price_placeholder_ecommerce",
     },
     {
-        id: '4',
-        name: 'UI Component Library',
+        id: "4",
+        name: "UI Component Library",
         price: 39.99,
-        description: 'Comprehensive UI library with Tailwind CSS',
-        category: 'components',
-        image: '/placeholder-ui.jpg',
-        inStock: true
+        description: "Comprehensive UI library with Tailwind CSS",
+        category: "components",
+        stripePriceId: process.env.NEXT_PUBLIC_PRICE_UI_LIBRARY || "price_placeholder_ui",
     },
     {
-        id: '5',
-        name: 'SaaS Landing Page',
+        id: "5",
+        name: "SaaS Landing Page",
         price: 59.99,
-        description: 'Convert-optimized landing page for SaaS products',
-        category: 'templates',
-        image: '/placeholder-saas.jpg',
-        inStock: true
+        description: "Convert-optimized landing page for SaaS products",
+        category: "templates",
+        stripePriceId: process.env.NEXT_PUBLIC_PRICE_SAAS_LANDING || "price_placeholder_saas",
     },
     {
-        id: '6',
-        name: 'Blog Template Pro',
+        id: "6",
+        name: "Blog Template Pro",
         price: 44.99,
-        description: 'Modern blog template with MDX support',
-        category: 'templates',
-        image: '/placeholder-blog.jpg',
-        inStock: true
-    }
+        description: "Modern blog template with MDX support",
+        category: "templates",
+        stripePriceId: process.env.NEXT_PUBLIC_PRICE_BLOG_TEMPLATE || "price_placeholder_blog",
+    },
 ];
 
-const categories = ['All', 'Components', 'Templates'];
+const categories = ["All", "Components", "Templates"];
 
 export default function ShopPage() {
-    const [selectedCategory, setSelectedCategory] = useState('All');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState("All");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [showAuth, setShowAuth] = useState(false);
 
-    const filteredProducts = products.filter(product => {
-        const matchesCategory = selectedCategory === 'All' ||
-            product.category.toLowerCase() === selectedCategory.toLowerCase();
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const filteredProducts = products.filter((product) => {
+        const matchesCategory =
+            selectedCategory === "All" || product.category.toLowerCase() === selectedCategory.toLowerCase();
+        const matchesSearch =
+            product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             product.description.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesCategory && matchesSearch;
     });
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-matrix-black text-matrix-text-primary">
+            <div className="fixed inset-0 pointer-events-none opacity-[0.07]">
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        backgroundImage:
+                            "linear-gradient(#00ff41 1px, transparent 1px), linear-gradient(90deg, #00ff41 1px, transparent 1px)",
+                        backgroundSize: "60px 60px",
+                    }}
+                />
+            </div>
+
             {/* Header */}
-            <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <Link href="/" className="text-2xl font-bold text-gray-900 dark:text-white">
-                            Code Cloud
-                        </Link>
+            <header className="sticky top-0 z-20 border-b border-matrix-border/30 bg-matrix-dark/90 backdrop-blur-md">
+                <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 font-mono text-lg font-bold text-matrix-text-primary hover:text-matrix-primary"
+                    >
+                        <span>dev-dominick</span>
+                        <span className="text-matrix-primary">/</span>
+                        <span className="text-matrix-text-secondary">shop</span>
+                    </Link>
+
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setShowAuth(true)}
+                            className="hidden sm:inline-flex items-center gap-2 rounded-lg border border-matrix-border/50 px-4 py-2 text-sm font-mono text-matrix-text-secondary hover:border-matrix-primary hover:text-matrix-primary"
+                        >
+                            Sign in / up
+                        </button>
                         <Link
                             href="/cart"
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            className="inline-flex items-center gap-2 rounded-lg bg-matrix-primary px-4 py-2 text-sm font-semibold text-matrix-black shadow-matrix hover:bg-matrix-secondary"
                         >
-                            <ShoppingCart className="w-5 h-5" />
-                            <span className="font-medium">Cart</span>
+                            <ShoppingCart className="h-4 w-4" />
+                            Cart
                         </Link>
                     </div>
                 </div>
             </header>
 
-            {/* Hero Section */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                        Premium Development Resources
-                    </h1>
-                    <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-                        Production-ready templates and components to accelerate your development
+            {/* Hero */}
+            <section className="relative z-10 px-4 pb-10 pt-16 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-6xl text-center">
+                    <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-matrix-border/50 bg-matrix-darker/80 px-4 py-2 text-xs font-mono uppercase tracking-[0.18em] text-matrix-primary">
+                        Matrix-grade launch kits
                     </p>
+                    <h1 className="mb-4 text-4xl font-bold leading-tight text-matrix-text-primary sm:text-5xl lg:text-6xl font-mono">
+                        Ship faster with ready-to-deploy products
+                    </h1>
+                    <p className="mx-auto mb-8 max-w-3xl text-lg text-matrix-text-secondary">
+                        Templates, components, and starter kits wired for Stripe so you can go live in hours—not weeks. Secure, performant, and fully typed.
+                    </p>
+                    <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+                        <Link href="/cart" className="w-full sm:w-auto">
+                            <button className="w-full rounded-lg bg-matrix-primary px-6 py-3 font-semibold text-matrix-black hover:bg-matrix-secondary shadow-matrix">
+                                View cart
+                            </button>
+                        </Link>
+                        <button
+                            onClick={() => setShowAuth(true)}
+                            className="w-full sm:w-auto rounded-lg border border-matrix-border/60 px-6 py-3 font-semibold text-matrix-text-primary hover:border-matrix-primary hover:text-matrix-primary"
+                        >
+                            Sign in to save
+                        </button>
+                    </div>
+                    <div className="mt-6 flex items-center justify-center gap-6 text-sm text-matrix-text-secondary">
+                        <div className="flex items-center gap-2">
+                            <Shield className="h-4 w-4 text-matrix-primary" />
+                            Secure Stripe checkout
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-matrix-secondary" />
+                            Instant digital delivery
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            {/* Filters and Search */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
-                    {/* Search */}
+            {/* Filters */}
+            <section className="relative z-10 px-4 pb-6 sm:px-6 lg:px-8">
+                <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                     <div className="relative w-full md:w-96">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-matrix-text-muted" />
                         <input
                             type="text"
-                            placeholder="Search products..."
+                            placeholder="Search products"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                            className="w-full rounded-lg border border-matrix-border/50 bg-matrix-darker px-10 py-3 text-matrix-text-primary placeholder:text-matrix-text-muted focus:border-matrix-primary focus:outline-none"
                         />
                     </div>
-
-                    {/* Category Filter */}
                     <div className="flex items-center gap-2">
-                        <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                        {categories.map(category => (
+                        <Filter className="h-4 w-4 text-matrix-text-muted" />
+                        {categories.map((category) => (
                             <button
                                 key={category}
                                 onClick={() => setSelectedCategory(category)}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${selectedCategory === category
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                    }`}
+                                className={`rounded-lg px-4 py-2 text-sm font-mono transition-colors ${
+                                    selectedCategory === category
+                                        ? "border border-matrix-primary/60 bg-matrix-primary/10 text-matrix-primary"
+                                        : "border border-matrix-border/50 bg-matrix-darker text-matrix-text-secondary hover:border-matrix-primary/40 hover:text-matrix-primary"
+                                }`}
                             >
                                 {category}
                             </button>
                         ))}
                     </div>
                 </div>
+            </section>
 
-                {/* Products Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                    {filteredProducts.map(product => (
-                        <div
-                            key={product.id}
-                            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden group"
-                        >
-                            {/* Product Image */}
-                            <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden">
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-6xl font-bold text-white opacity-20">
-                                        {product.name.charAt(0)}
-                                    </span>
-                                </div>
-                                <div className="absolute top-4 right-4">
-                                    <span className="px-3 py-1 bg-white text-blue-600 text-sm font-medium rounded-full">
+            {/* Product grid */}
+            <section className="relative z-10 px-4 pb-16 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-6xl">
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {filteredProducts.map((product) => (
+                            <div
+                                key={product.id}
+                                className="group relative overflow-hidden rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-6 shadow-lg transition-all duration-200 hover:-translate-y-1 hover:border-matrix-primary/60 hover:shadow-matrix"
+                            >
+                                <div className="mb-4 flex items-center justify-between">
+                                    <span className="rounded-full border border-matrix-border/60 bg-matrix-black/60 px-3 py-1 text-xs font-mono uppercase tracking-wide text-matrix-text-secondary">
                                         {product.category}
                                     </span>
+                                    <Sparkles className="h-4 w-4 text-matrix-secondary opacity-70" />
                                 </div>
-                            </div>
 
-                            {/* Product Info */}
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                    {product.name}
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-                                    {product.description}
-                                </p>
+                                <h3 className="mb-2 text-xl font-semibold text-matrix-text-primary">{product.name}</h3>
+                                <p className="mb-4 line-clamp-3 text-sm text-matrix-text-secondary">{product.description}</p>
 
                                 <div className="flex items-center justify-between">
-                                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        ${product.price}
-                                    </span>
+                                    <span className="text-2xl font-bold text-matrix-text-primary">${product.price}</span>
                                     <Link
                                         href={`/shop/${product.id}`}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                        className="rounded-lg border border-matrix-border/60 px-4 py-2 text-sm font-semibold text-matrix-text-primary hover:border-matrix-primary hover:text-matrix-primary"
                                     >
-                                        View Details
+                                        View
                                     </Link>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Empty State */}
-                {filteredProducts.length === 0 && (
-                    <div className="text-center py-16">
-                        <div className="text-6xl mb-4">🔍</div>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                            No products found
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            Try adjusting your search or filter criteria
-                        </p>
+                        ))}
                     </div>
-                )}
-            </div>
+
+                    {filteredProducts.length === 0 && (
+                        <div className="py-16 text-center text-matrix-text-secondary">
+                            <p className="text-lg">No products match that search.</p>
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            <AuthModal open={showAuth} onClose={() => setShowAuth(false)} onGuestContinue={() => setShowAuth(false)} />
         </div>
     );
 }

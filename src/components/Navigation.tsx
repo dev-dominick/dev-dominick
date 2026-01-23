@@ -19,26 +19,18 @@ export function Navigation({ siteName = 'dev-dominick' }: NavigationProps) {
   const isLoggedIn = status === 'authenticated'
   const isLoadingSession = status === 'loading'
 
-  // Marketing nav items (for logged-out users and public pages)
-  const marketingNavItems = [
+  // Unified marketing nav focused on conversions
+  const navItems = [
     { href: '/', label: 'Home' },
-    { href: '/services', label: 'Services' },
-    { href: '/portfolio', label: 'Portfolio' },
-    { href: '/pricing', label: 'Pricing' },
+    { href: '/shop', label: 'Shop' },
+    { href: '/appointments', label: 'Book' },
     { href: '/contact', label: 'Contact' },
-  ]
-
-  // App nav items (for logged-in users)
-  const appNavItems = [
-    { href: '/app', label: 'Dashboard' },
   ]
 
   // Don't show nav on auth pages or app section (they have their own headers/shells)
   if (isAuthPage || isAppSection) {
     return null
   }
-
-  const navItems = isLoggedIn ? appNavItems : marketingNavItems
 
   const handleLogout = async () => {
     await signOut({ redirect: false })

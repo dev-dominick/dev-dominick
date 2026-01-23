@@ -52,7 +52,7 @@
 
 @theme inline {
   /* Matrix theme integration with Tailwind */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', 'IBM Plex Sans', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, 'Courier New', monospace;
 }
 
@@ -74,4 +74,18 @@ html {
 
 body {
   @apply bg-black text-white transition-none;
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  letter-spacing: -0.01em;
+}
+
+p, li {
+  color: var(--matrix-text-secondary);
+  line-height: 1.7;
 }

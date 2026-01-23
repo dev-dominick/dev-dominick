@@ -1,9 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { ShoppingCart, ArrowLeft, Check, Download, Star } from 'lucide-react';
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { ShoppingCart, ArrowLeft, Check, Download, Star, Shield } from "lucide-react";
 
 // Mock product data (in production, fetch from API)
 const products = {
@@ -77,10 +76,10 @@ export default function ProductDetailPage() {
 
     if (!product) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+            <div className="min-h-screen bg-matrix-black flex items-center justify-center px-4">
                 <div className="text-center">
-                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Product Not Found</h1>
-                    <Link href="/shop" className="text-blue-600 hover:text-blue-700">
+                    <h1 className="text-4xl font-bold text-matrix-text-primary mb-4">Product Not Found</h1>
+                    <Link href="/shop" className="text-matrix-primary hover:text-matrix-secondary font-mono">
                         ← Back to Shop
                     </Link>
                 </div>
@@ -117,92 +116,110 @@ export default function ProductDetailPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-matrix-black text-matrix-text-primary">
+            <div className="fixed inset-0 pointer-events-none opacity-[0.07]">
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        backgroundImage:
+                            "linear-gradient(#00ff41 1px, transparent 1px), linear-gradient(90deg, #00ff41 1px, transparent 1px)",
+                        backgroundSize: "60px 60px",
+                    }}
+                />
+            </div>
+
             {/* Header */}
-            <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <Link href="/shop" className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                            <ArrowLeft className="w-5 h-5" />
-                            <span>Back to Shop</span>
-                        </Link>
-                        <Link
-                            href="/cart"
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            <ShoppingCart className="w-5 h-5" />
-                            <span>Cart</span>
-                        </Link>
-                    </div>
+            <header className="sticky top-0 z-20 border-b border-matrix-border/30 bg-matrix-dark/90 backdrop-blur-md">
+                <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                    <Link
+                        href="/shop"
+                        className="flex items-center gap-2 text-matrix-text-secondary hover:text-matrix-primary"
+                    >
+                        <ArrowLeft className="h-5 w-5" />
+                        <span className="font-mono">Back to shop</span>
+                    </Link>
+                    <Link
+                        href="/cart"
+                        className="inline-flex items-center gap-2 rounded-lg bg-matrix-primary px-4 py-2 text-sm font-semibold text-matrix-black shadow-matrix hover:bg-matrix-secondary"
+                    >
+                        <ShoppingCart className="h-4 w-4" />
+                        Cart
+                    </Link>
                 </div>
             </header>
 
             {/* Product Details */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
                     {/* Product Image */}
-                    <div className="relative h-96 lg:h-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl overflow-hidden">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-9xl font-bold text-white opacity-20">
+                    <div className="relative overflow-hidden rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-6 shadow-matrix">
+                        <div className="absolute inset-0 opacity-20" aria-hidden>
+                            <div
+                                className="absolute inset-0"
+                                style={{
+                                    backgroundImage:
+                                        "radial-gradient(circle at 20% 20%, #00ff4122, transparent 25%), radial-gradient(circle at 80% 0%, #39ff1422, transparent 30%)",
+                                }}
+                            />
+                        </div>
+                        <div className="relative flex h-80 items-center justify-center">
+                            <span className="text-8xl font-black text-matrix-primary/40">
                                 {product.name.charAt(0)}
                             </span>
                         </div>
-                        <div className="absolute bottom-6 left-6 right-6">
-                            <div className="bg-white/10 backdrop-blur-md rounded-lg p-4">
-                                <div className="flex items-center gap-4 text-white">
-                                    <div className="flex items-center gap-1">
-                                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                                        <span className="font-bold">{product.rating}</span>
-                                    </div>
-                                    <span className="text-sm opacity-90">{product.reviews} reviews</span>
-                                    <Download className="w-5 h-5 ml-auto" />
-                                    <span className="font-bold">{product.downloads.toLocaleString()}</span>
-                                </div>
+                        <div className="relative mt-4 flex items-center gap-4 rounded-lg border border-matrix-border/40 bg-matrix-black/60 px-4 py-3 text-sm text-matrix-text-secondary">
+                            <div className="flex items-center gap-1">
+                                <Star className="h-4 w-4 text-yellow-400" />
+                                <span className="font-semibold text-matrix-text-primary">{product.rating}</span>
+                            </div>
+                            <span>{product.reviews} reviews</span>
+                            <div className="ml-auto flex items-center gap-2">
+                                <Download className="h-4 w-4" />
+                                <span className="font-mono">{product.downloads.toLocaleString()}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Product Info */}
-                    <div>
-                        <div className="mb-4">
-                            <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium capitalize">
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                            <span className="rounded-full border border-matrix-border/50 bg-matrix-black/60 px-3 py-1 text-xs font-mono uppercase tracking-wide text-matrix-text-secondary">
                                 {product.category}
                             </span>
+                            <div className="flex items-center gap-2 text-sm text-matrix-text-secondary">
+                                <Shield className="h-4 w-4 text-matrix-primary" />
+                                Secure Stripe checkout
+                            </div>
                         </div>
 
-                        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                            {product.name}
-                        </h1>
-
-                        <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
-                            {product.description}
-                        </p>
-
-                        <div className="text-4xl font-bold text-gray-900 dark:text-white mb-8">
-                            ${product.price}
+                        <div>
+                            <h1 className="mb-3 text-4xl font-bold text-matrix-text-primary">{product.name}</h1>
+                            <p className="text-lg text-matrix-text-secondary">{product.description}</p>
                         </div>
+
+                        <div className="text-4xl font-bold text-matrix-text-primary">${product.price}</div>
 
                         {/* Features */}
-                        <div className="mb-8">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">What&apos;s Included:</h3>
+                        <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-5">
+                            <h3 className="mb-4 text-lg font-semibold text-matrix-text-primary">What&apos;s included</h3>
                             <ul className="space-y-3">
                                 {product.features.map((feature, idx) => (
                                     <li key={idx} className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                                        <Check className="mt-0.5 h-5 w-5 text-matrix-primary flex-shrink-0" />
+                                        <span className="text-matrix-text-secondary">{feature}</span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
 
                         {/* Tech Stack */}
-                        <div className="mb-8">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Tech Stack:</h3>
+                        <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-5">
+                            <h3 className="mb-3 text-lg font-semibold text-matrix-text-primary">Tech stack</h3>
                             <div className="flex flex-wrap gap-2">
                                 {product.techStack.map((tech, idx) => (
                                     <span
                                         key={idx}
-                                        className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm"
+                                        className="rounded-lg border border-matrix-border/40 bg-matrix-black/60 px-3 py-1 text-sm text-matrix-text-secondary"
                                     >
                                         {tech}
                                     </span>
@@ -213,18 +230,16 @@ export default function ProductDetailPage() {
                         {/* Add to Cart */}
                         <button
                             onClick={handleAddToCart}
-                            className="w-full flex items-center justify-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors text-lg font-bold"
+                            className="flex w-full items-center justify-center gap-3 rounded-xl bg-matrix-primary px-8 py-4 text-lg font-semibold text-matrix-black shadow-matrix hover:bg-matrix-secondary"
                         >
-                            <ShoppingCart className="w-6 h-6" />
-                            Add to Cart
+                            <ShoppingCart className="h-5 w-5" />
+                            Add to cart
                         </button>
 
                         {/* Details */}
-                        <div className="mt-8 p-6 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                            <h3 className="font-bold text-gray-900 dark:text-white mb-3">Description</h3>
-                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                {product.longDescription}
-                            </p>
+                        <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-5">
+                            <h3 className="mb-3 text-lg font-semibold text-matrix-text-primary">Description</h3>
+                            <p className="text-matrix-text-secondary leading-relaxed">{product.longDescription}</p>
                         </div>
                     </div>
                 </div>
