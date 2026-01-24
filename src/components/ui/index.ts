@@ -6,7 +6,7 @@ export type { CardProps } from "./Card";
 export { CardHeader, CardTitle, CardDescription, CardContent } from "./Card";
 
 export { Input, InputWithIcon, Calendar, PasswordStrength, Textarea } from "./Input";
-export type { InputProps, TextareaProps } from "./input";
+export type { InputProps, TextareaProps } from "./Input";
 
 export { Modal } from "./modal";
 export type { ModalProps } from "./modal";
