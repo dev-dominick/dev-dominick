@@ -100,7 +100,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                         ref={ref}
                         type={showPassword ? "text" : type}
                         className={inputClasses}
-                        aria-invalid={error ? "true" : "false"}
                         aria-describedby={error ? errorId : hint ? hintId : undefined}
                         {...props}
                     />
@@ -159,15 +158,6 @@ export interface PasswordStrengthProps {
 
 export function PasswordStrength({ password }: PasswordStrengthProps) {
     const getStrength = (pwd: string) => {
-        if (!pwd) return { score: 0, label: "" };
-
-        let score = 0;
-        if (pwd.length >= 8) score++;
-        if (pwd.length >= 12) score++;
-        if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) score++;
-        if (/\d/.test(pwd)) score++;
-        if (/[^a-zA-Z\d]/.test(pwd)) score++;
-
         const levels = [
             { score: 0, label: "", color: "", barColor: "" },
             { score: 1, label: "Weak", color: "text-danger-500", barColor: "bg-danger-500" },
@@ -176,6 +166,15 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
             { score: 4, label: "Strong", color: "text-success-500", barColor: "bg-success-500" },
             { score: 5, label: "Very Strong", color: "text-success-600", barColor: "bg-success-600" },
         ];
+
+        if (!pwd) return levels[0];
+
+        let score = 0;
+        if (pwd.length >= 8) score++;
+        if (pwd.length >= 12) score++;
+        if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) score++;
+        if (/\d/.test(pwd)) score++;
+        if (/[^a-zA-Z\d]/.test(pwd)) score++;
 
         return levels[Math.min(score, 5)];
     };
@@ -280,7 +279,6 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                         id={textareaId}
                         ref={ref}
                         className={textareaClasses}
-                        aria-invalid={!!error}
                         aria-describedby={error ? errorId : hint ? hintId : undefined}
                         {...props}
                     />
