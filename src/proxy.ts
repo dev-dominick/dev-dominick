@@ -11,7 +11,8 @@ const PUBLIC_ROUTES = [
   "/code-cloud-logo.svg",
 ];
 
-// Auth routes - allow when logged out, redirect away when logged in
+// Auth routes - hidden from public, only accessible directly (for admin setup)
+// No links to these routes exist in the UI
 const AUTH_ROUTES = [
   "/login",
   "/signup",
@@ -19,7 +20,7 @@ const AUTH_ROUTES = [
   "/reset-password",
 ];
 
-// Protected app routes - require login
+// Protected app routes - require admin login
 const APP_ROUTES = ["/app"];
 
 function isPublicRoute(path: string): boolean {

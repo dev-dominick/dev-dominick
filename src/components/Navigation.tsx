@@ -128,9 +128,7 @@ export function Navigation({ siteName = 'dev-dominick' }: NavigationProps) {
             <div className="flex items-center gap-4">
               {/* Desktop auth + CTA */}
               <div className="hidden md:flex items-center gap-4">
-                {isLoadingSession ? (
-                  <div className="w-16 h-4 bg-[var(--surface-raised)] rounded animate-pulse" />
-                ) : isLoggedIn ? (
+                {isLoggedIn && (
                   <>
                     {!simpleMode && cartCount > 0 && (
                       <Link
@@ -153,13 +151,6 @@ export function Navigation({ siteName = 'dev-dominick' }: NavigationProps) {
                       <LogOut className="w-4 h-4" />
                     </button>
                   </>
-                ) : (
-                  <Link
-                    href="/login?next=/app"
-                    className="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors duration-200"
-                  >
-                    Sign In
-                  </Link>
                 )}
 
                 {/* Primary CTA - the only button */}
@@ -208,8 +199,8 @@ export function Navigation({ siteName = 'dev-dominick' }: NavigationProps) {
             {/* Divider */}
             <div className="border-t border-[var(--border-subtle)] my-4" />
 
-            {/* Auth state */}
-            {isLoggedIn ? (
+            {/* Auth state - only show when logged in */}
+            {isLoggedIn && (
               <div className="space-y-3">
                 <p className="text-sm text-[var(--text-muted)]">{session?.user?.email}</p>
                 <button
@@ -220,13 +211,6 @@ export function Navigation({ siteName = 'dev-dominick' }: NavigationProps) {
                   Sign out
                 </button>
               </div>
-            ) : (
-              <Link
-                href="/login?next=/app"
-                className="block text-base text-[var(--text-muted)] py-2"
-              >
-                Sign In
-              </Link>
             )}
 
             {/* Primary CTA */}
