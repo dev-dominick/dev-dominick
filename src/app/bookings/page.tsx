@@ -25,6 +25,7 @@ export default function BookingsPage() {
     const [loading, setLoading] = useState(true)
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
+    const [website, setWebsite] = useState('') // Honeypot field - bots fill this
     const [selectedDate, setSelectedDate] = useState<string>('')
     const [selectedTime, setSelectedTime] = useState<string>('')
     const [submitting, setSubmitting] = useState(false)
@@ -151,6 +152,7 @@ export default function BookingsPage() {
                     consultationType,
                     consultationSource: fromProduct ? 'product_upsell' : 'landing',
                     durationMinutes: 30,
+                    website, // Honeypot field - API rejects if filled
                 }),
             })
 
@@ -271,41 +273,56 @@ export default function BookingsPage() {
                                 placeholder="your@email.com"
                             />
                         </div>
+
+                        {/* Honeypot field - hidden from humans, filled by bots */}
+                        <div className="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true">
+                            <label htmlFor="website">Website</label>
+                            <input
+                                type="text"
+                                id="website"
+                                name="website"
+                                value={website}
+                                onChange={(e) => setWebsite(e.target.value)}
+                                tabIndex={-1}
+                                autoComplete="off"
+                            />
+                        </div>
                     </div>
 
                     {/* Date Selection */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-semibold text-matrix-text-primary">Pick a date</h2>
+                        <h2 className="text-lg font-semibold text-neutral-200">Pick a date</h2>
 
                         {loading ? (
-                            <div className="py-6 text-center text-matrix-text-secondary">Loading availability...</div>
+                            <div className="py-6 text-center text-neutral-400">Loading availability...</div>
                         ) : (
-                            <div className="space-y-6">
+                            <div className="grid grid-cols-2 gap-3">
                                 {calendarMonths.map((monthData, monthIdx) => (
-                                    <div key={monthIdx} className="rounded-lg border border-matrix-border/30 bg-matrix-darker/50 p-4">
-                                        <h3 className="mb-3 text-sm font-semibold text-matrix-text-primary">
+                                    <div key={monthIdx} className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-3">
+                                        <h3 className="mb-2 text-xs font-semibold text-neutral-400 uppercase tracking-wider">
                                             {monthData.name}
                                         </h3>
 
                                         {/* Weekday headers */}
-                                        <div className="grid grid-cols-7 gap-1 mb-2">
-                                            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-                                                <div key={day} className="text-center text-xs font-semibold text-matrix-text-muted py-1">
+                                        <div className="grid grid-cols-7 gap-0.5 mb-1">
+                                            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
+                                                <div key={i} className="text-center text-[10px] font-medium text-neutral-500 py-0.5">
                                                     {day}
                                                 </div>
                                             ))}
                                         </div>
 
                                         {/* Calendar grid */}
-                                        <div className="grid grid-cols-7 gap-1">
+                                        <div className="grid grid-cols-7 gap-0.5">
                                             {monthData.days.map((dayData, dayIdx) => {
                                                 // Use local date string for consistent comparison (YYYY-MM-DD in local timezone)
                                                 const year = dayData.date.getFullYear()
                                                 const month = String(dayData.date.getMonth() + 1).padStart(2, '0')
                                                 const day = String(dayData.date.getDate()).padStart(2, '0')
                                                 const dateStr = `${year}-${month}-${day}`
-                                                const isSelected = selectedDate === dateStr
-                                                const isToday = dayData.date.toDateString() === new Date().toDateString()
+                                                // Only highlight if this cell belongs to its own month
+                                                const isSelected = selectedDate === dateStr && dayData.isCurrentMonth
+                                                const isToday = dayData.date.toDateString() === new Date().toDateString() && dayData.isCurrentMonth
 
                                                 return (
                                                     <button
@@ -319,18 +336,15 @@ export default function BookingsPage() {
                                                             }
                                                         }}
                                                         className={`
-                              aspect-square rounded-lg text-sm font-medium transition-all relative
-                              ${!dayData.isCurrentMonth ? 'text-neutral-600 cursor-default' : ''}
-                              ${dayData.isAvailable && !isSelected ? 'bg-neutral-900 border border-neutral-700 text-neutral-300 hover:border-[var(--accent)]/50 hover:bg-[var(--accent-subtle)]' : ''}
-                              ${isSelected ? 'bg-[var(--accent)] text-neutral-950 font-bold shadow-lg' : ''}
+                              aspect-square rounded text-xs font-medium transition-all
+                              ${!dayData.isCurrentMonth ? 'text-neutral-700 cursor-default' : ''}
+                              ${dayData.isAvailable && !isSelected ? 'bg-neutral-800/50 text-neutral-300 hover:bg-[var(--accent-subtle)] hover:text-[var(--accent)]' : ''}
+                              ${isSelected ? 'bg-[var(--accent)] text-neutral-950 font-bold' : ''}
                               ${!dayData.isAvailable && dayData.isCurrentMonth ? 'text-neutral-600 cursor-not-allowed' : ''}
-                              ${isToday && !isSelected ? 'ring-2 ring-[var(--accent)]/40' : ''}
+                              ${isToday && !isSelected ? 'ring-1 ring-[var(--accent)]/50' : ''}
                             `}
                                                     >
                                                         {dayData.date.getDate()}
-                                                        {isToday && !isSelected && (
-                                                            <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--accent)]"></div>
-                                                        )}
                                                     </button>
                                                 )
                                             })}

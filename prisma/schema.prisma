@@ -50,8 +50,8 @@ model Product {
 // Appointment model for booking system
 model Appointment {
   id               String    @id @default(cuid())
-  userId           String
-  user             User      @relation(fields: [userId], references: [id])
+  userId           String?   // Optional: only set if booked by authenticated user
+  user             User?     @relation(fields: [userId], references: [id])
   
   clientName       String
   clientEmail      String
@@ -64,14 +64,16 @@ model Appointment {
   billableHours    Float     @default(0)
   workNotes        String?
   
-  // Consultation type & approval
+  // Consultation type
   consultationType String    @default("free")     // free, paid ($50)
   consultationSource String?                      // landing, product_upsell
-  requiresApproval Boolean   @default(true)       // free consults require admin approval
-  isApproved       Boolean   @default(false)      // admin has approved the consultation
-  approvedAt       DateTime?
   
-  status           String    @default("pending_approval") // pending_approval, scheduled, confirmed, completed, cancelled
+  // Approval timestamps (status is the source of truth)
+  approvedAt       DateTime?
+  rejectedAt       DateTime?
+  
+  // Status: pending_approval -> confirmed/cancelled -> completed
+  status           String    @default("pending_approval")
   
   // Video conferencing
   meetingLink      String?

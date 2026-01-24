@@ -1,12 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
-import { sendEmail, appointmentConfirmationEmail } from "@/lib/email";
+import {
+  sendEmail,
+  appointmentConfirmationEmail,
+  appointmentAdminNotificationEmail,
+  appointmentApprovedEmail,
+  appointmentRejectedEmail,
+} from "@/lib/email";
 import { generalRateLimiter } from "@/lib/rate-limit";
 import { getClientIp } from "@/lib/request-utils";
 import { apiSuccess, apiError, apiRateLimitError } from "@/lib/api-response";
 
-const OWNER_USER_ID = process.env.ADMIN_USER_ID || "default-owner";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "";
+
+/**
+ * Generate a Jitsi Meet link for the appointment
+ * Both parties can click to join - no account needed
+ */
+function generateMeetingLink(appointmentId: string): string {
+  // Create a unique room name using appointment ID
+  const roomName = `dev-dominick-${appointmentId}`;
+  return `https://meet.jit.si/${roomName}`;
+}
 
 function parseStartEnd(date: string, time: string, durationMinutes = 60) {
   const start = new Date(`${date}T${time}`);
@@ -34,7 +50,7 @@ async function slotIsAvailable(startTime: Date, endTime: Date) {
     where: {
       startTime: { lt: endTime },
       endTime: { gt: startTime },
-      status: { in: ["scheduled", "confirmed", "pending"] },
+      status: { in: ["pending_approval", "confirmed"] },
     },
     select: { id: true },
   });
@@ -98,7 +114,14 @@ export async function POST(request: NextRequest) {
       notes,
       consultationType = "free",
       consultationSource = "landing",
+      website, // Honeypot field - should be empty
     } = body;
+
+    // Honeypot spam check - bots fill this hidden field
+    if (website) {
+      // Silently reject but return success to confuse bots
+      return apiSuccess({ success: true, appointment: { id: "blocked" } }, 201);
+    }
 
     if (!date || !time || !name || !email) {
       return apiError("Missing required fields", 400);
@@ -119,7 +142,8 @@ export async function POST(request: NextRequest) {
 
     const sessionToken = randomUUID();
 
-    // All consultations require admin approval before client can join
+    // Create appointment - NO userId for guest bookings
+    // userId is nullable, only set if an authenticated user books
     const appointment = await prisma.appointment.create({
       data: {
         clientName: name,
@@ -130,12 +154,10 @@ export async function POST(request: NextRequest) {
         notes: notes || null,
         status: "pending_approval",
         sessionToken,
-        userId: OWNER_USER_ID,
         billableHours: durationMinutes / 60,
         consultationType,
         consultationSource,
-        requiresApproval: true,
-        isApproved: false,
+        // userId intentionally omitted for guest bookings
       },
     });
 
@@ -143,30 +165,63 @@ export async function POST(request: NextRequest) {
       return apiError("Failed to create appointment", 500);
     }
 
-    // Send confirmation email to client
-    const emailHtml = appointmentConfirmationEmail({
-      clientName: name,
-      startTime,
-      duration: durationMinutes,
-      notes: notes || undefined,
-      isAwaitingApproval: true,
-      consultationType,
-    });
+    // Send confirmation email to client (non-blocking, log errors)
+    try {
+      const emailHtml = appointmentConfirmationEmail({
+        clientName: name,
+        startTime,
+        duration: durationMinutes,
+        notes: notes || undefined,
+        isAwaitingApproval: true,
+        consultationType,
+      });
 
-    const emailResult = await sendEmail({
-      to: email,
-      subject:
-        consultationType === "free"
-          ? "Free consultation booked – awaiting confirmation 📅"
-          : "$50 Consultation added to your booking 📅",
-      html: emailHtml,
-    });
+      const emailResult = await sendEmail({
+        to: email,
+        subject:
+          consultationType === "free"
+            ? "Free consultation booked – awaiting confirmation 📅"
+            : "$50 Consultation added to your booking 📅",
+        html: emailHtml,
+      });
 
-    if (!emailResult.success) {
-      console.warn("Failed to send confirmation email:", emailResult.error);
+      if (!emailResult.success) {
+        console.warn("Failed to send client confirmation email:", emailResult.error);
+      }
+    } catch (emailError) {
+      console.error("Client email sending failed:", emailError);
+      // Don't fail the booking due to email issues
     }
 
-    // TODO: Send admin notification email about new consultation to approve
+    // Send admin notification email (non-blocking)
+    try {
+      if (ADMIN_EMAIL) {
+        const adminEmailHtml = appointmentAdminNotificationEmail({
+          clientName: name,
+          clientEmail: email,
+          startTime,
+          duration: durationMinutes,
+          notes: notes || undefined,
+          consultationType,
+          appointmentId: appointment.id,
+        });
+
+        const adminEmailResult = await sendEmail({
+          to: ADMIN_EMAIL,
+          subject: `🔔 New booking request from ${name}`,
+          html: adminEmailHtml,
+        });
+
+        if (!adminEmailResult.success) {
+          console.warn("Failed to send admin notification email:", adminEmailResult.error);
+        }
+      } else {
+        console.warn("ADMIN_EMAIL not configured - skipping admin notification");
+      }
+    } catch (adminEmailError) {
+      console.error("Admin email sending failed:", adminEmailError);
+      // Don't fail the booking due to email issues
+    }
 
     return apiSuccess(
       {
@@ -200,21 +255,95 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, status, billableHours, workNotes, notes } = body;
+    const { id, status, billableHours, workNotes, notes, rejectionReason } = body;
 
     if (!id) {
       return apiError("Missing appointment id", 400);
     }
 
+    // Fetch existing appointment to detect status transitions
+    const existing = await prisma.appointment.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      return apiError("Appointment not found", 404);
+    }
+
+    const oldStatus = existing.status;
+    const newStatus = status || oldStatus;
+
+    // Build update data
+    const updateData: Record<string, unknown> = {
+      status: status || undefined,
+      billableHours: billableHours ?? undefined,
+      workNotes: workNotes ?? undefined,
+      notes: notes ?? undefined,
+    };
+
+    // Handle approval - generate meeting link and set timestamp
+    if (newStatus === "confirmed" && oldStatus === "pending_approval") {
+      const meetingLink = generateMeetingLink(id);
+      updateData.approvedAt = new Date();
+      updateData.meetingLink = meetingLink;
+      updateData.meetingType = "jitsi";
+    }
+
+    // Handle rejection - set timestamp
+    if (newStatus === "cancelled" && oldStatus === "pending_approval") {
+      updateData.rejectedAt = new Date();
+    }
+
     const updated = await prisma.appointment.update({
       where: { id },
-      data: {
-        status: status || undefined,
-        billableHours: billableHours ?? undefined,
-        workNotes: workNotes ?? undefined,
-        notes: notes ?? undefined,
-      },
+      data: updateData,
     });
+
+    // Send decision emails only on status transitions from pending_approval
+    if (oldStatus === "pending_approval" && newStatus !== oldStatus) {
+      try {
+        if (newStatus === "confirmed") {
+          // Send approval email with meeting link
+          const meetingLink = updated.meetingLink || generateMeetingLink(id);
+          const approvedEmailHtml = appointmentApprovedEmail({
+            clientName: updated.clientName,
+            startTime: updated.startTime,
+            duration: updated.duration,
+            meetingLink,
+          });
+
+          const result = await sendEmail({
+            to: updated.clientEmail,
+            subject: "✅ Your consultation is confirmed!",
+            html: approvedEmailHtml,
+          });
+
+          if (!result.success) {
+            console.warn("Failed to send approval email:", result.error);
+          }
+        } else if (newStatus === "cancelled") {
+          // Send rejection email
+          const rejectedEmailHtml = appointmentRejectedEmail({
+            clientName: updated.clientName,
+            startTime: updated.startTime,
+            reason: rejectionReason,
+          });
+
+          const result = await sendEmail({
+            to: updated.clientEmail,
+            subject: "Booking update - Unable to accommodate your request",
+            html: rejectedEmailHtml,
+          });
+
+          if (!result.success) {
+            console.warn("Failed to send rejection email:", result.error);
+          }
+        }
+      } catch (emailError) {
+        console.error("Decision email sending failed:", emailError);
+        // Don't fail the update due to email issues
+      }
+    }
 
     return apiSuccess({ appointment: updated, success: true });
   } catch (error) {

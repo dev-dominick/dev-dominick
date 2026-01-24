@@ -345,3 +345,231 @@ export function contactReplyEmail({
 </html>
   `
 }
+
+export function appointmentAdminNotificationEmail({
+  clientName,
+  clientEmail,
+  startTime,
+  duration,
+  notes,
+  consultationType,
+  appointmentId,
+}: {
+  clientName: string
+  clientEmail: string
+  startTime: Date
+  duration: number
+  notes?: string
+  consultationType: string
+  appointmentId: string
+}) {
+  const timeStr = startTime.toLocaleString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short',
+  })
+
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://dev-dominick.com'
+  const adminUrl = `${baseUrl}/app/appointments`
+
+  return `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+      .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000; padding: 20px; border-radius: 8px 8px 0 0; }
+      .content { background: #f5f5f5; padding: 30px 20px; border-radius: 0 0 8px 8px; }
+      .details { background: white; padding: 15px; border-radius: 4px; margin: 15px 0; border-left: 4px solid #f59e0b; }
+      .button { display: inline-block; background: #f59e0b; color: #000; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; margin: 5px; }
+      .footer { color: #666; font-size: 12px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🔔 New Booking Request</h1>
+      </div>
+      <div class="content">
+        <p>A new ${consultationType === 'free' ? 'free consultation' : '$50 consultation'} has been requested.</p>
+        
+        <div class="details">
+          <strong>👤 Client:</strong> ${clientName}<br>
+          <strong>📧 Email:</strong> <a href="mailto:${clientEmail}">${clientEmail}</a><br>
+          <strong>📅 Requested Time:</strong> ${timeStr}<br>
+          <strong>⏱️ Duration:</strong> ${duration} minutes<br>
+          ${notes ? `<strong>📝 Notes:</strong><br>${notes}<br>` : ''}
+        </div>
+        
+        <p><strong>Action required:</strong> Review and approve or reject this booking.</p>
+        
+        <p style="text-align: center;">
+          <a href="${adminUrl}" class="button">View in Dashboard</a>
+        </p>
+        
+        <div class="footer">
+          <p>Appointment ID: ${appointmentId}</p>
+          <p>This is an automated notification from your booking system.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+  `
+}
+
+export function appointmentApprovedEmail({
+  clientName,
+  startTime,
+  duration,
+  meetingLink,
+}: {
+  clientName: string
+  startTime: Date
+  duration: number
+  meetingLink: string
+}) {
+  const timeStr = startTime.toLocaleString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short',
+  })
+
+  return `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+      .header { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: #fff; padding: 20px; border-radius: 8px 8px 0 0; }
+      .content { background: #f5f5f5; padding: 30px 20px; border-radius: 0 0 8px 8px; }
+      .details { background: white; padding: 15px; border-radius: 4px; margin: 15px 0; border-left: 4px solid #22c55e; }
+      .button { display: inline-block; background: #22c55e; color: #fff; padding: 14px 28px; border-radius: 4px; text-decoration: none; font-weight: bold; margin-top: 10px; font-size: 16px; }
+      .meeting-link { background: #f0fdf4; border: 2px solid #22c55e; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; }
+      .footer { color: #666; font-size: 12px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>✅ Your Call is Confirmed!</h1>
+      </div>
+      <div class="content">
+        <p>Hi ${clientName},</p>
+        <p>Great news! Your consultation has been approved and confirmed.</p>
+        
+        <div class="details">
+          <strong>📅 Date & Time:</strong> ${timeStr}<br>
+          <strong>⏱️ Duration:</strong> ${duration} minutes
+        </div>
+
+        <div class="meeting-link">
+          <p style="margin: 0 0 10px 0; font-weight: bold;">📹 Join the Video Call</p>
+          <p style="margin: 0 0 15px 0; color: #666; font-size: 14px;">Click the button below at your scheduled time:</p>
+          <a href="${meetingLink}" class="button">Join Call</a>
+          <p style="margin: 15px 0 0 0; font-size: 12px; color: #666;">
+            Or copy this link: <code style="background: #e5e7eb; padding: 4px 8px; border-radius: 4px;">${meetingLink}</code>
+          </p>
+        </div>
+        
+        <p><strong>Tips for a great call:</strong></p>
+        <ul>
+          <li>Join a few minutes early to test your audio/video</li>
+          <li>Find a quiet space with good lighting</li>
+          <li>Have any questions or materials ready</li>
+        </ul>
+        
+        <p>Looking forward to speaking with you!</p>
+        
+        <div class="footer">
+          <p>Need to reschedule? Reply to this email and we'll work something out.</p>
+          <p>&copy; 2026 Dominick's Portfolio. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+  `
+}
+
+export function appointmentRejectedEmail({
+  clientName,
+  startTime,
+  reason,
+}: {
+  clientName: string
+  startTime: Date
+  reason?: string
+}) {
+  const timeStr = startTime.toLocaleString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://dev-dominick.com'
+
+  return `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+      .header { background: linear-gradient(135deg, #64748b 0%, #475569 100%); color: #fff; padding: 20px; border-radius: 8px 8px 0 0; }
+      .content { background: #f5f5f5; padding: 30px 20px; border-radius: 0 0 8px 8px; }
+      .details { background: white; padding: 15px; border-radius: 4px; margin: 15px 0; border-left: 4px solid #64748b; }
+      .button { display: inline-block; background: #38bdf8; color: #000; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+      .footer { color: #666; font-size: 12px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Booking Update</h1>
+      </div>
+      <div class="content">
+        <p>Hi ${clientName},</p>
+        <p>Unfortunately, I'm unable to accommodate the consultation you requested for:</p>
+        
+        <div class="details">
+          <strong>📅 Requested Time:</strong> ${timeStr}
+        </div>
+
+        ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
+        
+        <p>This could be due to a scheduling conflict or limited availability. I apologize for any inconvenience.</p>
+        
+        <p><strong>Would you like to try a different time?</strong></p>
+        <p>
+          <a href="${baseUrl}/bookings" class="button">Book Another Time</a>
+        </p>
+        
+        <p>Or feel free to reply to this email and we can find a time that works for both of us.</p>
+        
+        <div class="footer">
+          <p>Thank you for your understanding!</p>
+          <p>&copy; 2026 Dominick's Portfolio. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+  `
+}
