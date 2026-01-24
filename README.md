@@ -1,16 +1,18 @@
 ## Hi there 👋
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="domalbano3b" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
-<!--
-**dev-dominick/dev-dominick** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
-Here are some ideas to get you started:
+I’m Dominick — a senior full-stack engineer working primarily with React, Next.js, Node, and Postgres.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+I focus on building production-ready systems: clean architecture, integrations, performance, and software that holds up over time. I’m currently available for contract work and open to the right full-time opportunity.
+
+### What I work on
+- Full-stack web applications
+- APIs and integrations
+- Technical architecture and system design
+- Performance and reliability improvements
+
+I share practical notes and code from real projects. If something here saves you time or helps you think more clearly, that’s a win.
+
+If you’d like to talk or support the work:
+
+[![Book an intro call](https://img.shields.io/badge/Book%20an%20intro%20call-111111?style=for-the-badge)](https://dev-dominick.com/book-a-call)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=000000)](https://buymeacoffee.com/devdominick)
