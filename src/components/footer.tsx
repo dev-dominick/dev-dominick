@@ -8,24 +8,19 @@ import { Container, Section, Input, Button } from '@/components/ui'
 import { SIMPLE_CONSULTING_MODE } from '@/lib/config/flags'
 
 const footerLinks = {
-  product: [
-    { label: 'Home', href: '/' },
+  engage: [
+    { label: 'Book a call', href: '/bookings', primary: true },
     { label: 'Contact', href: '/contact' },
-    { label: 'Book a Call', href: '/bookings' },
+    { label: 'Home', href: '/' },
   ],
   resources: [
     { label: 'LinkedIn', href: 'https://linkedin.com/in/dominick', external: true },
     { label: 'GitHub', href: 'https://github.com', external: true },
   ],
   legal: [
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
-    { label: 'Cookie Policy', href: '/cookies' },
-  ],
-  social: [
-    { label: 'LinkedIn', href: 'https://linkedin.com', icon: 'Linkedin' },
-    { label: 'GitHub', href: 'https://github.com', icon: 'Github' },
-    { label: 'Twitter', href: 'https://twitter.com', icon: 'Twitter' },
+    { label: 'Privacy', href: '/privacy' },
+    { label: 'Terms', href: '/terms' },
+    { label: 'Cookies', href: '/cookies' },
   ],
 }
 
@@ -34,9 +29,9 @@ export function Footer() {
   const [loading, setLoading] = useState(false)
   const simpleMode = SIMPLE_CONSULTING_MODE
 
-  const productLinks = simpleMode
-    ? [{ label: 'Book a call', href: '/bookings' }]
-    : footerLinks.product
+  const engageLinks = simpleMode
+    ? [{ label: 'Book a call', href: '/bookings', primary: true }]
+    : footerLinks.engage
 
   const resourceLinks = simpleMode
     ? footerLinks.resources.filter((link) => link.label === 'Contact' || link.external)
@@ -121,34 +116,27 @@ export function Footer() {
                 </div>
                 <span className="font-bold text-neutral-50">dev-dominick</span>
               </Link>
-              <p className="text-sm text-neutral-400 mb-4">Senior Full-Stack Engineer · React · Next.js · Node · Postgres</p>
-              <div className="flex gap-3">
-                {footerLinks.social.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={link.label}
-                    className="w-10 h-10 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-[var(--accent)] hover:border-[var(--accent)]/30 transition-all"
-                  >
-                    {link.icon && <Icon name={link.icon as any} size="sm" />}
-                  </a>
-                ))}
-              </div>
+              <p className="text-sm text-neutral-400 mb-1">Senior Full-Stack Engineer</p>
+              <p className="text-xs text-neutral-500 mb-3">React · Next.js · Node · Postgres</p>
+              <p className="text-xs text-neutral-500">Available for contract and full-time roles</p>
             </div>
 
-            {/* Product */}
+            {/* Engage */}
             <div>
-              <h4 className="font-semibold text-neutral-50 mb-4 text-sm uppercase tracking-wider">Product</h4>
+              <h4 className="font-semibold text-neutral-50 mb-4 text-sm uppercase tracking-wider">Engage</h4>
               <ul className="space-y-3">
-                {productLinks.map((link) => (
+                {engageLinks.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-neutral-400 hover:text-[var(--accent)] transition-colors text-sm"
+                      className={`transition-colors text-sm inline-flex items-center gap-1 ${
+                        link.primary
+                          ? 'text-[var(--accent)] font-medium hover:text-[var(--accent-hover)]'
+                          : 'text-neutral-400 hover:text-[var(--accent)]'
+                      }`}
                     >
                       {link.label}
+                      {link.primary && <Icon name="ArrowRight" size="xs" />}
                     </Link>
                   </li>
                 ))}
@@ -186,13 +174,13 @@ export function Footer() {
 
             {/* Legal */}
             <div>
-              <h4 className="font-semibold text-neutral-50 mb-4 text-sm uppercase tracking-wider">Legal</h4>
-              <ul className="space-y-3">
+              <h4 className="font-medium text-neutral-500 mb-4 text-xs uppercase tracking-wider">Legal</h4>
+              <ul className="space-y-2">
                 {footerLinks.legal.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-neutral-400 hover:text-[var(--accent)] transition-colors text-sm"
+                      className="text-neutral-500 hover:text-neutral-300 transition-colors text-xs"
                     >
                       {link.label}
                     </Link>
@@ -206,30 +194,29 @@ export function Footer() {
               <h4 className="font-semibold text-neutral-50 mb-4 text-sm uppercase tracking-wider">Get in Touch</h4>
               <ul className="space-y-3">
                 <li>
-                  <a
-                    href="mailto:hello@dev-dominick.com"
-                    className="text-neutral-400 hover:text-[var(--accent)] transition-colors text-sm"
-                  >
-                    hello@dev-dominick.com
-                  </a>
-                </li>
-                <li>
-                  <Link
-                    href="/contact"
-                    className="text-neutral-400 hover:text-[var(--accent)] transition-colors text-sm inline-flex items-center gap-1"
-                  >
-                    Contact form
-                    <Icon name="ArrowRight" size="xs" />
-                  </Link>
-                </li>
-                <li>
                   <Link
                     href="/bookings"
-                    className="text-neutral-400 hover:text-[var(--accent)] transition-colors text-sm inline-flex items-center gap-1"
+                    className="text-[var(--accent)] font-medium hover:text-[var(--accent-hover)] transition-colors text-sm inline-flex items-center gap-1"
                   >
                     Book an intro call
                     <Icon name="ArrowRight" size="xs" />
                   </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="text-neutral-400 hover:text-neutral-200 transition-colors text-sm"
+                  >
+                    Contact form
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="mailto:hello@dev-dominick.com"
+                    className="text-neutral-500 hover:text-neutral-300 transition-colors text-xs"
+                  >
+                    hello@dev-dominick.com
+                  </a>
                 </li>
               </ul>
             </div>
