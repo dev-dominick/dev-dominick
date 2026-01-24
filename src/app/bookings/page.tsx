@@ -32,6 +32,11 @@ export default function BookingsPage() {
     const [success, setSuccess] = useState(false)
     const [error, setError] = useState('')
 
+    // Scroll to top on mount
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
     // Fetch availability on mount
     useEffect(() => {
         const fetchAvailability = async () => {
