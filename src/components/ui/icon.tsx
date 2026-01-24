@@ -42,6 +42,10 @@ import {
   Sparkles,
   Shield,
   Filter,
+  Linkedin,
+  Github,
+  Twitter,
+  ExternalLink,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -87,6 +91,10 @@ const ICON_REGISTRY: Record<string, LucideIcon> = {
   Sparkles,
   Shield,
   Filter,
+  Linkedin,
+  Github,
+  Twitter,
+  ExternalLink,
 }
 
 interface IconProps {

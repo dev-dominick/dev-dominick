@@ -14,8 +14,8 @@ const footerLinks = {
     { label: 'Home', href: '/' },
   ],
   resources: [
-    { label: 'LinkedIn', href: 'https://linkedin.com/in/dominick', external: true },
-    { label: 'GitHub', href: 'https://github.com', external: true },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/dominick-albano/', external: true },
+    { label: 'GitHub', href: 'https://github.com/dev-dominick', external: true },
   ],
   legal: [
     { label: 'Privacy', href: '/privacy' },
