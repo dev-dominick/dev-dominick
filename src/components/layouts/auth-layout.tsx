@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, cn } from '@/lib/ui'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui'
 
 export interface AuthLayoutProps {
     eyebrow?: string

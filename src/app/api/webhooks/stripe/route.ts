@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
+import type Stripe from "stripe";
+import { stripe } from "@/lib/stripe";
+import { prisma } from "@/lib/prisma";
+import { sendEmail, orderConfirmationEmail } from "@/lib/email";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_temp", {
-  apiVersion: "2025-12-15.clover",
-});
-
+// Fail-fast in production when secrets are missing; allow local testing to surface explicit errors
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
 
 export async function POST(request: NextRequest) {
@@ -38,18 +38,83 @@ export async function POST(request: NextRequest) {
           metadata: session.metadata,
         });
 
-        // TODO: Update database with payment info, send confirmation email
-        // Example: await updatePaymentRecord(session);
+        // Retrieve full session data with line items
+        const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+          expand: ["line_items"],
+        });
+
+        const lineItems = (fullSession.line_items?.data || []) as Stripe.LineItem[];
+
+        // Ensure prisma is available for writes
+        if (!prisma) {
+          console.error("Prisma client unavailable for order creation")
+          return NextResponse.json({ received: true })
+        }
+
+        // Idempotent save: if order exists for this session, skip create
+        const existing = await prisma.order.findUnique({
+          where: { stripeSessionId: session.id },
+        })
+
+        let order = existing
+        if (!existing) {
+          order = await prisma.order.create({
+            data: {
+              stripeSessionId: session.id,
+              stripeCustomerId: (session.customer as string) || null,
+              total: session.amount_total || 0,
+              currency: session.currency || "usd",
+              status: "completed",
+              customerEmail: session.customer_email || "",
+              customerName: session.customer_details?.name || undefined,
+              completedAt: new Date(),
+              items: {
+                create: lineItems.map((item) => ({
+                  productId: (item.price?.product as string) || "",
+                  quantity: item.quantity || 1,
+                  priceAtTime: item.price?.unit_amount || 0,
+                })),
+              },
+            },
+          })
+        }
+
+        if (order) {
+          // Send order confirmation email
+          const orderItems = lineItems.map((item) => ({
+            name: item.description || "Product",
+            quantity: item.quantity || 1,
+            price: item.price?.unit_amount || 0,
+          }));
+
+          const emailHtml = orderConfirmationEmail({
+            customerName: session.customer_details?.name || "Valued Customer",
+            orderId: order.id,
+            items: orderItems,
+            total: session.amount_total || 0,
+            downloadLinks: order.downloadLinks || [],
+          });
+
+          await sendEmail({
+            to: session.customer_email || "",
+            subject: "Order Confirmation - Thank You! 🎉",
+            html: emailHtml,
+          });
+
+          console.log("✓ Order saved and confirmation email sent:", order.id);
+        }
         break;
       }
 
       case "checkout.session.async_payment_succeeded": {
         const session = event.data.object as Stripe.Checkout.Session;
+        console.log("✓ Async payment succeeded:", session.id);
         break;
       }
 
       case "checkout.session.async_payment_failed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        console.log("✗ Async payment failed:", session.id);
         // TODO: Send failure notification email
         break;
       }
@@ -60,11 +125,12 @@ export async function POST(request: NextRequest) {
           chargeId: charge.id,
           amount: charge.amount_refunded,
         });
-        // TODO: Update database with refund info
+        // Schema does not track payment intent on Order; log only.
         break;
       }
 
       default:
+        console.log(`Unhandled event type: ${event.type}`);
     }
   } catch (error) {
     console.error("Error processing webhook:", error);

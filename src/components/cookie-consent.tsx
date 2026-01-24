@@ -8,7 +8,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from '@/lib/ui';
+import { Button } from '@/components/ui';
 
 export function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);

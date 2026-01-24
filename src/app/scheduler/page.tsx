@@ -5,9 +5,10 @@ import { Calendar, Clock, Users } from 'lucide-react';
 
 interface Appointment {
   id: string;
-  customerName: string;
-  customerEmail: string;
-  datetime: string;
+  clientName: string;
+  clientEmail: string;
+  startTime: string;
+  endTime: string;
   status: string;
   notes?: string;
 }
@@ -60,12 +61,12 @@ export default function AdminScheduler() {
   };
 
   const upcomingAppointments = appointments
-    .filter(apt => new Date(apt.datetime) > new Date())
-    .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
+    .filter(apt => new Date(apt.startTime) > new Date())
+    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 
   const pastAppointments = appointments
-    .filter(apt => new Date(apt.datetime) <= new Date())
-    .sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime());
+    .filter(apt => new Date(apt.startTime) <= new Date())
+    .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
 
   if (loading) {
     return (
@@ -135,10 +136,10 @@ export default function AdminScheduler() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-semibold text-white">
-                      {appointment.customerName}
+                      {appointment.clientName}
                     </h3>
                     <p className="text-sm text-gray-400">
-                      {appointment.customerEmail}
+                      {appointment.clientEmail}
                     </p>
                     {appointment.notes && (
                       <p className="text-sm text-gray-500 mt-2 italic">
@@ -183,7 +184,7 @@ export default function AdminScheduler() {
                     </p>
                   </div>
                   <p className="text-sm text-gray-500">
-                    {formatDateTime(appointment.datetime)}
+                    {formatDateTime(appointment.startTime)}
                   </p>
                 </div>
               </div>

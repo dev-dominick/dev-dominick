@@ -5,6 +5,22 @@ import { signupRateLimiter } from "@/lib/rate-limit";
 import { z } from "zod";
 import { issueSessionResponse } from "@/lib/auth-session";
 
+function isAllowedOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get("origin") || "";
+  const allowed = (process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
+  const baseUrl = process.env.NEXTAUTH_URL || "";
+  if (baseUrl) {
+    try {
+      const u = new URL(baseUrl);
+      allowed.push(`${u.protocol}//${u.host}`);
+    } catch {}
+  }
+  return allowed.length === 0 ? true : allowed.includes(origin);
+}
+
 /**
  * Signup API Route with Bot Protection
  * 
@@ -32,6 +48,11 @@ const signupSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF mitigation: require requests originate from allowed origin
+    if (!isAllowedOrigin(request)) {
+      return NextResponse.json({ error: "Invalid origin" }, { status: 400 });
+    }
+
     // Get client IP for rate limiting
     const ip =
       request.headers.get("x-forwarded-for") ||

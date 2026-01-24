@@ -140,7 +140,7 @@ export default function EnterpriseDashboard() {
             <button
               onClick={fetchDashboard}
               disabled={refreshing}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg font-medium flex items-center gap-2 transition-all"
+              className="px-4 py-2 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white rounded-lg font-medium flex items-center gap-2 transition-all"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
               Refresh

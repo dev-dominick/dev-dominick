@@ -1,211 +1,176 @@
+'use client'
+
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { Button } from '@/components/ui'
-import { Terminal, ShoppingBag, CalendarClock, ShieldCheck, Sparkles } from 'lucide-react'
-
-const featuredProducts = [
-  {
-    title: 'Premium React Components',
-    blurb: '50+ production-ready components with TypeScript',
-    price: 49.99,
-    href: '/shop/1',
-  },
-  {
-    title: 'Next.js Dashboard Template',
-    blurb: 'Analytics-ready admin with dark mode',
-    price: 79.99,
-    href: '/shop/2',
-  },
-  {
-    title: 'E-commerce Starter Kit',
-    blurb: 'Full-stack shop wired to Stripe',
-    price: 129.99,
-    href: '/shop/3',
-  },
-]
-
-const bookingHighlights = [
-  {
-    title: 'Book a Session',
-    body: 'Strategy, architecture, or pairing—pick a slot and we meet live.',
-    href: '/appointments',
-  },
-  {
-    title: 'Bring Your Problem',
-    body: 'We troubleshoot together and leave with a clear implementation plan.',
-    href: '/appointments',
-  },
-  {
-    title: 'Ship Faster',
-    body: 'Hands-on help so you can get code into production quickly and safely.',
-    href: '/appointments',
-  },
-]
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Container, Section } from '@/components/ui'
+import { Icon } from '@/components/ui/icon'
+import { SIMPLE_CONSULTING_MODE } from '@/lib/config/flags'
 
 export default function HomePage() {
+  const { data: session, status } = useSession()
+  const simpleMode = SIMPLE_CONSULTING_MODE
+
   return (
-    <main className="min-h-screen bg-matrix-black">
-      <div className="fixed inset-0 pointer-events-none opacity-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              'linear-gradient(#00ff41 1px, transparent 1px), linear-gradient(90deg, #00ff41 1px, transparent 1px)',
-            backgroundSize: '50px 50px',
-          }}
-        />
-      </div>
+    <main className="min-h-screen bg-neutral-950 text-neutral-50">
+      <Section className="relative overflow-hidden py-20 md:py-28">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-sky-500/5 via-transparent to-sky-500/10" />
+        <Container>
+          <div className="text-center space-y-8 max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-300 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em]">
+              <Icon name="Sparkles" size="sm" /> {simpleMode ? 'Consulting-first mode' : 'Proven delivery, startup-speed'}
+            </div>
+            <div className="space-y-6">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight">
+                {simpleMode ? 'Book a senior engineer to de-risk your build' : 'Ship faster with'}
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-sky-300 to-sky-500">
+                  {simpleMode ? 'Clarity, architecture, and next steps' : 'production-grade systems'}
+                </span>
+              </h1>
+              <p className="text-lg text-neutral-300 max-w-2xl mx-auto leading-relaxed">
+                {simpleMode
+                  ? 'Get technical clarity, architecture review, and an execution plan. One call to stop guessing and move forward.'
+                  : 'Templates, consulting, and coaching built for founders who need to execute. Pick what you need or combine them for maximum impact.'}
+              </p>
+            </div>
 
-      {/* Hero: choose your path */}
-      <div className="relative z-10 px-4 pt-28 pb-16 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="flex items-center gap-2 mb-4 justify-center">
-            <Terminal className="w-5 h-5 text-matrix-primary" />
-            <span className="text-sm font-semibold text-matrix-primary uppercase tracking-wider font-mono">
-              Build with confidence
-            </span>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              {session ? (
+                <>
+                  <Button asChild size="lg">
+                    <Link href={simpleMode ? '/bookings' : '/explore'} className="inline-flex items-center gap-2">
+                      {simpleMode ? 'Book a call' : 'Explore options'}
+                      <Icon name="ArrowRight" size="sm" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="secondary" size="lg">
+                    <Link href={simpleMode ? '/contact' : '/app'}>{simpleMode ? 'Contact' : 'Dashboard'}</Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button asChild size="lg">
+                    <Link href={simpleMode ? '/bookings' : '/explore'} className="inline-flex items-center gap-2">
+                      {simpleMode ? 'Book a call' : 'Explore options'}
+                      <Icon name="ArrowRight" size="sm" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="secondary" size="lg">
+                    <Link href={simpleMode ? '/contact' : '/signup'}>{simpleMode ? 'Contact' : 'Sign up'}</Link>
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
+        </Container>
+      </Section>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 font-mono text-matrix-text-primary leading-tight">
-            Shop products or book time
-            <span className="block text-matrix-secondary">either way, you ship faster</span>
-          </h1>
+      {!simpleMode && (
+        <Section className="bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
+          <Container>
+            <div className="text-center space-y-3 mb-10">
+              <h2 className="text-3xl font-bold text-neutral-950 dark:text-neutral-50">Everything you need</h2>
+              <p className="text-neutral-600 dark:text-neutral-400">Pick a path or mix them for your stack.</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card className="hover:shadow-md transition-all dark:border-neutral-800 dark:bg-neutral-800/50">
+                <CardContent className="space-y-3 pt-6">
+                  <div className="text-2xl">🛍️</div>
+                  <CardTitle className="text-xl dark:text-neutral-50">Shop templates</CardTitle>
+                  <CardDescription className="dark:text-neutral-400">
+                    Production-ready website & commerce kits wired with Stripe, admin dashboards, and modern stack.
+                  </CardDescription>
+                  <Button asChild variant="ghost" className="px-0 text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300">
+                    <Link href="/shop" className="inline-flex items-center gap-2">
+                      View templates <Icon name="ArrowRight" size="sm" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
 
-          <p className="text-lg sm:text-xl text-matrix-text-secondary max-w-3xl mx-auto mb-10">
-            Pre-built resources for instant velocity, or hands-on sessions to unblock your roadmap. Matrix-grade quality, zero fluff.
-          </p>
+              <Card className="hover:shadow-md transition-all dark:border-neutral-800 dark:bg-neutral-800/50">
+                <CardContent className="space-y-3 pt-6">
+                  <div className="text-2xl">📞</div>
+                  <CardTitle className="text-xl dark:text-neutral-50">Consultations</CardTitle>
+                  <CardDescription className="dark:text-neutral-400">
+                    Free 30-min discovery or $50 technical consults. Get a roadmap tailored to your goals.
+                  </CardDescription>
+                  <Button asChild variant="ghost" className="px-0 text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300">
+                    <Link href="/bookings?type=free" className="inline-flex items-center gap-2">
+                      Book a call <Icon name="ArrowRight" size="sm" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/shop">
-              <Button size="lg" className="w-full sm:w-auto">
-                Shop products
+              <Card className="hover:shadow-md transition-all dark:border-neutral-800 dark:bg-neutral-800/50">
+                <CardContent className="space-y-3 pt-6">
+                  <div className="text-2xl">🎓</div>
+                  <CardTitle className="text-xl dark:text-neutral-50">Private coaching</CardTitle>
+                  <CardDescription className="dark:text-neutral-400">
+                    1-on-1 architecture reviews, growth strategies, and tactical execution support for founders.
+                  </CardDescription>
+                  <Button asChild variant="ghost" className="px-0 text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300">
+                    <Link href="/contact" className="inline-flex items-center gap-2">
+                      Learn more <Icon name="ArrowRight" size="sm" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </Container>
+        </Section>
+      )}
+
+      {simpleMode && (
+        <Section className="bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
+          <Container>
+            <div className="max-w-4xl mx-auto text-center space-y-4">
+              <h2 className="text-3xl font-bold text-neutral-950 dark:text-neutral-50">What you get on the call</h2>
+              <p className="text-neutral-600 dark:text-neutral-400">Architecture review, risks, and a clear next-steps checklist tailored to your context.</p>
+            </div>
+            <div className="mt-10 grid gap-4 md:grid-cols-2">
+              {["Risk + architecture review", "Execution plan with 2–3 milestones", "Build vs buy guidance", "Tooling + stack recommendations"].map((item) => (
+                <Card key={item} className="dark:border-neutral-800 dark:bg-neutral-800/60">
+                  <CardContent className="flex items-center gap-3 py-5">
+                    <span className="text-sky-400">✓</span>
+                    <p className="text-neutral-800 dark:text-neutral-200">{item}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild size="lg">
+                <Link href="/bookings">Book now</Link>
               </Button>
-            </Link>
-            <Link href="/appointments">
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                Book a session
+              <Button asChild variant="secondary" size="lg">
+                <Link href="/contact">Talk first</Link>
               </Button>
-            </Link>
-          </div>
+            </div>
+          </Container>
+        </Section>
+      )}
 
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-matrix-text-secondary">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-matrix-primary" />
-              <span>Secure Stripe checkout</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CalendarClock className="w-4 h-4 text-matrix-primary" />
-              <span>Live sessions with real outcomes</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Conversion rail */}
-      <div className="relative z-10 px-4 pb-14 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
-          <div className="p-8 rounded-2xl border border-matrix-border/30 bg-matrix-darker/80 shadow-lg">
-            <div className="flex items-center gap-3 mb-4">
-              <ShoppingBag className="w-5 h-5 text-matrix-primary" />
-              <h3 className="text-xl font-semibold text-matrix-text-primary font-mono">Shop</h3>
-            </div>
-            <p className="text-matrix-text-secondary mb-6">
-              Production-ready templates and components wired for Stripe. Launch faster without reinventing the stack.
+      <Section className="bg-neutral-950 text-neutral-50">
+        <Container>
+          <div className="max-w-3xl text-center mx-auto space-y-6">
+            <h2 className="text-3xl font-bold">{simpleMode ? 'Ready to get clarity?' : 'Ready to ship?'}</h2>
+            <p className="text-lg text-neutral-400">
+              {simpleMode ? 'Start with a consultation to de-risk your next move.' : 'Choose your path, or start with a free consultation to figure it out.'}
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/shop">
-                <Button size="lg">Browse products</Button>
-              </Link>
-              <Link href="/cart" className="inline-flex">
-                <Button variant="ghost" size="lg">View cart</Button>
-              </Link>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild size="lg" variant="secondary" className="bg-neutral-50 text-neutral-950 hover:bg-neutral-200">
+                <Link href={simpleMode ? '/bookings' : '/explore'} className="inline-flex items-center gap-2">
+                  {simpleMode ? 'Book a call' : 'Explore'}
+                  <Icon name="ArrowRight" size="sm" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="ghost" className="border-neutral-50 text-neutral-50 hover:bg-neutral-50/10">
+                <Link href={simpleMode ? '/contact' : '/bookings?type=free'}>{simpleMode ? 'Contact' : 'Free call'}</Link>
+              </Button>
             </div>
           </div>
-
-          <div className="p-8 rounded-2xl border border-matrix-border/30 bg-matrix-darker/80 shadow-lg">
-            <div className="flex items-center gap-3 mb-4">
-              <CalendarClock className="w-5 h-5 text-matrix-primary" />
-              <h3 className="text-xl font-semibold text-matrix-text-primary font-mono">Book</h3>
-            </div>
-            <p className="text-matrix-text-secondary mb-6">
-              Get live guidance: architecture, performance, integrations, or pair-programming to unblock shipping.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/appointments">
-                <Button size="lg" variant="secondary">Schedule now</Button>
-              </Link>
-              <Link href="/contact" className="inline-flex">
-                <Button variant="ghost" size="lg">Ask a question</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Featured products */}
-      <div className="relative z-10 px-4 pb-16 sm:px-6 lg:px-8 border-t border-matrix-border/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between flex-wrap gap-3 mb-8">
-            <h2 className="text-3xl sm:text-4xl font-bold text-matrix-text-primary font-mono">Featured products</h2>
-            <Link href="/shop" className="text-matrix-primary font-mono text-sm hover:underline">
-              See all products
-            </Link>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredProducts.map((product) => (
-              <div
-                key={product.title}
-                className="p-6 rounded-2xl border border-matrix-border/30 bg-matrix-darker/70 hover:border-matrix-primary/50 hover:shadow-matrix transition-all duration-200"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-matrix-text-primary">{product.title}</h3>
-                  <Sparkles className="w-4 h-4 text-matrix-secondary" />
-                </div>
-                <p className="text-matrix-text-secondary mb-4">{product.blurb}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-semibold text-matrix-text-primary">${product.price.toFixed(2)}</span>
-                  <Link href={product.href} className="inline-flex">
-                    <Button size="sm" variant="secondary">View</Button>
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Booking highlights */}
-      <div className="relative z-10 px-4 pb-16 sm:px-6 lg:px-8 border-t border-matrix-border/20">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
-          {bookingHighlights.map((item) => (
-            <div
-              key={item.title}
-              className="p-6 rounded-2xl border border-matrix-border/30 bg-matrix-darker/80 hover:border-matrix-primary/40 transition-all duration-200"
-            >
-              <h3 className="text-xl font-semibold text-matrix-text-primary mb-3 font-mono">{item.title}</h3>
-              <p className="text-matrix-text-secondary mb-4">{item.body}</p>
-              <Link href={item.href} className="text-matrix-primary font-mono text-sm hover:underline">Book now</Link>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Final CTA */}
-      <div className="relative z-10 px-4 pb-20 sm:px-6 lg:px-8 border-t border-matrix-border/20">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-matrix-text-primary font-mono">Pick your path and start</h2>
-          <p className="text-lg text-matrix-text-secondary mb-8">
-            Whether you need a ready-to-ship template or a focused session, the goal is the same: ship solid software, fast.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/shop">
-              <Button size="lg">Shop products</Button>
-            </Link>
-            <Link href="/appointments">
-              <Button variant="secondary" size="lg">Book a session</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+        </Container>
+      </Section>
     </main>
   )
 }

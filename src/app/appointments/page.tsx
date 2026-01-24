@@ -1,5 +1,5 @@
-import { Container } from '@/lib/ui';
-import { AppointmentBooker } from "@/components/client/AppointmentBooker";
+import { Container } from '@/components/ui';
+import { AppointmentBooker } from "@/components/client/appointment-booker";
 import Link from "next/link";
 
 export default function AppointmentsPage() {

@@ -1,4 +1,4 @@
-import { Container, Button, PageHeader, Section, Card, CardContent } from '@/lib/ui';
+import { Container, Button, PageHeader, Section, Card, CardContent } from '@/components/ui';
 import Link from "next/link";
 import { AlertCircle, MessageSquare } from "lucide-react";
 

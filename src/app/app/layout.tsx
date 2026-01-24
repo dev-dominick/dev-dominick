@@ -1,4 +1,4 @@
-import { AppShellClient } from '@/components/app-shell/AppShellClient'
+import { AppShellClient } from '@/components/app-shell/app-shell-client'
 
 export default function AppLayout({
   children,

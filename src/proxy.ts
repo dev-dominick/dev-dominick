@@ -11,9 +11,10 @@ const PUBLIC_ROUTES = [
   "/code-cloud-logo.svg",
 ];
 
-// Auth routes - blocked when logged in (owner only)
+// Auth routes - allow when logged out, redirect away when logged in
 const AUTH_ROUTES = [
   "/login",
+  "/signup",
   "/forgot-password",
   "/reset-password",
 ];
@@ -33,15 +34,8 @@ function isAppRoute(path: string): boolean {
   return APP_ROUTES.some((route) => path.startsWith(route));
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  // Block auth routes completely - redirect to homepage
-  if (isAuthRoute(pathname)) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-    return NextResponse.redirect(url);
-  }
 
   // Get auth token
   const token = await getToken({
@@ -52,8 +46,10 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = !!token;
 
   // Check maintenance mode - redirect all unauthenticated traffic to coming soon (PRODUCTION ONLY)
+  // Disabled in development for easier testing
   const isProduction = process.env.NODE_ENV === "production";
-  if (isProduction && pathname !== "/maintenance" && !isAuthenticated) {
+  const maintenanceEnabled = process.env.MAINTENANCE_MODE === "true";
+  if (maintenanceEnabled && isProduction && pathname !== "/maintenance" && !isAuthenticated) {
     const maintenanceUrl = request.nextUrl.clone();
     maintenanceUrl.pathname = "/maintenance";
     return NextResponse.redirect(maintenanceUrl);
@@ -64,15 +60,30 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. Auth routes - now blocked above
+  // 2. Auth routes - allow if logged out; redirect to /app if logged in
+  if (isAuthRoute(pathname)) {
+    if (isAuthenticated) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/app";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
+  }
 
-  // 3. App routes - require login
+  // 3. App routes - require admin login
   if (isAppRoute(pathname)) {
     if (!isAuthenticated) {
       // Not logged in - redirect to login with next param
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       url.searchParams.set("next", pathname + url.search);
+      return NextResponse.redirect(url);
+    }
+
+    if ((token as any)?.role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      url.searchParams.set("reason", "forbidden");
       return NextResponse.redirect(url);
     }
     return NextResponse.next();

@@ -1,6 +1,6 @@
-import { Container } from '@/lib/ui';
-import { Card } from '@/lib/ui';
-import { Button } from '@/lib/ui';
+import { Container } from '@/components/ui';
+import { Card } from '@/components/ui';
+import { Button } from '@/components/ui';
 import Link from "next/link";
 
 export default function NonnaRosaProject() {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,48 +8,64 @@ export async function GET(request: NextRequest) {
       searchParams.get("startDate") || new Date().toISOString().split("T")[0];
     const days = parseInt(searchParams.get("days") || "7");
 
-    // TODO: Replace with actual Prisma query
-    // 1. Get availability settings from database
-    // const availability = await prisma.availability.findMany({
-    //     where: { clientId: 'your-client-id', active: true }
-    // });
-
-    // 2. Get existing appointments to block times
-    // const appointments = await prisma.appointment.findMany({
-    //     where: {
-    //         datetime: {
-    //             gte: new Date(startDate),
-    //             lte: new Date(Date.now() + days * 24 * 60 * 60 * 1000)
-    //         }
-    //     }
-    // });
-
-    // Mock availability logic - Business hours 9 AM - 5 PM, 1-hour slots
     const slots = [];
     const start = new Date(startDate);
+
+    // preload availability by day
+    const availability = await prisma.availability.findMany({
+      where: { isActive: true },
+    });
+
+    const appointmentWindowEnd = new Date(start);
+    appointmentWindowEnd.setDate(appointmentWindowEnd.getDate() + days);
+
+    const existingAppointments = await prisma.appointment.findMany({
+      where: {
+        startTime: { gte: start },
+        endTime: { lte: appointmentWindowEnd },
+        status: { in: ["scheduled", "confirmed", "pending"] },
+      },
+      select: { startTime: true, endTime: true },
+    });
 
     for (let day = 0; day < days; day++) {
       const currentDate = new Date(start);
       currentDate.setDate(start.getDate() + day);
 
-      // Skip weekends (0 = Sunday, 6 = Saturday)
-      if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
-        continue;
-      }
-
       const dateStr = currentDate.toISOString().split("T")[0];
+      const dow = currentDate.getUTCDay();
 
-      // Generate hourly slots from 9 AM to 5 PM
-      for (let hour = 9; hour < 17; hour++) {
-        const timeStr = `${hour.toString().padStart(2, "0")}:00`;
+      const dayAvailability = availability.filter((a) => a.dayOfWeek === dow);
 
-        slots.push({
-          id: `${dateStr}-${timeStr}`,
-          date: dateStr,
-          time: timeStr,
-          available: true, // In real app, check against existing appointments
-          duration: 60,
-        });
+      for (const window of dayAvailability) {
+        const [startHour, startMinute] = window.startTime.split(":").map(Number);
+        const [endHour, endMinute] = window.endTime.split(":").map(Number);
+
+        const windowStart = new Date(currentDate);
+        windowStart.setUTCHours(startHour, startMinute, 0, 0);
+        const windowEnd = new Date(currentDate);
+        windowEnd.setUTCHours(endHour, endMinute, 0, 0);
+
+        for (
+          let slotStart = new Date(windowStart);
+          slotStart < windowEnd;
+          slotStart = new Date(slotStart.getTime() + 60 * 60 * 1000)
+        ) {
+          const slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000);
+          if (slotEnd > windowEnd) break;
+
+          const conflict = existingAppointments.some(
+            (apt) => apt.startTime < slotEnd && apt.endTime > slotStart
+          );
+
+          slots.push({
+            id: `${dateStr}-${slotStart.toISOString().substring(11, 16)}`,
+            date: dateStr,
+            time: slotStart.toISOString().substring(11, 16),
+            available: !conflict,
+            duration: 60,
+          });
+        }
       }
     }
 

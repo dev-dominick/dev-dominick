@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { VideoSession } from '@/components/client/VideoSession'
+import { VideoSession } from '@/components/client/video-session'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui'
 import Link from 'next/link'

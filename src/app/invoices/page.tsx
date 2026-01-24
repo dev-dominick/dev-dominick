@@ -1,6 +1,6 @@
 'use client';
 
-import { InvoiceViewer, type Invoice } from '@/components/client/InvoiceViewer';
+import { InvoiceViewer, type Invoice } from '@/components/client/invoice-viewer';
 
 // Mock invoice data for demo
 const mockInvoices: Invoice[] = [

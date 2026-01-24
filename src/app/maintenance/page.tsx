@@ -1,11 +1,11 @@
 export default function MaintenancePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-900 to-neutral-800">
       <div className="text-center px-4">
         <div className="mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/20 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-warning-500/20 mb-4">
             <svg
-              className="w-8 h-8 text-amber-500"
+              className="w-8 h-8 text-warning-500"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -17,16 +17,16 @@ export default function MaintenancePage() {
             </svg>
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">Coming Soon</h1>
-          <p className="text-xl text-slate-400 mb-8">
+          <p className="text-xl text-neutral-400 mb-8">
             We're preparing something amazing. Check back soon!
           </p>
         </div>
 
-        <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 max-w-md">
-          <p className="text-slate-300 mb-6">
+        <div className="bg-neutral-800/50 border border-neutral-700 rounded-lg p-8 max-w-md">
+          <p className="text-neutral-300 mb-6">
             This site is currently under maintenance and not yet open to the public.
           </p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-neutral-500">
             If you have questions, please contact us directly.
           </p>
         </div>

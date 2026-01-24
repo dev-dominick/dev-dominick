@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, InputWithIcon, Button } from '@/lib/ui'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button } from '@/components/ui'
 import { Mail, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
@@ -39,66 +39,43 @@ export default function ForgotPasswordPage() {
 
     if (submitted) {
         return (
-            <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-                {/* Minimal header */}
-                <nav className="border-b border-gray-800 bg-black/50 backdrop-blur-xl">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="flex h-16 items-center justify-between">
-                            <Link href="/" className="flex items-center gap-2 font-bold text-white hover:text-blue-400 transition-colors">
-                                <img src="/code-cloud-logo.svg" alt="Code Cloud" className="w-8 h-8" />
-                                <span className="text-lg">Code Cloud</span>
-                            </Link>
-                            <Link href="/login" className="text-sm text-gray-300 hover:text-white transition-colors">
-                                Back to <span className="text-blue-400 font-medium">Sign in</span>
-                            </Link>
-                        </div>
-                    </div>
-                </nav>
-
-                {/* Background decorations */}
-                <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
-                    <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
-                </div>
+            <main className="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-950 to-neutral-900">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.08),transparent_25%),radial-gradient(circle_at_50%_80%,rgba(14,165,233,0.06),transparent_30%)]" />
 
                 <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
-                    <Card className="w-full max-w-md bg-slate-900/80 backdrop-blur border-slate-800">
-                        <CardHeader className="text-center">
-                            <div className="flex justify-center mb-4">
-                                <div className="rounded-full bg-green-500/20 p-3">
-                                    <CheckCircle2 className="w-8 h-8 text-green-400" />
-                                </div>
+                    <Card className="w-full max-w-md border-neutral-800 bg-neutral-900/80 backdrop-blur-xl shadow-xl">
+                        <CardHeader className="text-center space-y-3">
+                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-500/15">
+                                <CheckCircle2 className="w-7 h-7 text-primary-300" />
                             </div>
-                            <CardTitle className="text-2xl text-white">Check Your Email</CardTitle>
-                            <CardDescription className="text-slate-400">
-                                We've sent a password reset link to <span className="font-medium text-white">{email}</span>
+                            <CardTitle className="text-heading-md text-neutral-50">Check your email</CardTitle>
+                            <CardDescription className="text-neutral-400">
+                                We sent a reset link to <span className="font-semibold text-neutral-100">{email}</span>
                             </CardDescription>
                         </CardHeader>
 
                         <CardContent className="space-y-4">
-                            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                                <p className="text-sm text-slate-300 mb-2">
-                                    <strong>Didn't receive the email?</strong>
-                                </p>
-                                <ul className="text-xs text-slate-400 space-y-1 list-disc list-inside">
-                                    <li>Check your spam/junk folder</li>
-                                    <li>Make sure you entered the correct email</li>
-                                    <li>Wait a few minutes for the email to arrive</li>
+                            <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
+                                <p className="text-sm text-neutral-100 mb-2 font-semibold">Didn't get it?</p>
+                                <ul className="text-sm text-neutral-400 space-y-1 list-disc list-inside">
+                                    <li>Check spam or promotions</li>
+                                    <li>Verify the email address</li>
+                                    <li>Wait a couple of minutes</li>
                                 </ul>
                             </div>
 
                             <Button
                                 onClick={() => setSubmitted(false)}
-                                variant="outline"
-                                className="w-full border-slate-700 text-slate-300 hover:bg-slate-800"
+                                variant="secondary"
+                                fullWidth
                             >
                                 Try a different email
                             </Button>
 
                             <div className="text-center">
-                                <Link href="/login" className="text-sm text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1">
+                                <Link href="/login" className="text-sm text-primary-300 hover:text-primary-200 inline-flex items-center gap-1 font-semibold">
                                     <ArrowLeft className="w-4 h-4" />
-                                    Back to Sign In
+                                    Back to sign in
                                 </Link>
                             </div>
                         </CardContent>
@@ -109,40 +86,21 @@ export default function ForgotPasswordPage() {
     }
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-            {/* Minimal header */}
-            <nav className="border-b border-gray-800 bg-black/50 backdrop-blur-xl">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 items-center justify-between">
-                        <Link href="/" className="flex items-center gap-2 font-bold text-white hover:text-blue-400 transition-colors">
-                            <img src="/code-cloud-logo.svg" alt="Code Cloud" className="w-8 h-8" />
-                            <span className="text-lg">Code Cloud</span>
-                        </Link>
-                        <Link href="/login" className="text-sm text-gray-300 hover:text-white transition-colors">
-                            Remember password? <span className="text-blue-400 font-medium">Sign in</span>
-                        </Link>
-                    </div>
-                </div>
-            </nav>
-
-            {/* Background decorations */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
-            </div>
+        <main className="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-950 to-neutral-900">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.08),transparent_25%),radial-gradient(circle_at_50%_80%,rgba(14,165,233,0.06),transparent_30%)]" />
 
             <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
-                <Card className="w-full max-w-md bg-slate-900/80 backdrop-blur border-slate-800">
-                    <CardHeader>
-                        <CardTitle className="text-2xl text-white">Reset Your Password</CardTitle>
-                        <CardDescription className="text-slate-400">
-                            Enter your email address and we'll send you a link to reset your password.
+                <Card className="w-full max-w-md border-neutral-800 bg-neutral-900/80 backdrop-blur-xl shadow-xl">
+                    <CardHeader className="space-y-2">
+                        <CardTitle className="text-heading-lg text-neutral-50">Reset your password</CardTitle>
+                        <CardDescription className="text-neutral-400 text-body-sm">
+                            Enter your email and we’ll send you a secure reset link.
                         </CardDescription>
                     </CardHeader>
 
                     <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <InputWithIcon
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            <Input
                                 id="email"
                                 name="email"
                                 type="email"
@@ -151,22 +109,23 @@ export default function ForgotPasswordPage() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="you@example.com"
                                 label="Email Address"
-                                startIcon={<Mail className="w-5 h-5" />}
-                                className="bg-slate-800 border-slate-700 text-white placeholder-slate-400 focus-visible:ring-blue-500"
+                                icon={Mail}
+                                autoComplete="email"
                             />
 
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-md transition-colors"
+                                fullWidth
+                                size="lg"
                             >
-                                {loading ? 'Sending...' : 'Send Reset Link'}
+                                {loading ? 'Sending...' : 'Send reset link'}
                             </Button>
 
                             <div className="text-center">
-                                <Link href="/login" className="text-sm text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1">
+                                <Link href="/login" className="text-sm text-primary-300 hover:text-primary-200 inline-flex items-center gap-1 font-semibold">
                                     <ArrowLeft className="w-4 h-4" />
-                                    Back to Sign In
+                                    Back to sign in
                                 </Link>
                             </div>
                         </form>

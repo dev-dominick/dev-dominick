@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Lock, ArrowLeft, ShoppingBag, Shield } from 'lucide-react';
+import { getProductById } from '@/lib/catalog';
 
 interface CartItem {
     id: string;
     name: string;
     price: number;
     quantity: number;
-    stripePriceId?: string;
+    stripePriceId: string;
 }
 
 export default function CheckoutPage() {
@@ -19,10 +20,21 @@ export default function CheckoutPage() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
+    const currency = useMemo(() => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }), []);
 
     useEffect(() => {
         const cart = JSON.parse(localStorage.getItem('shop_cart') || '[]');
-        setItems(cart);
+        const normalized: CartItem[] = (cart as CartItem[])
+            .map((item) => {
+                const catalogProduct = getProductById(item.id);
+                return {
+                    ...item,
+                    stripePriceId: item.stripePriceId || catalogProduct?.stripePriceId || '',
+                };
+            })
+            .filter((item) => item.stripePriceId);
+
+        setItems(normalized);
         setIsLoaded(true);
     }, []);
 
@@ -35,6 +47,11 @@ export default function CheckoutPage() {
         setError(null);
 
         try {
+            const itemsMissingPriceId = items.filter((item) => !item.stripePriceId);
+            if (itemsMissingPriceId.length) {
+                throw new Error('One or more items are missing a Stripe price. Please re-add them to the cart.');
+            }
+
             // Call API to create Stripe Checkout Session
             const res = await fetch('/api/stripe/checkout', {
                 method: 'POST',
@@ -73,7 +90,7 @@ export default function CheckoutPage() {
         return (
             <div className="min-h-screen bg-matrix-black pt-20">
                 <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                    <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-12 text-center shadow-matrix">
+                    <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker p-12 text-center shadow-soft">
                         <ShoppingBag className="w-16 h-16 text-matrix-text-secondary mx-auto mb-4" />
                         <h1 className="text-2xl font-bold text-matrix-text-primary mb-4">
                             Your cart is empty
@@ -83,7 +100,7 @@ export default function CheckoutPage() {
                         </p>
                         <Link
                             href="/shop"
-                            className="inline-block px-6 py-3 bg-matrix-primary text-matrix-black rounded-lg hover:bg-matrix-secondary shadow-matrix font-semibold"
+                            className="inline-block px-6 py-3 bg-matrix-primary text-matrix-black rounded-lg hover:brightness-110 shadow-soft font-semibold"
                         >
                             Browse shop
                         </Link>
@@ -95,38 +112,28 @@ export default function CheckoutPage() {
 
     return (
         <div className="min-h-screen bg-matrix-black text-matrix-text-primary pt-20">
-            <div className="fixed inset-0 pointer-events-none opacity-[0.06]">
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        backgroundImage:
-                            "linear-gradient(#00ff41 1px, transparent 1px), linear-gradient(90deg, #00ff41 1px, transparent 1px)",
-                        backgroundSize: "60px 60px",
-                    }}
-                />
-            </div>
             <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <Link
                     href="/cart"
-                    className="inline-flex items-center gap-2 text-matrix-text-secondary hover:text-matrix-primary mb-8 font-mono"
+                    className="inline-flex items-center gap-2 text-matrix-text-secondary hover:text-matrix-primary mb-8"
                 >
                     <ArrowLeft className="w-5 h-5" />
                     Back to cart
                 </Link>
 
-                <h1 className="text-3xl font-bold text-matrix-text-primary mb-8 font-mono">
+                <h1 className="text-3xl font-bold text-matrix-text-primary mb-2">
                     Checkout
                 </h1>
+                <p className="text-matrix-text-secondary mb-8">You’re booking a paid consultation. After payment, we’ll confirm details and share scheduling. Questions? <Link href="/contact" className="text-matrix-primary hover:brightness-110">Contact us</Link> anytime.</p>
 
                 {error && (
-                    <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
-                        <p className="text-red-400">{error}</p>
+                    <div className="mb-6 p-4 bg-danger/10 border border-danger/50 rounded-lg">
+                        <p className="text-danger">{error}</p>
                     </div>
                 )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Order Summary */}
-                    <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-6 shadow-matrix">
+                    <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker p-6 shadow-soft">
                         <h2 className="text-xl font-bold text-matrix-text-primary mb-4">
                             Order summary
                         </h2>
@@ -143,55 +150,54 @@ export default function CheckoutPage() {
                                         </p>
                                     </div>
                                     <span className="font-bold text-matrix-text-primary">
-                                        ${(item.price * item.quantity).toFixed(2)}
+                                        {currency.format(item.price * item.quantity)}
                                     </span>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="space-y-3 pt-4 border-t border-matrix-border/30">
+                        <div className="space-y-3 pt-4 border-t border-matrix-border/40">
                             <div className="flex items-center justify-between text-matrix-text-secondary">
                                 <span>Subtotal</span>
-                                <span className="text-matrix-text-primary">${subtotal.toFixed(2)}</span>
+                                <span className="text-matrix-text-primary">{currency.format(subtotal)}</span>
                             </div>
                             <div className="flex items-center justify-between text-matrix-text-secondary">
                                 <span>Tax</span>
-                                <span>${tax.toFixed(2)}</span>
+                                <span>{currency.format(tax)}</span>
                             </div>
-                            <div className="border-t border-matrix-border/30 pt-3">
+                            <div className="border-t border-matrix-border/40 pt-3">
                                 <div className="flex items-center justify-between">
                                     <span className="text-lg font-bold text-matrix-text-primary">
                                         Total
                                     </span>
                                     <span className="text-2xl font-bold text-matrix-text-primary">
-                                        ${total.toFixed(2)}
+                                        {currency.format(total)}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-6 pt-6 border-t border-matrix-border/30 space-y-2 text-sm text-matrix-text-secondary">
+                        <div className="mt-6 pt-6 border-t border-matrix-border/40 space-y-2 text-sm text-matrix-text-secondary">
                             <p>✅ Instant digital delivery</p>
                             <p>✅ Lifetime access</p>
                             <p>✅ Free updates</p>
                         </div>
                     </div>
 
-                    {/* Checkout Button */}
-                    <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-6 shadow-matrix flex flex-col justify-between">
+                    <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker p-6 shadow-soft flex flex-col justify-between">
                         <div>
                             <h2 className="text-xl font-bold text-matrix-text-primary mb-4">
                                 Payment
                             </h2>
                             <p className="text-matrix-text-secondary mb-6">
-                                You'll be redirected to Stripe's secure checkout to complete your purchase.
+                                Secure Stripe checkout. You'll get instant access to download your kit and documentation. Need help deploying? Let's talk.
                             </p>
                         </div>
 
                         <button
                             onClick={handleCheckout}
                             disabled={isProcessing}
-                            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-matrix-primary text-matrix-black rounded-lg hover:bg-matrix-secondary shadow-matrix transition-colors font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-matrix-primary text-matrix-black rounded-lg hover:brightness-110 shadow-soft transition-colors font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isProcessing ? (
                                 <>

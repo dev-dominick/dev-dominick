@@ -5,8 +5,8 @@ import { signIn, useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Sparkles, CheckCircle2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import { AuthLayout } from '@/components/layouts/AuthLayout'
-import { AuthForm } from '@/components/auth/AuthForm'
+import { AuthLayout } from '@/components/layouts/auth-layout'
+import { AuthForm } from '@/components/auth/auth-form'
 
 export default function AuthLandingPage() {
     const [isLogin, setIsLogin] = useState(true)

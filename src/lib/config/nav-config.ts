@@ -23,6 +23,22 @@ export interface NavSection {
 }
 
 export function getNavItemsForUser(isAdmin: boolean = false): NavSection[] {
+  if (!isAdmin) {
+    return [
+      {
+        title: "Account",
+        items: [
+          {
+            href: "/",
+            label: "Home",
+            icon: LayoutDashboard,
+            exact: true,
+          },
+        ],
+      },
+    ];
+  }
+
   return [
     {
       title: "Main",
@@ -73,6 +89,11 @@ export function getNavItemsForUser(isAdmin: boolean = false): NavSection[] {
     {
       title: "Ecommerce",
       items: [
+          {
+            href: "/app/orders",
+            label: "Orders",
+            icon: ShoppingCart,
+          },
         {
           href: "/app/cart",
           label: "Cart",

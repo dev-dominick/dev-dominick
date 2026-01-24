@@ -2,89 +2,59 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ShoppingCart, ArrowLeft, Check, Download, Star, Shield } from "lucide-react";
-
-// Mock product data (in production, fetch from API)
-const products = {
-    '1': {
-        id: '1',
-        name: 'Premium React Components Pack',
-        price: 49.99,
-        description: '50+ production-ready React components built with TypeScript and Tailwind CSS. Fully customizable and accessible.',
-        longDescription: 'This comprehensive component library includes everything you need to build modern web applications. Each component is carefully crafted with best practices, accessibility in mind, and full TypeScript support.',
-        category: 'components',
-        features: [
-            'TypeScript support',
-            '50+ customizable components',
-            'Dark mode ready',
-            'Full accessibility (WCAG 2.1)',
-            'Storybook documentation',
-            'Unit tests included'
-        ],
-        techStack: ['React 18', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
-        rating: 4.9,
-        reviews: 127,
-        downloads: 1543
-    },
-    '2': {
-        id: '2',
-        name: 'Next.js Dashboard Template',
-        price: 79.99,
-        description: 'Complete admin dashboard with analytics, charts, and user management.',
-        longDescription: 'A production-ready admin dashboard template built with Next.js 14. Includes authentication, role-based access control, analytics dashboards, and more.',
-        category: 'templates',
-        features: [
-            'Next.js 14 App Router',
-            'Authentication & authorization',
-            'Analytics dashboard',
-            'User management',
-            'API routes included',
-            'Responsive design'
-        ],
-        techStack: ['Next.js 14', 'React', 'TypeScript', 'Tailwind CSS', 'Recharts'],
-        rating: 5.0,
-        reviews: 89,
-        downloads: 876
-    },
-    '3': {
-        id: '3',
-        name: 'E-commerce Starter Kit',
-        price: 129.99,
-        description: 'Full-stack e-commerce solution with cart, checkout, and payment processing.',
-        longDescription: 'Everything you need to launch an online store. Includes product management, shopping cart, secure checkout with Stripe, order management, and customer accounts.',
-        category: 'templates',
-        features: [
-            'Stripe integration',
-            'Shopping cart & checkout',
-            'Product management',
-            'Order tracking',
-            'Customer accounts',
-            'Email notifications'
-        ],
-        techStack: ['Next.js', 'Prisma', 'Stripe', 'PostgreSQL', 'NextAuth'],
-        rating: 4.8,
-        reviews: 156,
-        downloads: 2103
-    }
-};
+import { ShoppingCart, ArrowLeft, Check, Star, Shield, Gauge } from "lucide-react";
+import { getProductById, catalogProducts } from "@/lib/catalog";
+import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function ProductDetailPage() {
     const params = useParams();
     const router = useRouter();
 
-    const product = products[params.id as keyof typeof products];
+    const product = getProductById(params.id as string);
+    const currency = useMemo(() => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }), []);
+
+    const handleBookConsultation = () => {
+        const consultationProduct = catalogProducts.find(p => p.id === "custom-consultation");
+        if (!consultationProduct) return;
+        
+        const cart = JSON.parse(localStorage.getItem("shop_cart") || "[]");
+        const existingItem = cart.find((item: any) => item.id === "custom-consultation");
+        
+        if (!existingItem) {
+            cart.push({
+                id: consultationProduct.id,
+                name: consultationProduct.name,
+                price: consultationProduct.price,
+                quantity: 1,
+                stripePriceId: consultationProduct.stripePriceId
+            });
+            localStorage.setItem("shop_cart", JSON.stringify(cart));
+        }
+        
+        window.location.href = "/cart";
+    };
 
     if (!product) {
         return (
-            <div className="min-h-screen bg-matrix-black flex items-center justify-center px-4">
-                <div className="text-center">
-                    <h1 className="text-4xl font-bold text-matrix-text-primary mb-4">Product Not Found</h1>
-                    <Link href="/shop" className="text-matrix-primary hover:text-matrix-secondary font-mono">
-                        ← Back to Shop
-                    </Link>
+            <div className="min-h-screen bg-matrix-black text-matrix-text-primary">
+                <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+                    <header className="flex items-center gap-3 text-matrix-text-secondary">
+                        <Link href="/shop" className="inline-flex items-center gap-2 text-sm font-semibold text-matrix-text-secondary hover:text-matrix-primary">
+                            <ArrowLeft className="h-4 w-4" />
+                            Back to shop
+                        </Link>
+                    </header>
+                    <div className="rounded-2xl border border-matrix-border/30 bg-matrix-darker px-6 py-10 text-center">
+                        <h1 className="text-2xl font-semibold text-matrix-text-primary">Product not found</h1>
+                        <p className="mt-2 text-matrix-text-secondary">This product is unavailable. Try another item.</p>
+                        <Link href="/shop" className="mt-6 inline-block">
+                            <Button variant="primary">Return to shop</Button>
+                        </Link>
+                    </div>
                 </div>
             </div>
-        );
+        )
     }
 
     const handleAddToCart = () => {
@@ -95,6 +65,7 @@ export default function ProductDetailPage() {
             price: number;
             quantity: number;
             type: string;
+            stripePriceId: string;
         }
         const cart: CartItem[] = JSON.parse(localStorage.getItem('shop_cart') || '[]');
         const existingItem = cart.find((item) => item.id === product.id);
@@ -107,7 +78,8 @@ export default function ProductDetailPage() {
                 name: product.name,
                 price: product.price,
                 quantity: 1,
-                type: product.category
+                type: product.category,
+                stripePriceId: product.stripePriceId
             });
         }
 
@@ -116,134 +88,112 @@ export default function ProductDetailPage() {
     };
 
     return (
-        <div className="min-h-screen bg-matrix-black text-matrix-text-primary">
-            <div className="fixed inset-0 pointer-events-none opacity-[0.07]">
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        backgroundImage:
-                            "linear-gradient(#00ff41 1px, transparent 1px), linear-gradient(90deg, #00ff41 1px, transparent 1px)",
-                        backgroundSize: "60px 60px",
-                    }}
-                />
+        <div className="min-h-screen bg-matrix-black text-matrix-text-primary relative overflow-hidden">
+            <div className="pointer-events-none absolute inset-0 opacity-20">
+                <div className="absolute -left-24 top-16 h-72 w-72 rounded-full bg-matrix-primary/25 blur-3xl" />
+                <div className="absolute right-0 top-56 h-72 w-72 rounded-full bg-accent/18 blur-3xl" />
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-matrix-primary/50 to-transparent" />
             </div>
-
-            {/* Header */}
-            <header className="sticky top-0 z-20 border-b border-matrix-border/30 bg-matrix-dark/90 backdrop-blur-md">
-                <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-                    <Link
-                        href="/shop"
-                        className="flex items-center gap-2 text-matrix-text-secondary hover:text-matrix-primary"
-                    >
-                        <ArrowLeft className="h-5 w-5" />
-                        <span className="font-mono">Back to shop</span>
-                    </Link>
-                    <Link
-                        href="/cart"
-                        className="inline-flex items-center gap-2 rounded-lg bg-matrix-primary px-4 py-2 text-sm font-semibold text-matrix-black shadow-matrix hover:bg-matrix-secondary"
-                    >
-                        <ShoppingCart className="h-4 w-4" />
-                        Cart
+            <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+                <div className="flex items-center gap-3 text-matrix-text-secondary">
+                    <Link href="/shop" className="inline-flex items-center gap-2 text-sm font-semibold text-matrix-text-secondary hover:text-matrix-primary">
+                        <ArrowLeft className="h-4 w-4" />
+                        Back to shop
                     </Link>
                 </div>
-            </header>
 
-            {/* Product Details */}
-            <div className="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-                    {/* Product Image */}
-                    <div className="relative overflow-hidden rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-6 shadow-matrix">
-                        <div className="absolute inset-0 opacity-20" aria-hidden>
-                            <div
-                                className="absolute inset-0"
-                                style={{
-                                    backgroundImage:
-                                        "radial-gradient(circle at 20% 20%, #00ff4122, transparent 25%), radial-gradient(circle at 80% 0%, #39ff1422, transparent 30%)",
-                                }}
-                            />
-                        </div>
-                        <div className="relative flex h-80 items-center justify-center">
-                            <span className="text-8xl font-black text-matrix-primary/40">
-                                {product.name.charAt(0)}
-                            </span>
-                        </div>
-                        <div className="relative mt-4 flex items-center gap-4 rounded-lg border border-matrix-border/40 bg-matrix-black/60 px-4 py-3 text-sm text-matrix-text-secondary">
-                            <div className="flex items-center gap-1">
-                                <Star className="h-4 w-4 text-yellow-400" />
-                                <span className="font-semibold text-matrix-text-primary">{product.rating}</span>
+                <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+                    <div className="relative overflow-hidden rounded-2xl border border-matrix-border/30 bg-matrix-darker/70 px-6 py-10 shadow-[0_18px_60px_rgba(0,0,0,0.4)]">
+                        <div className="absolute inset-0 bg-gradient-to-br from-matrix-primary/12 via-transparent to-accent/10" />
+                        <div className="relative flex h-full flex-col gap-8">
+                            <div className="flex flex-wrap items-center gap-3">
+                                <span className="badge-soft capitalize">{product.category}</span>
+                                <span className="inline-flex items-center gap-2 rounded-full border border-matrix-border/40 bg-matrix-dark/80 px-3 py-1 text-sm text-matrix-text-secondary">
+                                    <Star className="h-4 w-4 text-accent" />
+                                    {product.reviews} reviews
+                                </span>
+                                <span className="inline-flex items-center gap-2 rounded-full border border-matrix-border/40 bg-matrix-dark/80 px-3 py-1 text-sm text-matrix-text-secondary">
+                                    <Gauge className="h-4 w-4 text-primary" />
+                                    Optimized funnels
+                                </span>
                             </div>
-                            <span>{product.reviews} reviews</span>
-                            <div className="ml-auto flex items-center gap-2">
-                                <Download className="h-4 w-4" />
-                                <span className="font-mono">{product.downloads.toLocaleString()}</span>
+
+                            <div className="space-y-4">
+                                <h1 className="text-4xl font-bold text-matrix-text-primary">{product.name}</h1>
+                                <p className="max-w-2xl text-lg text-matrix-text-secondary">{product.description}</p>
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="rounded-xl border border-matrix-border/30 bg-matrix-dark px-4 py-3">
+                                    <p className="text-sm text-matrix-text-secondary">Price</p>
+                                    <p className="text-3xl font-semibold text-matrix-text-primary">{currency.format(product.price)}</p>
+                                </div>
+                                <div className="rounded-xl border border-matrix-border/30 bg-matrix-dark px-4 py-3">
+                                    <p className="text-sm text-matrix-text-secondary">Ship time</p>
+                                    <p className="text-base text-matrix-text-primary">Launch-ready in days with install guide.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Product Info */}
                     <div className="space-y-6">
-                        <div className="flex items-center gap-3">
-                            <span className="rounded-full border border-matrix-border/50 bg-matrix-black/60 px-3 py-1 text-xs font-mono uppercase tracking-wide text-matrix-text-secondary">
-                                {product.category}
-                            </span>
-                            <div className="flex items-center gap-2 text-sm text-matrix-text-secondary">
-                                <Shield className="h-4 w-4 text-matrix-primary" />
-                                Secure Stripe checkout
+                        <div className="rounded-2xl border border-matrix-border/30 bg-matrix-darker p-6 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
+                            <div className="flex items-start justify-between gap-2">
+                                <div>
+                                    <p className="text-sm text-matrix-text-secondary">Price</p>
+                                    <p className="text-4xl font-bold text-matrix-text-primary">{currency.format(product.price)}</p>
+                                </div>
+                                <div className="flex items-center gap-2 rounded-full border border-matrix-border/30 bg-matrix-dark px-3 py-1 text-xs text-matrix-text-secondary">
+                                    <Shield className="h-4 w-4 text-primary" /> Secure checkout
+                                </div>
+                            </div>
+                            <div className="mt-4 grid gap-3">
+                                <Button className="w-full" onClick={() => handleAddToCart(product)}>
+                                    Add to cart
+                                </Button>
+                                <Button 
+                                  variant="secondary" 
+                                  className="w-full" 
+                                  onClick={() => window.location.href = '/bookings?type=free'}
+                                >
+                                    Free 30-min discovery call
+                                </Button>
+                                <Button 
+                                  variant="ghost"
+                                  className="w-full text-accent hover:text-accent hover:bg-accent/10"
+                                  onClick={() => window.location.href = '/bookings?type=paid&from=product'}
+                                >
+                                    + $50 consultation with purchase
+                                </Button>
+                                <p className="text-xs text-matrix-text-secondary text-center">One-time purchase. Includes install walkthrough & email support.</p>
                             </div>
                         </div>
 
-                        <div>
-                            <h1 className="mb-3 text-4xl font-bold text-matrix-text-primary">{product.name}</h1>
-                            <p className="text-lg text-matrix-text-secondary">{product.description}</p>
-                        </div>
-
-                        <div className="text-4xl font-bold text-matrix-text-primary">${product.price}</div>
-
-                        {/* Features */}
-                        <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-5">
-                            <h3 className="mb-4 text-lg font-semibold text-matrix-text-primary">What&apos;s included</h3>
-                            <ul className="space-y-3">
-                                {product.features.map((feature, idx) => (
-                                    <li key={idx} className="flex items-start gap-3">
-                                        <Check className="mt-0.5 h-5 w-5 text-matrix-primary flex-shrink-0" />
-                                        <span className="text-matrix-text-secondary">{feature}</span>
+                        <div className="rounded-2xl border border-matrix-border/30 bg-matrix-darker p-6 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
+                            <h3 className="text-lg font-semibold text-matrix-text-primary">What's included</h3>
+                            <ul className="mt-4 space-y-3 text-sm text-matrix-text-secondary">
+                                {product.features.map((feature) => (
+                                    <li key={feature} className="flex items-start gap-2">
+                                        <Check className="mt-0.5 h-4 w-4 text-primary" />
+                                        <span>{feature}</span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
 
-                        {/* Tech Stack */}
-                        <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-5">
-                            <h3 className="mb-3 text-lg font-semibold text-matrix-text-primary">Tech stack</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {product.techStack.map((tech, idx) => (
-                                    <span
-                                        key={idx}
-                                        className="rounded-lg border border-matrix-border/40 bg-matrix-black/60 px-3 py-1 text-sm text-matrix-text-secondary"
-                                    >
+                        <div className="rounded-2xl border border-matrix-border/30 bg-matrix-darker p-6 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
+                            <h3 className="text-lg font-semibold text-matrix-text-primary">Tech stack</h3>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                                {product.techStack.map((tech) => (
+                                    <span key={tech} className="rounded-full bg-matrix-dark px-3 py-1 text-sm text-matrix-text-secondary">
                                         {tech}
                                     </span>
                                 ))}
                             </div>
                         </div>
-
-                        {/* Add to Cart */}
-                        <button
-                            onClick={handleAddToCart}
-                            className="flex w-full items-center justify-center gap-3 rounded-xl bg-matrix-primary px-8 py-4 text-lg font-semibold text-matrix-black shadow-matrix hover:bg-matrix-secondary"
-                        >
-                            <ShoppingCart className="h-5 w-5" />
-                            Add to cart
-                        </button>
-
-                        {/* Details */}
-                        <div className="rounded-2xl border border-matrix-border/40 bg-matrix-darker/80 p-5">
-                            <h3 className="mb-3 text-lg font-semibold text-matrix-text-primary">Description</h3>
-                            <p className="text-matrix-text-secondary leading-relaxed">{product.longDescription}</p>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    );
+    )
 }

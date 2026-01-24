@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/lib/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Users, DollarSign, FileText, Calendar } from 'lucide-react';
 
 export function OverviewTiles() {

@@ -7,4 +7,4 @@
  */
 
 export { useMounted } from "./useMounted";
-export { ClientOnly } from "./ClientOnly";
+export { ClientOnly } from "./client-only";

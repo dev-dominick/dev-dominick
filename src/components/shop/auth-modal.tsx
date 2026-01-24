@@ -70,11 +70,11 @@ export function AuthModal({ open, onClose, defaultMode = "signin", onGuestContin
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-      <div className="relative w-full max-w-md rounded-2xl border border-matrix-border/40 bg-matrix-dark/90 shadow-matrix">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 backdrop-blur-md px-4">
+      <div className="relative w-full max-w-md rounded-2xl border border-neutral-800 bg-neutral-900/90 shadow-xl backdrop-blur-xl">
         <button
           onClick={handleClose}
-          className="absolute right-3 top-3 text-matrix-text-secondary hover:text-matrix-primary"
+          className="absolute right-3 top-3 text-neutral-400 hover:text-primary-300 transition-colors"
           aria-label="Close"
         >
           <X className="h-5 w-5" />
@@ -83,20 +83,20 @@ export function AuthModal({ open, onClose, defaultMode = "signin", onGuestContin
         <div className="flex gap-2 p-4">
           <button
             onClick={() => setMode("signin")}
-            className={`flex-1 rounded-lg px-3 py-2 text-sm font-mono ${
+            className={`flex-1 rounded-lg px-3 py-2 text-sm ${
               mode === "signin"
-                ? "bg-matrix-primary/15 text-matrix-primary border border-matrix-border"
-                : "text-matrix-text-secondary hover:text-matrix-primary"
+                ? "bg-primary-500/10 text-primary-200 border border-primary-500/50"
+                : "text-neutral-400 hover:text-primary-200"
             }`}
           >
             Sign in
           </button>
           <button
             onClick={() => setMode("signup")}
-            className={`flex-1 rounded-lg px-3 py-2 text-sm font-mono ${
+            className={`flex-1 rounded-lg px-3 py-2 text-sm ${
               mode === "signup"
-                ? "bg-matrix-primary/15 text-matrix-primary border border-matrix-border"
-                : "text-matrix-text-secondary hover:text-matrix-primary"
+                ? "bg-primary-500/10 text-primary-200 border border-primary-500/50"
+                : "text-neutral-400 hover:text-primary-200"
             }`}
           >
             Sign up
@@ -106,54 +106,54 @@ export function AuthModal({ open, onClose, defaultMode = "signin", onGuestContin
         <form onSubmit={handleSubmit} className="space-y-4 p-6 pt-2">
           {mode === "signup" && (
             <div className="space-y-2">
-              <label className="text-sm font-mono text-matrix-text-secondary">Name</label>
+              <label className="text-sm text-neutral-300">Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full rounded-lg border border-matrix-border/50 bg-matrix-darker px-3 py-2 text-matrix-text-primary focus:border-matrix-primary focus:outline-none"
+                className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-neutral-100 focus:border-primary-400 focus:outline-none"
                 placeholder="Your name"
               />
             </div>
           )}
 
           <div className="space-y-2">
-            <label className="text-sm font-mono text-matrix-text-secondary">Email</label>
+            <label className="text-sm text-neutral-300">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-lg border border-matrix-border/50 bg-matrix-darker px-3 py-2 text-matrix-text-primary focus:border-matrix-primary focus:outline-none"
+              className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-neutral-100 focus:border-primary-400 focus:outline-none"
               placeholder="you@example.com"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-mono text-matrix-text-secondary">Password</label>
+            <label className="text-sm text-neutral-300">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full rounded-lg border border-matrix-border/50 bg-matrix-darker px-3 py-2 text-matrix-text-primary focus:border-matrix-primary focus:outline-none"
+              className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-neutral-100 focus:border-primary-400 focus:outline-none"
               placeholder="••••••••"
             />
           </div>
 
-          {error && <p className="text-sm text-red-400">{error}</p>}
-          {success && <p className="text-sm text-matrix-primary">{success}</p>}
+          {error && <p className="text-sm text-danger">{error}</p>}
+          {success && <p className="text-sm text-primary-300">{success}</p>}
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-lg bg-matrix-primary px-4 py-2 font-semibold text-matrix-black hover:bg-matrix-secondary transition-colors disabled:opacity-70"
+            className="w-full rounded-lg bg-primary-500 px-4 py-2 font-semibold text-white hover:bg-primary-600 transition-colors disabled:opacity-70"
           >
             {isLoading ? "Please wait..." : mode === "signin" ? "Sign in" : "Create account"}
           </button>
 
-          <p className="text-center text-xs text-matrix-text-muted">
+          <p className="text-center text-xs text-neutral-400">
             Auth pages are blocked; use this modal to sign in or create an account.
           </p>
 
@@ -163,7 +163,7 @@ export function AuthModal({ open, onClose, defaultMode = "signin", onGuestContin
               onGuestContinue?.();
               handleClose();
             }}
-            className="w-full rounded-lg border border-matrix-border/50 bg-matrix-darker px-4 py-2 text-sm font-semibold text-matrix-text-primary hover:border-matrix-primary"
+            className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-4 py-2 text-sm font-semibold text-neutral-100 hover:border-primary-400"
           >
             Continue as guest
           </button>

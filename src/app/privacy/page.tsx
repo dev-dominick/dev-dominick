@@ -1,8 +1,8 @@
-import { Container } from '@/lib/ui';
+import { Container } from '@/components/ui';
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-slate-950 py-12">
+    <div className="min-h-screen bg-neutral-950 py-12">
       <Container>
         <div className="max-w-3xl mx-auto space-y-8">
           <div>

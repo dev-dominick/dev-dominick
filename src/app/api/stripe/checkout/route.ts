@@ -11,11 +11,40 @@ export async function POST(req: NextRequest) {
 
     // Handle shop checkout (cart with items)
     if (items && Array.isArray(items) && items.length > 0) {
-      // Build line items for Stripe Checkout
-      const lineItems = items.map((item: any) => ({
-        price: item.stripePriceId,
-        quantity: item.quantity,
+      const normalizedItems = items.map((item: any) => ({
+        ...item,
+        quantity: Math.max(1, Number(item.quantity) || 1),
       }))
+
+      // Build line items; if we only have a placeholder price, fall back to price_data
+      const lineItems = normalizedItems.map((item: any) => {
+        const quantity = item.quantity
+        const hasRealPriceId = item.stripePriceId && !String(item.stripePriceId).startsWith('price_placeholder')
+
+        if (hasRealPriceId) {
+          return {
+            price: item.stripePriceId,
+            quantity,
+          }
+        }
+
+        const unitAmount = Math.round(Number(item.price) * 100)
+        if (!unitAmount || Number.isNaN(unitAmount) || unitAmount <= 0) {
+          throw new Error(`Invalid price for item ${item.id || 'unknown'}`)
+        }
+
+        return {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: item.name || 'Consultation',
+              metadata: { id: item.id || 'custom-item' },
+            },
+            unit_amount: unitAmount,
+          },
+          quantity,
+        }
+      })
 
       // Create Stripe Checkout Session
       const session = await stripe.checkout.sessions.create({
@@ -27,7 +56,9 @@ export async function POST(req: NextRequest) {
         billing_address_collection: 'auto',
         payment_method_types: ['card'],
         metadata: {
-          items: JSON.stringify(items.map((i: any) => ({ id: i.id, name: i.name, quantity: i.quantity }))),
+          items: JSON.stringify(
+            normalizedItems.map((i: any) => ({ id: i.id, name: i.name, quantity: i.quantity }))
+          ),
         },
       })
 

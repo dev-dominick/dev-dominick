@@ -8,7 +8,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar } from '@/lib/ui';
+import { Calendar } from '@/components/ui';
 
 export interface TimeSlot {
   day: string;
@@ -41,6 +41,7 @@ export function AppointmentBooker({
   appointmentsStorageKey = 'appointments',
 }: AppointmentBookerProps) {
   const [availability, setAvailability] = useState<TimeSlot[]>([]);
+  const [slots, setSlots] = useState<{ date: string; time: string; available: boolean; duration?: number }[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [formData, setFormData] = useState({
@@ -52,23 +53,52 @@ export function AppointmentBooker({
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
-  // Load admin's availability on mount
+  // Load slots from internal API; fall back to local availability if present
   useEffect(() => {
-    const saved = localStorage.getItem(availabilityStorageKey);
+    const saved = typeof window !== 'undefined' ? localStorage.getItem(availabilityStorageKey) : null;
     if (saved) {
       setAvailability(JSON.parse(saved));
     }
+
+    async function loadSlots() {
+      try {
+        const res = await fetch('/api/appointments/slots');
+        if (res.ok) {
+          const data = await res.json();
+          setSlots(data.slots || []);
+        }
+      } catch (err) {
+        console.error('Failed to load slots', err);
+      }
+    }
+
+    loadSlots();
   }, [availabilityStorageKey]);
 
-  // Generate available dates (next 60 days) as Date objects
+  // Generate available dates from slots; fallback to local availability if no slots were loaded
   const getAvailableDates = (): Date[] => {
+    if (slots.length > 0) {
+      const dateSet = Array.from(
+        new Set(
+          slots
+            .filter((s) => s.available)
+            .map((s) => s.date)
+        )
+      );
+
+      return dateSet.map((d) => {
+        const [y, m, day] = d.split('-').map(Number);
+        return new Date(y, m - 1, day);
+      });
+    }
+
     const dates: Date[] = [];
     const dayMap = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     for (let i = 1; i <= 60; i++) {
       const date = new Date();
       date.setDate(date.getDate() + i);
-      date.setHours(0, 0, 0, 0); // Normalize time
+      date.setHours(0, 0, 0, 0);
 
       const dayName = dayMap[date.getDay()];
       const isOpen = availability.some(slot => slot.day === dayName && slot.enabled);
@@ -85,7 +115,14 @@ export function AppointmentBooker({
   const getAvailableTimes = (): string[] => {
     if (!selectedDate) return [];
 
-    // Parse date string to local Date object correctly
+    if (slots.length > 0) {
+      return slots
+        .filter((s) => s.date === selectedDate && s.available)
+        .map((s) => s.time)
+        .sort();
+    }
+
+    // Fallback to local availability if slots API empty
     const [year, month, day] = selectedDate.split('-');
     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][
@@ -141,16 +178,15 @@ export function AppointmentBooker({
       );
 
       const appointmentData = {
-        clientName: formData.clientName,
-        clientEmail: formData.clientEmail,
-        date: localDateTime.toISOString(),
-        duration: 60,
+        name: formData.clientName,
+        email: formData.clientEmail,
+        date: selectedDate,
+        time: selectedTime,
+        durationMinutes: 60,
         notes: formData.notes || undefined,
       };
 
-      // Call backend API
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${API_URL}/api/appointments/book`, {
+      const response = await fetch('/api/appointments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,7 +200,6 @@ export function AppointmentBooker({
       }
 
       const result = await response.json();
-
       setSuccess(true);
       setFormData({ clientName: '', clientEmail: '', notes: '' });
       setSelectedDate('');

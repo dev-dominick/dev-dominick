@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Button, InputWithIcon } from '@/lib/ui'
+import { Button, InputWithIcon } from '@/components/ui'
 import { Mail, Lock, User, ArrowRight } from 'lucide-react'
 
 export interface AuthFormProps {

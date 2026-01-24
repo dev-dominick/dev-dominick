@@ -2,7 +2,7 @@
 
 import { useEntitlements } from '@/hooks/useEntitlements'
 import { ReactNode } from 'react'
-import SignInPrompt from './SignInPrompt'
+import SignInPrompt from './sign-in-prompt'
 
 interface PrivateRouteProps {
     children: ReactNode

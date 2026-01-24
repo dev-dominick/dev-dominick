@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 // import { PrismaAdapter } from "@next-auth/prisma-adapter";
-// import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { loginRateLimiter } from "@/lib/rate-limit";
 
@@ -40,6 +40,14 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
+          select: {
+            id: true,
+            email: true,
+            password: true,
+            role: true,
+            loginAttempts: true,
+            lockedUntil: true,
+          },
         });
 
         if (!user || !user.password) {
@@ -91,7 +99,6 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
           role: user.role || "user",
         };
       },

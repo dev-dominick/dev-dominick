@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useAdminAuth, useBusinessData, useBusinessForm, useModal } from '@/lib/hooks';
-import { formatters } from '@/lib/utils';
+import { formatters } from '@/lib/formatters';
 import { DataView, FormError, LoadingSpinner } from '@/components/admin';
 import { fetchExpenses, fetchExpenseSummary, createExpense } from '@/lib/actions/business';
 

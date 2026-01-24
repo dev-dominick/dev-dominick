@@ -1,4 +1,4 @@
-import { Container, Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@/lib/ui';
+import { Container, Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@/components/ui';
 import Link from "next/link";
 
 export default function FinancialAnalyticsPage() {

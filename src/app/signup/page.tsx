@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Input, Button } from '@/components/ui'
+import { Input, Button, Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui'
 import { Lock, Mail, User, ArrowRight } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
@@ -87,112 +87,104 @@ export default function SignupPage() {
 
   if (status === 'loading' || status === 'authenticated') {
     return (
-      <div className="min-h-screen bg-matrix-black flex items-center justify-center">
-        <div className="animate-pulse text-matrix-primary font-mono">Loading...</div>
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
+        <div className="animate-pulse text-primary-400">Loading...</div>
       </div>
     )
   }
 
   return (
-    <main className="min-h-screen bg-matrix-black">
-      {/* Minimal header */}
-      <nav className="border-b border-matrix-border/20 bg-matrix-black/95 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 font-bold text-matrix-text-primary hover:text-matrix-primary transition-colors font-mono">
-              <img src="/code-cloud-logo.svg" alt="dev-dominick" className="w-8 h-8" />
-              <span className="text-lg">dev-dominick</span>
-            </Link>
-            <Link href="/login" className="text-sm text-matrix-text-secondary hover:text-matrix-text-primary transition-colors font-mono">
-              Already have an account? <span className="text-matrix-primary font-medium">Sign in</span>
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* Matrix grid background */}
-      <div className="fixed inset-0 pointer-events-none opacity-10">
-        <div className="absolute inset-0"
-          style={{
-            backgroundImage: 'linear-gradient(#00ff41 1px, transparent 1px), linear-gradient(90deg, #00ff41 1px, transparent 1px)',
-            backgroundSize: '50px 50px'
-          }}
-        />
-      </div>
+    <main className="min-h-screen bg-gradient-to-b from-neutral-950 via-slate-950 to-neutral-900">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.08),transparent_25%),radial-gradient(circle_at_50%_80%,rgba(14,165,233,0.06),transparent_30%)]" />
 
       <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
-        <div className="w-full max-w-md p-8 rounded-lg border border-matrix-border/20 bg-matrix-darker shadow-matrix-lg">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-matrix-text-primary font-mono">Create Account</h1>
-            <p className="text-matrix-text-secondary mt-1">
+        <Card className="w-full max-w-md border-neutral-800 bg-neutral-900/80 backdrop-blur-xl shadow-xl">
+          <CardHeader className="space-y-2">
+            <CardTitle className="text-heading-lg text-neutral-50">Create Account</CardTitle>
+            <CardDescription className="text-neutral-400 text-body-sm">
               Get started with your free account today.
-            </p>
-          </div>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Honeypot field - hidden from real users */}
+              <div className="absolute left-[-9999px]" aria-hidden="true">
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Honeypot field - hidden from real users */}
-            <div className="absolute left-[-9999px]" aria-hidden="true">
-              <input
+              <Input
+                id="name"
+                name="name"
                 type="text"
-                name="website"
-                tabIndex={-1}
-                autoComplete="off"
-                value={honeypot}
-                onChange={(e) => setHoneypot(e.target.value)}
+                required
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="John Doe"
+                label="Full Name"
+                icon={User}
+                autoComplete="name"
               />
-            </div>
 
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              required
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="John Doe"
-              label="Full Name"
-            />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                label="Email Address"
+                icon={Mail}
+                autoComplete="email"
+              />
 
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              label="Email Address"
-            />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                label="Password"
+                icon={Lock}
+                hint="Must contain uppercase, lowercase, number, and be at least 10 characters"
+                showPasswordToggle
+                autoComplete="new-password"
+              />
 
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              required
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Min. 10 characters"
-              label="Password"
-              hint="Must contain uppercase, lowercase, number, and be at least 10 characters"
-            />
+              <Button
+                type="submit"
+                disabled={loading}
+                fullWidth
+                size="lg"
+              >
+                {loading ? (
+                  'Creating account...'
+                ) : (
+                  <>
+                    Create Account
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </Button>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full"
-              size="lg"
-            >
-              {loading ? (
-                'Creating account...'
-              ) : (
-                <>
-                  Create Account
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </>
-              )}
-            </Button>
-          </form>
-        </div>
+              <p className="text-center text-sm text-neutral-400">
+                Already have an account?{' '}
+                <Link href="/login" className="text-primary-300 hover:text-primary-200 font-semibold">
+                  Sign in
+                </Link>
+              </p>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </main>
   )

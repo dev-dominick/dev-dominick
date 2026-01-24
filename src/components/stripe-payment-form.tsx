@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { Button } from '@/lib/ui'
+import { Button } from '@/components/ui'
 
 interface StripePaymentFormProps {
   projectName: string

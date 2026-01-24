@@ -1,6 +1,6 @@
 'use client'
 
-import PrivateRoute from '@/components/PrivateRoute'
+import PrivateRoute from '@/components/private-route'
 import { useEntitlements } from '@/hooks/useEntitlements'
 import { useApiError } from '@/hooks/useApiError'
 import { useState } from 'react'

@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  password         String
+  role             String    @default("user")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  lastLoginAt      DateTime?
+  loginAttempts    Int       @default(0)
+  lockedUntil      DateTime?
+
+  // Relations
+  appointments     Appointment[]
+  orders           Order[]
+  contactMessages  ContactMessage[]
+}
+
+// Product model for e-commerce
+model Product {
+  id               String    @id @default(cuid())
+  name             String
+  description      String?
+  category         String
+  price            Int       // in cents
+  stripePriceId    String    @unique
+  stripeProductId  String
+  features         String[]
+  salesCount       Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relations
+  orderItems       OrderItem[]
+}
+
+// Appointment model for booking system
+model Appointment {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id])
+  
+  clientName       String
+  clientEmail      String
+  clientPhone      String?
+  
+  startTime        DateTime
+  endTime          DateTime
+  duration         Int       // in minutes
+  notes            String?
+  billableHours    Float     @default(0)
+  workNotes        String?
+  
+  // Consultation type & approval
+  consultationType String    @default("free")     // free, paid ($50)
+  consultationSource String?                      // landing, product_upsell
+  requiresApproval Boolean   @default(true)       // free consults require admin approval
+  isApproved       Boolean   @default(false)      // admin has approved the consultation
+  approvedAt       DateTime?
+  
+  status           String    @default("pending_approval") // pending_approval, scheduled, confirmed, completed, cancelled
+  
+  // Video conferencing
+  meetingLink      String?
+  meetingType      String?   // daily, zoom, google_meet, none
+  meetingData      Json?     // Store meeting-specific data
+  
+  // Session access
+  sessionToken     String?   @unique
+  sessionExpiresAt DateTime?
+  
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([clientEmail])
+}
+
+// Availability model for admin scheduling
+model Availability {
+  id               String    @id @default(cuid())
+  dayOfWeek        Int       // 0-6 (Sunday-Saturday)
+  startTime        String    // HH:MM format
+  endTime          String    // HH:MM format
+  timezone         String    @default("UTC")
+  isActive         Boolean   @default(true)
+  
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  @@unique([dayOfWeek, startTime, endTime])
+}
+
+// Order model for order tracking
+model Order {
+  id               String    @id @default(cuid())
+  userId           String?
+  user             User?     @relation(fields: [userId], references: [id])
+  
+  stripeSessionId  String    @unique
+  stripeCustomerId String?
+  
+  total            Int       // in cents
+  currency         String    @default("usd")
+  status           String    @default("pending") // pending, completed, failed, refunded
+  
+  customerEmail    String
+  customerName     String?
+  
+  // Items in order
+  items            OrderItem[]
+  
+  // Delivery/fulfillment
+  downloadLinks    String[]  // For digital products
+  
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  completedAt      DateTime?
+  
+  @@index([stripeSessionId])
+  @@index([customerEmail])
+  @@index([userId])
+}
+
+// OrderItem model for line items
+model OrderItem {
+  id               String    @id @default(cuid())
+  orderId          String
+  order            Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId        String
+  product          Product   @relation(fields: [productId], references: [id])
+  
+  quantity         Int       @default(1)
+  priceAtTime      Int       // Price in cents at time of purchase
+  
+  createdAt        DateTime  @default(now())
+  
+  @@index([orderId])
+  @@index([productId])
+}
+
+// Contact message model for lead capture
+model ContactMessage {
+  id               String    @id @default(cuid())
+  userId           String?
+  user             User?     @relation(fields: [userId], references: [id])
+  
+  name             String
+  email            String
+  phone            String?
+  subject          String
+  message          String
+  
+  status           String    @default("new") // new, read, replied, archived
+  
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  @@index([email])
+  @@index([status])
+}
+
+// Email log for tracking sent emails
+model EmailLog {
+  id               String    @id @default(cuid())
+  to               String
+  subject          String
+  type             String    // appointment_confirmation, order_confirmation, contact_reply, password_reset
+  
+  status           String    @default("sent") // sent, failed, bounced
+  errorMessage     String?
+  
+  createdAt        DateTime  @default(now())
+  
+  @@index([to])
+  @@index([type])
+}
+// Newsletter subscriber model for marketing automation
+model NewsletterSubscriber {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  status           String    @default("active") // active, unsubscribed, bounced
+  
+  subscribedAt     DateTime  @default(now())
+  unsubscribedAt   DateTime?
+  
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  @@index([email])
+  @@index([status])
+}

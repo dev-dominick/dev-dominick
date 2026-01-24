@@ -1,5 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { issueSessionResponse } from "@/lib/auth-session";
+import { generalRateLimiter } from "@/lib/rate-limit";
+
+function isAllowedOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get("origin") || "";
+  const allowed = (process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
+  const baseUrl = process.env.NEXTAUTH_URL || "";
+  if (baseUrl) {
+    try {
+      const u = new URL(baseUrl);
+      allowed.push(`${u.protocol}//${u.host}`);
+    } catch {}
+  }
+  return allowed.length === 0 ? true : allowed.includes(origin);
+}
 
 // TODO: Replace with database
 // import { prisma } from '@/lib/prisma';
@@ -10,6 +27,24 @@ const validTokens = new Map<string, { sessionId: string; email: string; name: st
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF mitigation: require requests originate from allowed origin
+    if (!isAllowedOrigin(request)) {
+      return NextResponse.json({ error: "Invalid origin" }, { status: 400 });
+    }
+
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(',')[0].trim() ||
+      request.headers.get("x-real-ip") ||
+      (request as any).ip ||
+      "unknown";
+    const rl = generalRateLimiter.check(`session-token:${ip}`);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { token, sessionId } = body;
 
@@ -41,26 +76,6 @@ export async function POST(request: NextRequest) {
     const storedToken = validTokens.get(token);
     
     if (!storedToken || storedToken.sessionId !== sessionId) {
-      // For demo purposes, accept any token in development
-      if (process.env.NODE_ENV === 'development') {
-        console.log('⚠️  Dev mode: Accepting guest token without validation');
-        
-        // Create temporary guest session
-        return issueSessionResponse(
-          {
-            success: true,
-            message: "Guest session created",
-          },
-          {
-            id: `guest-${Date.now()}`,
-            name: "Guest User",
-            email: `guest-${sessionId}@temp.local`,
-            role: "guest",
-          },
-          200
-        );
-      }
-
       return NextResponse.json(
         { error: "Invalid or expired session link" },
         { status: 401 }
@@ -93,6 +108,24 @@ export async function POST(request: NextRequest) {
 // Helper endpoint to register valid tokens (called by appointment creation)
 export async function PUT(request: NextRequest) {
   try {
+    // CSRF mitigation: require requests originate from allowed origin
+    if (!isAllowedOrigin(request)) {
+      return NextResponse.json({ error: "Invalid origin" }, { status: 400 });
+    }
+
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(',')[0].trim() ||
+      request.headers.get("x-real-ip") ||
+      (request as any).ip ||
+      "unknown";
+    const rl = generalRateLimiter.check(`session-token-register:${ip}`);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { token, sessionId, email, name } = body;
 

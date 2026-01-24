@@ -15,8 +15,19 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const backendUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+
+    // If no backend is configured, return an offline profile to avoid noisy errors in dev
+    if (!backendUrl) {
+      return NextResponse.json({
+        user: { id: session.user.id, name: session.user.name || "", email: session.user.email || "" },
+        entitlements: [],
+        subscriptions: [],
+        isProUser: false,
+        message: "Using offline profile (no backend configured)",
+      });
+    }
+
     const response = await fetch(`${backendUrl}/entitlements`, {
       method: "GET",
       headers: {
@@ -51,7 +62,7 @@ export async function GET(req: NextRequest) {
     ) {
       console.warn("Backend unavailable, returning empty profile");
       return NextResponse.json({
-        user: { id: "dev-user", name: "Developer", email: "" },
+        user: { id: session.user.id, name: session.user.name || "Developer", email: session.user.email || "" },
         entitlements: [],
         subscriptions: [],
         isProUser: false,

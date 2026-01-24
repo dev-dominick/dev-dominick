@@ -3,8 +3,71 @@
 import { Button } from '@/components/ui';
 import Link from "next/link";
 import { Check, X } from "lucide-react";
+import { SIMPLE_CONSULTING_MODE } from '@/lib/config/flags'
 
 export default function PricingPage() {
+  const simpleMode = SIMPLE_CONSULTING_MODE
+
+  if (simpleMode) {
+    return (
+      <div className="min-h-screen bg-matrix-black">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16 space-y-12">
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl sm:text-5xl font-bold text-matrix-text-primary font-mono">Consulting</h1>
+            <p className="text-xl text-matrix-text-secondary max-w-3xl mx-auto">
+              Book a free discovery call. If we click, you can opt into a deeper 60–90 minute technical session for architecture, risk, and execution clarity.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="p-8 rounded-lg border border-matrix-border/20 bg-matrix-darker">
+              <h2 className="text-2xl font-bold text-matrix-text-primary font-mono mb-2">Free Discovery Call</h2>
+              <p className="text-matrix-text-secondary mb-4">30 minutes to understand your goals and assess fit.</p>
+              <ul className="space-y-2 text-matrix-text-secondary text-sm">
+                <li className="flex items-start gap-2"><span className="text-matrix-primary">✓</span> Current state + blockers</li>
+                <li className="flex items-start gap-2"><span className="text-matrix-primary">✓</span> Risks and blind spots</li>
+                <li className="flex items-start gap-2"><span className="text-matrix-primary">✓</span> Recommended next steps</li>
+              </ul>
+              <Link href="/bookings?type=free" className="inline-block mt-6">
+                <Button>Book free call</Button>
+              </Link>
+            </div>
+
+            <div className="p-8 rounded-lg border border-matrix-border/20 bg-matrix-darker">
+              <h2 className="text-2xl font-bold text-matrix-text-primary font-mono mb-2">Technical Review Session</h2>
+              <p className="text-matrix-text-secondary mb-4">60–90 minutes. Starter price $150–$300.</p>
+              <ul className="space-y-2 text-matrix-text-secondary text-sm">
+                <li className="flex items-start gap-2"><span className="text-matrix-primary">✓</span> Architecture and execution plan</li>
+                <li className="flex items-start gap-2"><span className="text-matrix-primary">✓</span> Build vs buy guidance</li>
+                <li className="flex items-start gap-2"><span className="text-matrix-primary">✓</span> Timeline and risk reduction</li>
+                <li className="flex items-start gap-2"><span className="text-matrix-primary">✓</span> Action checklist you can run with</li>
+              </ul>
+              <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                <Link href="/bookings" className="inline-block">
+                  <Button className="w-full">Book session</Button>
+                </Link>
+                <Link href="/contact" className="inline-block">
+                  <Button variant="outline" className="w-full border-matrix-border/50 text-matrix-text-primary">
+                    Talk first
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-8 rounded-lg border border-matrix-border/20 bg-matrix-darker text-center space-y-4">
+            <h3 className="text-2xl font-bold text-matrix-text-primary font-mono">What you leave with</h3>
+            <p className="text-matrix-text-secondary max-w-3xl mx-auto">
+              A concise plan: risks, priorities, build-vs-buy calls, and the next 2–3 milestones. No sales pressure—just clarity.
+            </p>
+            <Link href="/bookings" className="inline-block">
+              <Button size="lg">Book now</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const packages = [
     {
@@ -92,6 +155,7 @@ export default function PricingPage() {
         <div className="text-center mb-16">
           <h1 className="text-4xl sm:text-5xl font-bold text-matrix-text-primary mb-4 font-mono">Pricing</h1>
           <p className="text-xl text-matrix-text-secondary max-w-3xl mx-auto">Transparent pricing for quality work</p>
+          <p className="mt-3 text-sm text-matrix-text-muted">Want fixed-price starter kits? <Link href="/shop" className="text-matrix-primary hover:underline">Shop packages</Link> from $1,499.</p>
         </div>
 
         <section className="mb-16">

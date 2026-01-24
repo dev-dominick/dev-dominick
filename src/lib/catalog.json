@@ -1,0 +1,90 @@
+[
+  {
+    "id": "business-website",
+    "name": "Professional Business Website",
+    "price": 1499,
+    "description": "Complete website for service businesses and consultants",
+    "longDescription": "Launch your business online with a professional website built for conversions. Includes contact forms, service pages, testimonials, and appointment booking integration.",
+    "category": "websites",
+    "features": [
+      "5-7 custom pages (Home, About, Services, Contact, etc.)",
+      "Mobile-responsive design",
+      "Contact form with email notifications",
+      "SEO-optimized structure",
+      "Analytics integration",
+      "Free deployment guide"
+    ],
+    "techStack": ["Next.js", "TypeScript", "Tailwind CSS", "Resend Email"],
+    "rating": 5,
+    "reviews": 42,
+    "downloads": 318,
+    "envPriceKey": "NEXT_PUBLIC_PRICE_BUSINESS_SITE",
+    "stripePriceIdFallback": "price_placeholder_business"
+  },
+  {
+    "id": "ecommerce-store",
+    "name": "E-Commerce Store",
+    "price": 2499,
+    "description": "Full online store with payments, inventory, and order management",
+    "longDescription": "Sell products online with a complete e-commerce solution. Stripe payments, product catalog, shopping cart, order tracking, and customer accounts all included.",
+    "category": "websites",
+    "features": [
+      "Stripe payment processing",
+      "Product & inventory management",
+      "Shopping cart & checkout",
+      "Order tracking & history",
+      "Customer account dashboard",
+      "Email order confirmations"
+    ],
+    "techStack": ["Next.js", "Prisma", "Stripe", "PostgreSQL", "NextAuth"],
+    "rating": 4.9,
+    "reviews": 67,
+    "downloads": 521,
+    "envPriceKey": "NEXT_PUBLIC_PRICE_ECOMMERCE",
+    "stripePriceIdFallback": "price_placeholder_ecommerce"
+  },
+  {
+    "id": "booking-platform",
+    "name": "Appointment Booking Platform",
+    "price": 1999,
+    "description": "Client scheduling system with calendar sync and payment collection",
+    "longDescription": "Let clients book appointments directly on your website. Includes calendar integration, automated reminders, payment collection, and availability management.",
+    "category": "websites",
+    "features": [
+      "Online appointment scheduling",
+      "Calendar sync (Google, Outlook)",
+      "Automated email reminders",
+      "Upfront payment collection",
+      "Client management dashboard",
+      "Customizable availability"
+    ],
+    "techStack": ["Next.js", "Prisma", "Stripe", "Calendar APIs", "Resend"],
+    "rating": 4.8,
+    "reviews": 38,
+    "downloads": 294,
+    "envPriceKey": "NEXT_PUBLIC_PRICE_BOOKING",
+    "stripePriceIdFallback": "price_placeholder_booking"
+  },
+  {
+    "id": "custom-consultation",
+    "name": "Custom Development Consultation",
+    "price": 199,
+    "description": "1-hour strategy call to scope your project and tech needs",
+    "longDescription": "Not sure what you need? Book a consultation to discuss your business goals, technical requirements, and get a custom proposal. Includes follow-up documentation and cost estimate.",
+    "category": "consulting",
+    "features": [
+      "1-hour video consultation",
+      "Business & technical requirements review",
+      "Technology recommendations",
+      "Custom project proposal",
+      "Cost & timeline estimate",
+      "Follow-up email summary"
+    ],
+    "techStack": ["Strategy", "Planning", "Custom Solutions"],
+    "rating": 5,
+    "reviews": 89,
+    "downloads": 412,
+    "envPriceKey": "NEXT_PUBLIC_PRICE_CONSULTATION",
+    "stripePriceIdFallback": "price_placeholder_consultation"
+  }
+]

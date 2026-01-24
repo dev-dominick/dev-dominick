@@ -6,7 +6,7 @@ Clean, modern templates inspired by Material-UI but built with **zero MUI depend
 
 ### 1. **Dashboard**
 
-`components/templates/Dashboard.tsx`
+`components/templates/dashboard.tsx`
 
 - Full-featured admin dashboard
 - Responsive sidebar navigation
@@ -17,7 +17,7 @@ Clean, modern templates inspired by Material-UI but built with **zero MUI depend
 
 ### 2. **Sign In**
 
-`components/templates/SignIn.tsx`
+`components/templates/sign-in.tsx`
 
 - Clean authentication form
 - Social login buttons (Google, GitHub)
@@ -28,7 +28,7 @@ Clean, modern templates inspired by Material-UI but built with **zero MUI depend
 
 ### 3. **Sign In Side**
 
-`components/templates/SignInSide.tsx`
+`components/templates/sign-in-side.tsx`
 
 - Two-column layout
 - Hero section on right side
@@ -39,7 +39,7 @@ Clean, modern templates inspired by Material-UI but built with **zero MUI depend
 
 ### 4. **Sign Up**
 
-`components/templates/SignUp.tsx`
+`components/templates/sign-up.tsx`
 
 - User registration form
 - Password strength indicator
@@ -50,7 +50,7 @@ Clean, modern templates inspired by Material-UI but built with **zero MUI depend
 
 ### 5. **Checkout**
 
-`components/templates/Checkout.tsx`
+`components/templates/checkout.tsx`
 
 - Multi-step checkout flow
 - Progress stepper
@@ -61,7 +61,7 @@ Clean, modern templates inspired by Material-UI but built with **zero MUI depend
 
 ### 6. **Marketing Page**
 
-`components/templates/MarketingPage.tsx`
+`components/templates/marketing-page.tsx`
 
 - Complete landing page
 - Hero section
@@ -74,7 +74,7 @@ Clean, modern templates inspired by Material-UI but built with **zero MUI depend
 
 ### 7. **Blog**
 
-`components/templates/Blog.tsx`
+`components/templates/blog.tsx`
 
 - Blog homepage layout
 - Featured post section
@@ -86,7 +86,7 @@ Clean, modern templates inspired by Material-UI but built with **zero MUI depend
 
 ### 8. **CRUD Dashboard**
 
-`components/templates/CRUDDashboard.tsx`
+`components/templates/crud-dashboard.tsx`
 
 - Full CRUD operations (Create, Read, Update, Delete)
 - Data table with actions
@@ -101,9 +101,9 @@ Clean, modern templates inspired by Material-UI but built with **zero MUI depend
 ### Import any template:
 
 ```tsx
-import Dashboard from "@/components/templates/Dashboard";
-import SignIn from "@/components/templates/SignIn";
-import Checkout from "@/components/templates/Checkout";
+import Dashboard from "@/components/templates/dashboard";
+import SignIn from "@/components/templates/sign-in";
+import Checkout from "@/components/templates/checkout";
 // ... etc
 
 export default function Page() {
@@ -117,7 +117,7 @@ Create a new route in your Next.js app:
 
 ```tsx
 // app/dashboard/page.tsx
-import Dashboard from "@/components/templates/Dashboard";
+import Dashboard from "@/components/templates/dashboard";
 
 export default function DashboardPage() {
   return <Dashboard />;

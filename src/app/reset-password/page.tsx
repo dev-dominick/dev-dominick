@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, InputWithIcon, Button } from '@/lib/ui'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button } from '@/components/ui'
 import { Lock, CheckCircle2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
@@ -77,43 +77,25 @@ function ResetPasswordContent() {
 
     if (success) {
         return (
-            <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-                {/* Minimal header */}
-                <nav className="border-b border-gray-800 bg-black/50 backdrop-blur-xl">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="flex h-16 items-center justify-between">
-                            <Link href="/" className="flex items-center gap-2 font-bold text-white hover:text-blue-400 transition-colors">
-                                <img src="/code-cloud-logo.svg" alt="Code Cloud" className="w-8 h-8" />
-                                <span className="text-lg">Code Cloud</span>
-                            </Link>
-                        </div>
-                    </div>
-                </nav>
-
-                {/* Background decorations */}
-                <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
-                    <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
-                </div>
+            <main className="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-950 to-neutral-900">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.08),transparent_25%),radial-gradient(circle_at_50%_80%,rgba(14,165,233,0.06),transparent_30%)]" />
 
                 <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
-                    <Card className="w-full max-w-md bg-slate-900/80 backdrop-blur border-slate-800">
-                        <CardHeader className="text-center">
-                            <div className="flex justify-center mb-4">
-                                <div className="rounded-full bg-green-500/20 p-3">
-                                    <CheckCircle2 className="w-8 h-8 text-green-400" />
-                                </div>
+                    <Card className="w-full max-w-md border-neutral-800 bg-neutral-900/80 backdrop-blur-xl shadow-xl">
+                        <CardHeader className="text-center space-y-3">
+                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-500/15">
+                                <CheckCircle2 className="w-7 h-7 text-primary-300" />
                             </div>
-                            <CardTitle className="text-2xl text-white">Password Reset Complete</CardTitle>
-                            <CardDescription className="text-slate-400">
-                                Your password has been successfully reset. Redirecting to login...
+                            <CardTitle className="text-heading-md text-neutral-50">Password reset complete</CardTitle>
+                            <CardDescription className="text-neutral-400">
+                                Your password was updated. Redirecting to sign in.
                             </CardDescription>
                         </CardHeader>
 
                         <CardContent>
                             <Link href="/login">
-                                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-md transition-colors">
-                                    Go to Sign In
+                                <Button fullWidth>
+                                    Go to sign in
                                 </Button>
                             </Link>
                         </CardContent>
@@ -124,37 +106,21 @@ function ResetPasswordContent() {
     }
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-            {/* Minimal header */}
-            <nav className="border-b border-gray-800 bg-black/50 backdrop-blur-xl">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 items-center justify-between">
-                        <Link href="/" className="flex items-center gap-2 font-bold text-white hover:text-blue-400 transition-colors">
-                            <img src="/code-cloud-logo.svg" alt="Code Cloud" className="w-8 h-8" />
-                            <span className="text-lg">Code Cloud</span>
-                        </Link>
-                    </div>
-                </div>
-            </nav>
-
-            {/* Background decorations */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
-            </div>
+        <main className="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-950 to-neutral-900">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.08),transparent_25%),radial-gradient(circle_at_50%_80%,rgba(14,165,233,0.06),transparent_30%)]" />
 
             <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
-                <Card className="w-full max-w-md bg-slate-900/80 backdrop-blur border-slate-800">
-                    <CardHeader>
-                        <CardTitle className="text-2xl text-white">Create New Password</CardTitle>
-                        <CardDescription className="text-slate-400">
-                            Enter a new password for your account
+                <Card className="w-full max-w-md border-neutral-800 bg-neutral-900/80 backdrop-blur-xl shadow-xl">
+                    <CardHeader className="space-y-2">
+                        <CardTitle className="text-heading-lg text-neutral-50">Create a new password</CardTitle>
+                        <CardDescription className="text-neutral-400 text-body-sm">
+                            Secure your account with a strong password.
                         </CardDescription>
                     </CardHeader>
 
                     <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <InputWithIcon
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            <Input
                                 id="password"
                                 name="password"
                                 type="password"
@@ -162,12 +128,13 @@ function ResetPasswordContent() {
                                 value={formData.password}
                                 onChange={handleChange}
                                 placeholder="••••••••"
-                                label="New Password"
-                                startIcon={<Lock className="w-5 h-5" />}
-                                className="bg-slate-800 border-slate-700 text-white placeholder-slate-400 focus-visible:ring-blue-500"
+                                label="New password"
+                                icon={Lock}
+                                showPasswordToggle
+                                autoComplete="new-password"
                             />
 
-                            <InputWithIcon
+                            <Input
                                 id="confirmPassword"
                                 name="confirmPassword"
                                 type="password"
@@ -175,17 +142,17 @@ function ResetPasswordContent() {
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 placeholder="••••••••"
-                                label="Confirm Password"
-                                startIcon={<Lock className="w-5 h-5" />}
-                                className="bg-slate-800 border-slate-700 text-white placeholder-slate-400 focus-visible:ring-blue-500"
+                                label="Confirm password"
+                                icon={Lock}
+                                showPasswordToggle
+                                autoComplete="new-password"
                             />
 
-                            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3">
-                                <p className="text-xs text-slate-300 mb-2"><strong>Password Requirements:</strong></p>
-                                <ul className="text-xs text-slate-400 space-y-1 list-disc list-inside">
-                                    <li>At least 10 characters long</li>
-                                    <li>At least one uppercase letter</li>
-                                    <li>At least one lowercase letter</li>
+                            <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3">
+                                <p className="text-xs text-neutral-100 mb-2 font-semibold">Password requirements</p>
+                                <ul className="text-xs text-neutral-400 space-y-1 list-disc list-inside">
+                                    <li>At least 10 characters</li>
+                                    <li>Uppercase and lowercase letters</li>
                                     <li>At least one number</li>
                                 </ul>
                             </div>
@@ -193,9 +160,10 @@ function ResetPasswordContent() {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-md transition-colors"
+                                fullWidth
+                                size="lg"
                             >
-                                {loading ? 'Resetting...' : 'Reset Password'}
+                                {loading ? 'Resetting...' : 'Reset password'}
                             </Button>
                         </form>
                     </CardContent>
@@ -208,8 +176,8 @@ function ResetPasswordContent() {
 export default function ResetPasswordPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-                <div className="animate-pulse text-slate-400">Loading...</div>
+            <div className="min-h-screen bg-gradient-to-b from-neutral-950 via-neutral-950 to-neutral-900 flex items-center justify-center">
+                <div className="animate-pulse text-neutral-400">Loading...</div>
             </div>
         }>
             <ResetPasswordContent />

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAdminAuth, useBusinessData } from '@/lib/hooks';
-import { formatters } from '@/lib/utils';
+import { formatters } from '@/lib/formatters';
 
 interface DashboardData {
   timestamp: string;
@@ -56,8 +56,8 @@ export default function BusinessOpsPage() {
               key={p}
               onClick={() => setPeriod(p)}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${period === p
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                ? 'bg-sky-500 text-white'
+                : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
                 }`}
             >
               {p.charAt(0).toUpperCase() + p.slice(1)}

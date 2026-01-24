@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
 import { PageHeader } from "@/components/app-shell";
 import Link from "next/link";
 

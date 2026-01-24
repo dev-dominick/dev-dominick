@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { redirect } from "next/navigation";
 import { Button } from '@/components/ui';
+import { SIMPLE_CONSULTING_MODE } from '@/lib/config/flags'
 
 export default function PortfolioPage() {
+  if (SIMPLE_CONSULTING_MODE) {
+    redirect('/')
+  }
+
   const projects = [
     {
       name: "Nonna Rosa Restaurant",

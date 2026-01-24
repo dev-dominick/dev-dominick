@@ -210,7 +210,7 @@ export function VideoSession({ sessionId, userName, isHost }: VideoSessionProps)
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-matrix-black">
+      <div className="flex items-center justify-center min-h-screen bg-neutral-950">
         <div className="text-center">
           <div className="text-red-400 text-xl mb-4">⚠️ {error}</div>
           <Button onClick={() => window.location.reload()}>Try Again</Button>
@@ -220,11 +220,11 @@ export function VideoSession({ sessionId, userName, isHost }: VideoSessionProps)
   }
 
   return (
-    <div className="relative h-screen w-full bg-matrix-black flex flex-col">
+    <div className="relative h-screen w-full bg-neutral-950 flex flex-col">
       {/* Video Grid */}
       <div className="flex-1 relative grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
         {/* Remote Video (large) */}
-        <div className="relative bg-matrix-darker rounded-lg overflow-hidden">
+        <div className="relative bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800">
           {remoteStream ? (
             <video
               ref={remoteVideoRef}
@@ -248,7 +248,7 @@ export function VideoSession({ sessionId, userName, isHost }: VideoSessionProps)
         </div>
 
         {/* Local Video (picture-in-picture) */}
-        <div className="relative bg-matrix-darker rounded-lg overflow-hidden md:absolute md:bottom-4 md:right-4 md:w-80 md:h-60 md:z-10">
+        <div className="relative bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800 md:absolute md:bottom-4 md:right-4 md:w-80 md:h-60 md:z-10">
           <video
             ref={localVideoRef}
             autoPlay
@@ -256,14 +256,14 @@ export function VideoSession({ sessionId, userName, isHost }: VideoSessionProps)
             playsInline
             className="w-full h-full object-cover mirror"
           />
-          <div className="absolute top-4 left-4 px-3 py-1 bg-matrix-black/80 text-white text-sm rounded-full">
+          <div className="absolute top-4 left-4 px-3 py-1 bg-neutral-900/80 text-white text-sm rounded-full">
             You {isHost && '(Host)'}
           </div>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-3 bg-matrix-darker/95 backdrop-blur-xl px-6 py-4 rounded-full border border-matrix-border/20">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-3 bg-neutral-900/95 backdrop-blur-xl px-6 py-4 rounded-full border border-neutral-800">
         <Button
           variant={audioEnabled ? 'outline' : 'destructive'}
           size="icon"

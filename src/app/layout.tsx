@@ -3,11 +3,12 @@ import { Inter } from 'next/font/google';
 import "./globals.css";
 import { Suspense } from 'react';
 import { Providers } from '@/components/providers';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from 'react-hot-toast';
-import SessionTimeout from '@/components/SessionTimeout';
-import { Navigation } from '@/components/Navigation';
-import { CookieConsent } from '@/components/CookieConsent';
+import SessionTimeout from '@/components/session-timeout';
+import { Navigation } from '@/components/navigation';
+import { Footer } from '@/components/footer';
+import { CookieConsent } from '@/components/cookie-consent';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -36,22 +37,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`}>
-      <body className="antialiased font-sans bg-matrix-black text-matrix-text-primary">
+    <html lang="en" className={`${inter.variable} dark`}>
+      <body className="antialiased font-sans bg-neutral-950 text-neutral-50">
         <ErrorBoundary>
           <Providers>
             <Navigation />
             <SessionTimeout />
             <Toaster position="top-right" toastOptions={{
-              className: 'bg-matrix-darker border border-matrix-border/40 text-matrix-text-primary',
+              className: 'bg-neutral-900 border border-neutral-800 text-neutral-50 shadow-lg',
             }} />
             <Suspense fallback={
-              <div className="min-h-screen bg-matrix-black flex items-center justify-center">
-                <div className="animate-pulse text-matrix-primary">Loading...</div>
+              <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
+                <div className="animate-pulse text-primary-400">Loading...</div>
               </div>
             }>
               {children}
             </Suspense>
+            <Footer />
             <CookieConsent />
           </Providers>
         </ErrorBoundary>

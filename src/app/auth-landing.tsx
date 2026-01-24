@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/ui'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui'
 import { Sparkles, Lock, Mail, User, ArrowRight, CheckCircle2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
@@ -95,14 +95,14 @@ export default function AuthLanding() {
 
     if (status === 'loading' || status === 'authenticated') {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-                <div className="animate-pulse text-slate-400">Loading...</div>
+            <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 flex items-center justify-center">
+                <div className="animate-pulse text-neutral-400">Loading...</div>
             </div>
         )
     }
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+        <main className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950">
             {/* Background decorations */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
@@ -120,11 +120,11 @@ export default function AuthLanding() {
                             </span>
                         </div>
 
-                        <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                        <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-neutral-200 to-neutral-400 bg-clip-text text-transparent">
                             Your Digital Business Platform
                         </h1>
 
-                        <p className="text-xl text-slate-400">
+                        <p className="text-xl text-neutral-400">
                             Manage your business with enterprise-grade tools. Invoicing, analytics, appointments, and more.
                         </p>
 
@@ -137,19 +137,19 @@ export default function AuthLanding() {
                             ].map((feature, i) => (
                                 <div key={i} className="flex items-center gap-3">
                                     <feature.icon className="w-5 h-5 text-green-400 flex-shrink-0" />
-                                    <span className="text-slate-300">{feature.text}</span>
+                                    <span className="text-neutral-300">{feature.text}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Right side - Auth form */}
-                    <Card className="bg-slate-900/80 backdrop-blur border-slate-800">
+                    <Card className="bg-neutral-900/80 backdrop-blur border-neutral-800">
                         <CardHeader>
                             <CardTitle className="text-2xl text-white">
                                 {isLogin ? 'Sign In' : 'Create Account'}
                             </CardTitle>
-                            <CardDescription className="text-slate-400">
+                            <CardDescription className="text-neutral-400">
                                 {isLogin
                                     ? 'Welcome back! Enter your credentials to continue.'
                                     : 'Get started with your free account today.'
@@ -161,11 +161,11 @@ export default function AuthLanding() {
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 {!isLogin && (
                                     <div>
-                                        <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1">
+                                        <label htmlFor="name" className="block text-sm font-medium text-neutral-300 mb-1">
                                             Full Name
                                         </label>
                                         <div className="relative">
-                                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
                                             <input
                                                 id="name"
                                                 name="name"
@@ -173,7 +173,7 @@ export default function AuthLanding() {
                                                 required={!isLogin}
                                                 value={formData.name}
                                                 onChange={handleChange}
-                                                className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                className="w-full pl-10 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                                                 placeholder="John Doe"
                                             />
                                         </div>
@@ -181,11 +181,11 @@ export default function AuthLanding() {
                                 )}
 
                                 <div>
-                                    <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1">
+                                    <label htmlFor="email" className="block text-sm font-medium text-neutral-300 mb-1">
                                         Email Address
                                     </label>
                                     <div className="relative">
-                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
                                         <input
                                             id="email"
                                             name="email"
@@ -193,18 +193,18 @@ export default function AuthLanding() {
                                             required
                                             value={formData.email}
                                             onChange={handleChange}
-                                            className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full pl-10 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                                             placeholder="you@example.com"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-1">
+                                    <label htmlFor="password" className="block text-sm font-medium text-neutral-300 mb-1">
                                         Password
                                     </label>
                                     <div className="relative">
-                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
                                         <input
                                             id="password"
                                             name="password"
@@ -212,12 +212,12 @@ export default function AuthLanding() {
                                             required
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full pl-10 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                                             placeholder={isLogin ? '••••••••' : 'Min. 8 characters'}
                                         />
                                     </div>
                                     {!isLogin && (
-                                        <p className="mt-1 text-xs text-slate-400">
+                                        <p className="mt-1 text-xs text-neutral-400">
                                             Must contain uppercase, lowercase, and number
                                         </p>
                                     )}
@@ -226,7 +226,7 @@ export default function AuthLanding() {
                                 <Button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-md transition-colors flex items-center justify-center gap-2"
+                                    className="w-full bg-sky-600 hover:bg-sky-700 text-white font-medium py-2.5 rounded-md transition-colors flex items-center justify-center gap-2"
                                 >
                                     {loading ? (
                                         'Please wait...'
@@ -243,17 +243,17 @@ export default function AuthLanding() {
                                 <button
                                     type="button"
                                     onClick={() => setIsLogin(!isLogin)}
-                                    className="text-sm text-slate-400 hover:text-white transition-colors"
+                                    className="text-sm text-neutral-400 hover:text-white transition-colors"
                                 >
                                     {isLogin ? (
                                         <>
                                             Don't have an account?{' '}
-                                            <span className="text-blue-400 font-medium">Sign up</span>
+                                            <span className="text-sky-400 font-medium">Sign up</span>
                                         </>
                                     ) : (
                                         <>
                                             Already have an account?{' '}
-                                            <span className="text-blue-400 font-medium">Sign in</span>
+                                            <span className="text-sky-400 font-medium">Sign in</span>
                                         </>
                                     )}
                                 </button>

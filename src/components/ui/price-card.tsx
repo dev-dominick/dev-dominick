@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Card } from "./Card";
+import { Card } from "./card";
 
 export interface PriceCardProps {
     title: string;
@@ -24,7 +24,7 @@ export function PriceCard({ title, description, priceUsd, features = [], ctaHref
                 <ul className="mt-4 space-y-2 text-sm text-matrix-text-secondary">
                     {features.map((f, i) => (
                         <li key={i} className="flex items-start gap-2">
-                            <span className="inline-block mt-1.5 h-1.5 w-1.5 rounded-full bg-matrix-primary flex-shrink-0" />
+                            <span className="inline-block mt-1.5 h-1.5 w-1.5 rounded-full bg-matrix-primary shrink-0" />
                             <span>{f}</span>
                         </li>
                     ))}
