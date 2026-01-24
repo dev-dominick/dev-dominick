@@ -71,8 +71,8 @@ export default function BookingsPage() {
             const firstDay = new Date(year, month, 1)
             const lastDay = new Date(year, month + 1, 0)
 
-            // Calculate padding days (to align with week start)
-            const startPadding = (firstDay.getDay() + 6) % 7 // Monday = 0
+            // Calculate padding days (to align with week start on Sunday)
+            const startPadding = firstDay.getDay() // Sunday = 0
 
             const days = []
 
@@ -308,9 +308,9 @@ export default function BookingsPage() {
                                             {monthData.name}
                                         </h3>
 
-                                        {/* Weekday headers */}
+                                        {/* Weekday headers - Sunday first */}
                                         <div className="grid grid-cols-7 gap-0.5 mb-1">
-                                            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
+                                            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
                                                 <div key={i} className="text-center text-[10px] font-medium text-neutral-500 py-0.5">
                                                     {day}
                                                 </div>
