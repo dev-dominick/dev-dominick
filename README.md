@@ -14,5 +14,5 @@ I share practical notes and code from real projects. If something here saves you
 
 If you’d like to talk or support the work:
 
-[![Book an intro call](https://img.shields.io/badge/Book%20an%20intro%20call-111111?style=for-the-badge)](https://dev-dominick.com/book-a-call)
+[![Book an intro call](https://img.shields.io/badge/Book%20an%20intro%20call-111111?style=for-the-badge)](https://dev-dominick.com/bookings)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=000000)](https://buymeacoffee.com/devdominick)
