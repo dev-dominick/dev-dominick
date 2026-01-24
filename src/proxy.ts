@@ -48,7 +48,7 @@ export async function proxy(request: NextRequest) {
   // Check maintenance mode - redirect all unauthenticated traffic to coming soon (PRODUCTION ONLY)
   // Disabled in development for easier testing
   const isProduction = process.env.NODE_ENV === "production";
-  const maintenanceEnabled = process.env.MAINTENANCE_MODE === "true";
+  const maintenanceEnabled = process.env.MAINTENANCE_MODE === "false";
   if (maintenanceEnabled && isProduction && pathname !== "/maintenance" && !isAuthenticated) {
     const maintenanceUrl = request.nextUrl.clone();
     maintenanceUrl.pathname = "/maintenance";
