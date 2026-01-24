@@ -49,25 +49,25 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             "bg-white dark:bg-neutral-900",
             "text-neutral-900 dark:text-neutral-50",
             "placeholder:text-neutral-400 dark:placeholder:text-neutral-500",
-            
+
             // Border color
             !error && !success && "border-neutral-200 dark:border-neutral-700",
             error && "border-danger-500 dark:border-danger-600",
             success && "border-success-500 dark:border-success-600",
-            
+
             // Focus state (WCAG AAA compliant)
             "focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-0",
             !error && !success && "focus:ring-sky-500 focus:border-sky-500",
             error && "focus:ring-danger-500 focus:border-danger-500",
             success && "focus:ring-success-500 focus:border-success-500",
-            
+
             // Hover state
             !error && !success && "hover:border-neutral-300 dark:hover:border-neutral-600",
-            
+
             // Base padding with left padding for icons
             (Icon || showPasswordToggle || error || success) && "pl-9",
             sizes[inputSize],
-            
+
             className
         );
 
@@ -100,7 +100,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                         ref={ref}
                         type={showPassword ? "text" : type}
                         className={inputClasses}
-                        aria-invalid={!!error || false}
+                        aria-invalid={error ? "true" : "false"}
                         aria-describedby={error ? errorId : hint ? hintId : undefined}
                         {...props}
                     />
@@ -160,7 +160,7 @@ export interface PasswordStrengthProps {
 export function PasswordStrength({ password }: PasswordStrengthProps) {
     const getStrength = (pwd: string) => {
         if (!pwd) return { score: 0, label: "" };
-        
+
         let score = 0;
         if (pwd.length >= 8) score++;
         if (pwd.length >= 12) score++;
