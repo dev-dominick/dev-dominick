@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ShoppingCart, ArrowLeft, Check, Star, Shield, Gauge } from "lucide-react";
 import { getProductById, catalogProducts } from "@/lib/catalog";
 import { useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 export default function ProductDetailPage() {
     const params = useParams();

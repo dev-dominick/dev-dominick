@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Card } from "./card";
+import { Card } from "./Card";
 
 export interface PriceCardProps {
     title: string;

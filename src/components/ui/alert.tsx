@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import { AlertCircle, CheckCircle2, AlertTriangle, Info, XCircle } from 'lucide-react';
-import { Button } from './button';
+import { Button } from './Button';
 import { twMerge } from 'tailwind-merge';
 
 export interface AlertProps {

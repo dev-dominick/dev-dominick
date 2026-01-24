@@ -6,7 +6,7 @@ import { Providers } from '@/components/providers';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from 'react-hot-toast';
 import SessionTimeout from '@/components/session-timeout';
-import { Navigation } from '@/components/navigation';
+import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/footer';
 import { CookieConsent } from '@/components/cookie-consent';
 

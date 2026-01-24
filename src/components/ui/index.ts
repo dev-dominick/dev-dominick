@@ -1,11 +1,11 @@
-export { Button } from "./button";
-export type { ButtonProps } from "./button";
+export { Button } from "./Button";
+export type { ButtonProps } from "./Button";
 
-export { Card } from "./card";
-export type { CardProps } from "./card";
-export { CardHeader, CardTitle, CardDescription, CardContent } from "./card";
+export { Card } from "./Card";
+export type { CardProps } from "./Card";
+export { CardHeader, CardTitle, CardDescription, CardContent } from "./Card";
 
-export { Input, InputWithIcon, Calendar, PasswordStrength, Textarea } from "./input";
+export { Input, InputWithIcon, Calendar, PasswordStrength, Textarea } from "./Input";
 export type { InputProps, TextareaProps } from "./input";
 
 export { Modal } from "./modal";

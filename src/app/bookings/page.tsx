@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Calendar, Clock, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/Button'
 import { SIMPLE_CONSULTING_MODE } from '@/lib/config/flags'
 
 interface TimeSlot {

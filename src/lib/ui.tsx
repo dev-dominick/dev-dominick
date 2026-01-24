@@ -5,14 +5,14 @@
  */
 
 // Re-export all components from @/components/ui
-export { Button } from "@/components/ui/button";
-export type { ButtonProps } from "@/components/ui/button";
+export { Button } from "@/components/ui/Button";
+export type { ButtonProps } from "@/components/ui/Button";
 
-export { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-export type { CardProps } from "@/components/ui/card";
+export { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+export type { CardProps } from "@/components/ui/Card";
 
-export { Input, InputWithIcon, Calendar, PasswordStrength, Textarea } from "@/components/ui/input";
-export type { InputProps, TextareaProps } from "@/components/ui/input";
+export { Input, InputWithIcon, Calendar, PasswordStrength, Textarea } from "@/components/ui/Input";
+export type { InputProps, TextareaProps } from "@/components/ui/Input";
 
 export { Modal } from "@/components/ui/modal";
 export type { ModalProps } from "@/components/ui/modal";
