@@ -61,8 +61,8 @@ export default function LoginPage() {
                 toast.error(result.error || 'Login failed')
             } else if (result?.ok) {
                 toast.success('Welcome back!')
-                router.refresh()
-                router.push(next)
+                // Use hard redirect to ensure session is properly recognized
+                window.location.href = next
             } else {
                 console.warn('Unexpected signIn response:', result)
                 toast.error('Login failed - unexpected response')
