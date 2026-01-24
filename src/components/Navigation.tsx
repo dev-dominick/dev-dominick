@@ -51,9 +51,8 @@ export function Navigation({ siteName = 'dev-dominick' }: NavigationProps) {
       ]
     : [
         { href: '/', label: 'Home' },
-        { href: '/shop', label: 'Shop' },
-        { href: '/pricing', label: 'Service Pricing' },
         { href: '/contact', label: 'Contact' },
+        { href: '/bookings', label: 'Book a Call' },
       ]
 
   // Don't show nav on app section (it has its own shell)

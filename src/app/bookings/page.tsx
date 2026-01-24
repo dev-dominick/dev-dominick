@@ -175,13 +175,13 @@ export default function BookingsPage() {
                     <div className="rounded-2xl border border-matrix-border/30 bg-matrix-darker p-8 text-center">
                         <CheckCircle2 className="mx-auto h-16 w-16 text-primary mb-4" />
                         <h1 className="text-3xl font-bold text-matrix-text-primary mb-3">
-                            Consultation Booked! 🎉
+                            Call booked! 🎉
                         </h1>
                         <p className="text-lg text-matrix-text-secondary mb-4">
-                            Check your email for confirmation details. I'll review and send you the call link once approved.
+                            Check your email for confirmation. I'll send the call link within a few hours.
                         </p>
                         <p className="text-sm text-matrix-text-secondary mb-6">
-                            Typically approved within 1 hour during business hours.
+                            Looking forward to our conversation.
                         </p>
                         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                             <Link href="/">
@@ -221,19 +221,13 @@ export default function BookingsPage() {
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
                         <Calendar className="h-5 w-5 text-accent" />
-                        <h1 className="text-3xl font-bold text-matrix-text-primary">Schedule a consultation</h1>
+                        <h1 className="text-3xl font-bold text-matrix-text-primary">Book an intro call</h1>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        {consultationType === 'free' ? (
-                            <span className="inline-flex items-center gap-1 rounded-full border border-primary/50 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                                Free 30-minute discovery call
-                            </span>
-                        ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full border border-accent/50 bg-accent/10 px-3 py-1 text-sm font-semibold text-accent">
-                                $50 consultation + {fromProduct ? 'product bundle' : 'follow-up'}
-                            </span>
-                        )}
+                        <span className="inline-flex items-center gap-1 rounded-full border border-[var(--accent)]/50 bg-[var(--accent-muted)] px-3 py-1 text-sm font-semibold text-[var(--accent)]">
+                            30-minute conversation. No pitch. No pressure.
+                        </span>
                     </div>
                 </div>
 
@@ -326,16 +320,16 @@ export default function BookingsPage() {
                                                         }}
                                                         className={`
                               aspect-square rounded-lg text-sm font-medium transition-all relative
-                              ${!dayData.isCurrentMonth ? 'text-matrix-text-muted/30 cursor-default' : ''}
-                              ${dayData.isAvailable && !isSelected ? 'bg-matrix-dark border border-matrix-border/30 text-matrix-text-secondary hover:border-matrix-primary/50 hover:bg-matrix-primary/5' : ''}
-                              ${isSelected ? 'bg-matrix-primary text-matrix-black font-bold shadow-lg' : ''}
-                              ${!dayData.isAvailable && dayData.isCurrentMonth ? 'text-matrix-text-muted/50 cursor-not-allowed' : ''}
-                              ${isToday && !isSelected ? 'ring-2 ring-accent/40' : ''}
+                              ${!dayData.isCurrentMonth ? 'text-neutral-600 cursor-default' : ''}
+                              ${dayData.isAvailable && !isSelected ? 'bg-neutral-900 border border-neutral-700 text-neutral-300 hover:border-[var(--accent)]/50 hover:bg-[var(--accent-subtle)]' : ''}
+                              ${isSelected ? 'bg-[var(--accent)] text-neutral-950 font-bold shadow-lg' : ''}
+                              ${!dayData.isAvailable && dayData.isCurrentMonth ? 'text-neutral-600 cursor-not-allowed' : ''}
+                              ${isToday && !isSelected ? 'ring-2 ring-[var(--accent)]/40' : ''}
                             `}
                                                     >
                                                         {dayData.date.getDate()}
                                                         {isToday && !isSelected && (
-                                                            <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent"></div>
+                                                            <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--accent)]"></div>
                                                         )}
                                                     </button>
                                                 )
@@ -385,12 +379,12 @@ export default function BookingsPage() {
                                                 className={`
                           flex flex-col items-center justify-center rounded-lg border-2 py-3 transition-all
                           ${isSelected
-                                                        ? 'border-matrix-primary bg-matrix-primary/10 text-matrix-primary shadow-md scale-105'
-                                                        : 'border-matrix-border/30 bg-matrix-darker/50 text-matrix-text-secondary hover:border-matrix-primary/40 hover:bg-matrix-primary/5'
+                                                        ? 'border-[var(--accent)] bg-[var(--accent-muted)] text-[var(--accent)] shadow-md scale-105'
+                                                        : 'border-neutral-700 bg-neutral-900/50 text-neutral-400 hover:border-[var(--accent)]/40 hover:bg-[var(--accent-subtle)]'
                                                     }
                         `}
                                             >
-                                                <Clock className={`h-4 w-4 mb-1 ${isSelected ? 'text-matrix-primary' : 'text-matrix-text-muted'}`} />
+                                                <Clock className={`h-4 w-4 mb-1 ${isSelected ? 'text-[var(--accent)]' : 'text-neutral-500'}`} />
                                                 <span className="font-mono text-sm font-semibold">
                                                     {displayHours}:{minutes.toString().padStart(2, '0')}
                                                 </span>

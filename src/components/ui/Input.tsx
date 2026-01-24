@@ -45,24 +45,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         const inputClasses = twMerge(
             // Base styles
-            "w-full rounded-lg border transition-all duration-200",
-            "bg-white dark:bg-neutral-900",
-            "text-neutral-900 dark:text-neutral-50",
-            "placeholder:text-neutral-400 dark:placeholder:text-neutral-500",
+            "w-full rounded-[var(--radius-md)] border transition-all duration-150 ease-out",
+            "bg-[var(--surface-input)]",
+            "text-[var(--text-primary)]",
+            "placeholder:text-[var(--text-muted)]",
 
             // Border color
-            !error && !success && "border-neutral-200 dark:border-neutral-700",
-            error && "border-danger-500 dark:border-danger-600",
-            success && "border-success-500 dark:border-success-600",
+            !error && !success && "border-[var(--border-default)]",
+            error && "border-[var(--error)]",
+            success && "border-[var(--success)]",
 
-            // Focus state (WCAG AAA compliant)
-            "focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-0",
-            !error && !success && "focus:ring-sky-500 focus:border-sky-500",
-            error && "focus:ring-danger-500 focus:border-danger-500",
-            success && "focus:ring-success-500 focus:border-success-500",
+            // Focus state
+            "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--surface-base)]",
+            !error && !success && "focus:ring-[var(--accent)] focus:border-[var(--accent)]",
+            error && "focus:ring-[var(--error)] focus:border-[var(--error)]",
+            success && "focus:ring-[var(--success)] focus:border-[var(--success)]",
 
             // Hover state
-            !error && !success && "hover:border-neutral-300 dark:hover:border-neutral-600",
+            !error && !success && "hover:border-[var(--border-strong)]",
 
             // Base padding with left padding for icons
             (Icon || showPasswordToggle || error || success) && "pl-9",
@@ -77,13 +77,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                     <label
                         htmlFor={inputId}
                         className={twMerge(
-                            "text-sm font-semibold",
-                            "text-neutral-700 dark:text-neutral-300",
-                            error && "text-danger-600 dark:text-danger-500"
+                            "text-sm font-medium",
+                            "text-[var(--text-secondary)]",
+                            error && "text-[var(--error)]"
                         )}
                     >
                         {label}
-                        {required && <span className="ml-1 text-danger-500">*</span>}
+                        {required && <span className="ml-1 text-[var(--error)]">*</span>}
                     </label>
                 )}
 
@@ -91,7 +91,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                     {Icon && (
                         <Icon className={twMerge(
                             "pointer-events-none absolute left-3 h-5 w-5",
-                            error ? "text-danger-500 dark:text-danger-400" : "text-neutral-400 dark:text-neutral-500"
+                            error ? "text-[var(--error)]" : "text-[var(--text-muted)]"
                         )} />
                     )}
 
@@ -110,7 +110,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 transition-colors"
+                                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                                 aria-label={showPassword ? "Hide password" : "Show password"}
                                 tabIndex={-1}
                             >
@@ -123,23 +123,23 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                         )}
 
                         {error && (
-                            <AlertCircle className="h-5 w-5 text-danger-500 dark:text-danger-400 flex-shrink-0" />
+                            <AlertCircle className="h-5 w-5 text-[var(--error)] flex-shrink-0" />
                         )}
 
                         {success && (
-                            <CheckCircle2 className="h-5 w-5 text-success-500 dark:text-success-400 flex-shrink-0" />
+                            <CheckCircle2 className="h-5 w-5 text-[var(--success)] flex-shrink-0" />
                         )}
                     </div>
                 </div>
 
                 {hint && !error && (
-                    <p id={hintId} className="text-xs text-neutral-500 dark:text-neutral-400">
+                    <p id={hintId} className="text-xs text-[var(--text-muted)]">
                         {hint}
                     </p>
                 )}
 
                 {error && (
-                    <p id={errorId} className="text-xs font-medium text-danger-600 dark:text-danger-400 flex items-center gap-1">
+                    <p id={errorId} className="text-xs font-medium text-[var(--error)] flex items-center gap-1">
                         <AlertCircle className="h-3.5 w-3.5" />
                         {error}
                     </p>
@@ -160,11 +160,11 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
     const getStrength = (pwd: string) => {
         const levels = [
             { score: 0, label: "", color: "", barColor: "" },
-            { score: 1, label: "Weak", color: "text-danger-500", barColor: "bg-danger-500" },
-            { score: 2, label: "Fair", color: "text-warning-500", barColor: "bg-warning-500" },
-            { score: 3, label: "Good", color: "text-warning-400", barColor: "bg-warning-400" },
-            { score: 4, label: "Strong", color: "text-success-500", barColor: "bg-success-500" },
-            { score: 5, label: "Very Strong", color: "text-success-600", barColor: "bg-success-600" },
+            { score: 1, label: "Weak", color: "text-[var(--error)]", barColor: "bg-[var(--error)]" },
+            { score: 2, label: "Fair", color: "text-[var(--warning)]", barColor: "bg-[var(--warning)]" },
+            { score: 3, label: "Good", color: "text-[var(--warning)]", barColor: "bg-[var(--warning)]" },
+            { score: 4, label: "Strong", color: "text-[var(--success)]", barColor: "bg-[var(--success)]" },
+            { score: 5, label: "Very Strong", color: "text-[var(--success)]", barColor: "bg-[var(--success)]" },
         ];
 
         if (!pwd) return levels[0];
@@ -185,7 +185,7 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
 
     return (
         <div className="flex items-center gap-2 mt-2">
-            <div className="flex-1 h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+            <div className="flex-1 h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden">
                 <div
                     className={twMerge(
                         "h-full rounded-full transition-all duration-300",
@@ -248,18 +248,20 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
         const textareaClasses = twMerge(
             // Base styles
-            "w-full rounded-lg border transition-all duration-200 resize-none",
-            "bg-white dark:bg-neutral-900",
-            "text-neutral-900 dark:text-neutral-50",
-            "placeholder:text-neutral-400 dark:placeholder:text-neutral-500",
-            "border-neutral-200 dark:border-neutral-700",
-            "focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-neutral-950",
+            "w-full rounded-[var(--radius-md)] border transition-all duration-150 ease-out resize-none",
+            "bg-[var(--surface-input)]",
+            "text-[var(--text-primary)]",
+            "placeholder:text-[var(--text-muted)]",
+            "border-[var(--border-default)]",
+            "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--surface-base)]",
             // Error state
-            error && "border-danger-500 dark:border-danger-500 focus:ring-danger-500/30",
+            error && "border-[var(--error)] focus:ring-[var(--error)]",
             // Success state
-            !error && success && "border-success-500 dark:border-success-500 focus:ring-success-500/30",
+            !error && success && "border-[var(--success)] focus:ring-[var(--success)]",
             // Normal focus
-            !error && !success && "focus:ring-primary-500/30 focus:border-primary-500",
+            !error && !success && "focus:ring-[var(--accent)] focus:border-[var(--accent)]",
+            // Hover
+            !error && !success && "hover:border-[var(--border-strong)]",
             // Sizes
             sizes[textareaSize],
             className
@@ -268,9 +270,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         return (
             <div className="w-full space-y-1.5">
                 {label && (
-                    <label htmlFor={textareaId} className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    <label htmlFor={textareaId} className="block text-sm font-medium text-[var(--text-secondary)]">
                         {label}
-                        {required && <span className="text-danger-500 ml-1">*</span>}
+                        {required && <span className="text-[var(--error)] ml-1">*</span>}
                     </label>
                 )}
 
@@ -285,13 +287,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                 </div>
 
                 {hint && !error && (
-                    <p id={hintId} className="text-xs text-neutral-500 dark:text-neutral-400">
+                    <p id={hintId} className="text-xs text-[var(--text-muted)]">
                         {hint}
                     </p>
                 )}
 
                 {error && (
-                    <p id={errorId} className="text-xs font-medium text-danger-600 dark:text-danger-400 flex items-center gap-1">
+                    <p id={errorId} className="text-xs font-medium text-[var(--error)] flex items-center gap-1">
                         <AlertCircle className="h-3.5 w-3.5" />
                         {error}
                     </p>

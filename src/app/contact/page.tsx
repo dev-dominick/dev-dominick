@@ -91,19 +91,19 @@ export default function ContactPage() {
     <div className="min-h-screen bg-neutral-950 pt-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-16">
-          <h1 className="text-4xl sm:text-5xl font-bold text-neutral-50 mb-4">Get in Touch</h1>
-          <p className="text-xl text-neutral-400 max-w-3xl mx-auto">Have questions about our services? Need help choosing the right solution? Let's talk.</p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-neutral-50 mb-4">Reach out</h1>
+          <p className="text-xl text-neutral-400 max-w-3xl mx-auto">If you have a question or want to discuss a project, send me a message. I read everything and usually reply within one business day.</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-12">
           {/* Contact Form */}
           <div className="lg:col-span-2 p-8 rounded-2xl border border-neutral-800 bg-neutral-900 shadow-lg">
-            <h2 className="text-2xl font-bold text-neutral-50 mb-6">Send a Message</h2>
+            <h2 className="text-2xl font-bold text-neutral-50 mb-6">Send a message</h2>
 
             {submitted ? (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-sky-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-16 h-16 bg-[var(--accent-muted)] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
@@ -141,7 +141,7 @@ export default function ContactPage() {
                       value={formData.projectType}
                       onChange={handleChange}
                       title="Project type"
-                      className="w-full h-10 px-4 rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-50 focus:outline-none focus:border-sky-400 transition-all"
+                      className="w-full h-10 px-4 rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-50 focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
                     >
                       <option value="">Select a project type</option>
                       <option value="web-app">Web Application</option>
@@ -158,7 +158,7 @@ export default function ContactPage() {
                       value={formData.budget}
                       onChange={handleChange}
                       title="Budget range"
-                      className="w-full h-10 px-4 rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-50 focus:outline-none focus:border-sky-400 transition-all"
+                      className="w-full h-10 px-4 rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-50 focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
                     >
                       <option value="">Select your budget</option>
                       <option value="under-5k">Under $5,000</option>
@@ -170,15 +170,15 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-400 mb-1.5">Tell me about your project *</label>
+                  <label className="block text-sm font-medium text-neutral-400 mb-1.5">What are you working on? *</label>
                   <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
                     required
                     rows={6}
-                    placeholder="Describe your project goals, timeline, and any specific requirements..."
-                    className="w-full px-4 py-3 rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-50 placeholder:text-neutral-500 focus:outline-none focus:border-sky-400 transition-all resize-none"
+                    placeholder="Tell me about your project, timeline, or what you're looking to accomplish..."
+                    className="w-full px-4 py-3 rounded-lg border border-neutral-700 bg-neutral-800 text-neutral-50 placeholder:text-neutral-500 focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all resize-none"
                   />
                 </div>
 
@@ -189,9 +189,9 @@ export default function ContactPage() {
                       name="bookCall"
                       checked={formData.bookCall}
                       onChange={(e) => setFormData({ ...formData, bookCall: e.target.checked })}
-                      className="w-5 h-5 rounded bg-neutral-800 border-neutral-600 text-sky-400 focus:ring-2 focus:ring-sky-400/20"
+                      className="w-5 h-5 rounded bg-neutral-800 border-neutral-600 accent-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
                     />
-                    <span className="text-neutral-400">I'd like to schedule a consultation call</span>
+                    <span className="text-neutral-400">I'd also like to schedule a call</span>
                   </label>
 
                   {formData.bookCall && (
@@ -225,12 +225,12 @@ export default function ContactPage() {
           <div className="space-y-6">
             <div className="p-6 rounded-2xl border border-neutral-800 bg-neutral-900">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-sky-500/10 rounded-lg">
-                  <Mail className="w-5 h-5 text-neutral-400" />
+                <div className="p-3 bg-[var(--accent-muted)] rounded-lg">
+                  <Mail className="w-5 h-5 text-[var(--accent)]" />
                 </div>
                 <div>
                   <h3 className="text-neutral-50 font-semibold mb-1">Email</h3>
-                  <a href="mailto:dom@dev-dominick.com" className="text-neutral-400 hover:text-sky-400 transition-colors">
+                  <a href="mailto:dom@dev-dominick.com" className="text-neutral-400 hover:text-[var(--accent)] transition-colors">
                     dom@dev-dominick.com
                   </a>
                 </div>
@@ -239,8 +239,8 @@ export default function ContactPage() {
 
             <div className="p-6 rounded-2xl border border-neutral-800 bg-neutral-900">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-sky-500/10 rounded-lg">
-                  <Calendar className="w-5 h-5 text-neutral-400" />
+                <div className="p-3 bg-[var(--accent-muted)] rounded-lg">
+                  <Calendar className="w-5 h-5 text-[var(--accent)]" />
                 </div>
                 <div>
                   <h3 className="text-neutral-50 font-semibold mb-1">Availability</h3>
@@ -251,8 +251,8 @@ export default function ContactPage() {
 
             <div className="p-6 rounded-2xl border border-neutral-800 bg-neutral-900">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-sky-500/10 rounded-lg">
-                  <Clock className="w-5 h-5 text-neutral-400" />
+                <div className="p-3 bg-[var(--accent-muted)] rounded-lg">
+                  <Clock className="w-5 h-5 text-[var(--accent)]" />
                 </div>
                 <div>
                   <h3 className="text-neutral-50 font-semibold mb-1">Response Time</h3>
@@ -262,18 +262,18 @@ export default function ContactPage() {
             </div>
 
             <div className="p-6 rounded-2xl border border-neutral-800 bg-neutral-900 space-y-4">
-              <h3 className="text-lg font-bold text-neutral-50">FAQ</h3>
+              <h3 className="text-lg font-bold text-neutral-50">Common questions</h3>
               <div>
-                <h4 className="text-neutral-50 font-semibold mb-2">How long does a project take?</h4>
-                <p className="text-neutral-400 text-sm">Typically 2-8 weeks depending on complexity.</p>
+                <h4 className="text-neutral-50 font-semibold mb-2">What kind of work do you take on?</h4>
+                <p className="text-neutral-400 text-sm">Full-stack web apps, APIs, integrations, and system architecture for production teams. Happy to discuss specifics.</p>
               </div>
               <div>
-                <h4 className="text-neutral-50 font-semibold mb-2">Do you offer support?</h4>
-                <p className="text-neutral-400 text-sm">Yes, all packages include post-launch support.</p>
+                <h4 className="text-neutral-50 font-semibold mb-2">Are you open to full-time roles?</h4>
+                <p className="text-neutral-400 text-sm">Yes, for the right team and challenge. Let's talk.</p>
               </div>
               <div>
-                <h4 className="text-neutral-50 font-semibold mb-2">Can you work with my team?</h4>
-                <p className="text-neutral-400 text-sm">Absolutely! I collaborate with designers and developers.</p>
+                <h4 className="text-neutral-50 font-semibold mb-2">Can you work with existing teams?</h4>
+                <p className="text-neutral-400 text-sm">Absolutely. I integrate well with designers, PMs, and other engineers.</p>
               </div>
             </div>
           </div>

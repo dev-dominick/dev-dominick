@@ -12,12 +12,28 @@ export function Card({
     variant = "outlined",
     ...props
 }: CardProps) {
-    const baseClasses = "rounded-xl transition-all duration-200";
+    const baseClasses = [
+        "rounded-[var(--radius-lg)]",
+        "transition-all duration-150 ease-out",
+    ].join(" ");
 
     const variants = {
-        elevated: "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-md hover:shadow-lg",
-        outlined: "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700",
-        flat: "bg-neutral-50 dark:bg-neutral-800 border-0",
+        elevated: [
+            "bg-[var(--surface-raised)]",
+            "border border-[var(--border-subtle)]",
+            "shadow-[var(--shadow-md)]",
+            "hover:shadow-[var(--shadow-lg)]",
+            "hover:border-[var(--border-default)]",
+        ].join(" "),
+        outlined: [
+            "bg-[var(--surface-raised)]",
+            "border border-[var(--border-subtle)]",
+            "hover:border-[var(--border-default)]",
+        ].join(" "),
+        flat: [
+            "bg-[var(--surface-overlay)]",
+            "border-0",
+        ].join(" "),
     };
 
     return (
@@ -34,7 +50,7 @@ export function CardHeader({ className, ...props }: CardHeaderProps) {
     return (
         <div
             className={twMerge(
-                "border-b border-neutral-200 dark:border-neutral-800 px-6 py-4",
+                "border-b border-[var(--border-subtle)] px-6 py-4",
                 className
             )}
             {...props}
@@ -48,7 +64,7 @@ export function CardTitle({ className, ...props }: CardTitleProps) {
     return (
         <h2
             className={twMerge(
-                    "text-xl font-semibold text-neutral-900 dark:text-neutral-50",
+                "text-xl font-semibold text-[var(--text-primary)]",
                 className
             )}
             {...props}
@@ -62,7 +78,7 @@ export function CardDescription({ className, ...props }: CardDescriptionProps) {
     return (
         <p
             className={twMerge(
-                    "text-sm text-neutral-600 dark:text-neutral-400",
+                "text-sm text-[var(--text-secondary)]",
                 className
             )}
             {...props}
