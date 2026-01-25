@@ -121,6 +121,17 @@ export default function BookingsPage() {
     return months
   }, [])
 
+  // Check if a date has any existing bookings
+  const dateHasBookings = (dateStr: string) => {
+    return bookedAppointments.some((apt) => {
+      const aptDate = new Date(apt.startTime)
+      const y = aptDate.getFullYear()
+      const m = String(aptDate.getMonth() + 1).padStart(2, '0')
+      const d = String(aptDate.getDate()).padStart(2, '0')
+      return `${y}-${m}-${d}` === dateStr
+    })
+  }
+
   // Get available time slots for selected date (excluding already-booked slots)
   const timeSlotsForDate = useMemo(() => {
     if (!selectedDate) return []
@@ -358,6 +369,7 @@ export default function BookingsPage() {
                         // Only highlight if this cell belongs to its own month
                         const isSelected = selectedDate === dateStr && dayData.isCurrentMonth
                         const isToday = dayData.date.toDateString() === new Date().toDateString() && dayData.isCurrentMonth
+                        const hasBookings = dayData.isCurrentMonth && dateHasBookings(dateStr)
 
                         return (
                           <button
@@ -371,7 +383,7 @@ export default function BookingsPage() {
                               }
                             }}
                             className={`
-                              aspect-square rounded text-xs font-medium transition-all
+                              aspect-square rounded text-xs font-medium transition-all relative
                               ${!dayData.isCurrentMonth ? 'text-[var(--text-muted)]/40 cursor-default' : ''}
                               ${dayData.isAvailable && !isSelected ? 'bg-[var(--surface-overlay)] text-[var(--text-secondary)] hover:bg-[var(--accent-muted)] hover:text-[var(--accent)]' : ''}
                               ${isSelected ? 'bg-[var(--accent)] text-[var(--surface-base)] font-bold' : ''}
@@ -380,6 +392,9 @@ export default function BookingsPage() {
                             `}
                           >
                             {dayData.date.getDate()}
+                            {hasBookings && (
+                              <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--warning)]" />
+                            )}
                           </button>
                         )
                       })}

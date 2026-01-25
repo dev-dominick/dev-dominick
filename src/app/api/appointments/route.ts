@@ -25,7 +25,8 @@ function generateMeetingLink(appointmentId: string): string {
 }
 
 function parseStartEnd(date: string, time: string, durationMinutes = 60) {
-  const start = new Date(`${date}T${time}`);
+  // Treat the selected date/time as UTC to match availability storage
+  const start = new Date(`${date}T${time}:00.000Z`);
   const end = new Date(start.getTime() + durationMinutes * 60 * 1000);
   return { start, end };
 }
