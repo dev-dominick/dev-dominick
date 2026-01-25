@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 
 export function useDarkMode() {
+  const [mounted, setMounted] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window === "undefined") return false;
     const savedMode = localStorage.getItem("darkMode");
@@ -11,6 +12,10 @@ export function useDarkMode() {
     }
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // Save preference
@@ -24,7 +29,7 @@ export function useDarkMode() {
     }
   }, [darkMode]);
 
-  const toggleDarkMode = () => setDarkMode(!darkMode);
+  const toggle = () => setDarkMode(!darkMode);
 
-  return { darkMode, setDarkMode, toggleDarkMode };
+  return { darkMode, isDark: darkMode, setDarkMode, toggleDarkMode: toggle, toggle, mounted };
 }

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { Button, BookingCalendar, ConfirmModal } from '@/components/ui'
 import { formatters } from '@/lib/formatters'
+import { LawyerDashboard, AccountantDashboard, OpsDashboard } from '@/components/app/dashboards'
 
 interface Appointment {
   id: string
@@ -204,6 +205,9 @@ export default function DashboardPage() {
     appointmentId: null,
   })
 
+  // Get user role from session
+  const userRole = (session?.user as { role?: string })?.role || 'user'
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/')
@@ -211,6 +215,12 @@ export default function DashboardPage() {
   }, [status, router])
 
   useEffect(() => {
+    // Only fetch admin data for admin roles
+    if (userRole === 'lawyer' || userRole === 'accountant' || userRole === 'ops') {
+      setLoading(false)
+      return
+    }
+
     async function fetchData() {
       try {
         const controller = new AbortController()
@@ -246,7 +256,7 @@ export default function DashboardPage() {
     }
 
     fetchData()
-  }, [])
+  }, [userRole])
 
   const handleApprove = async (id: string) => {
     try {
@@ -299,6 +309,20 @@ export default function DashboardPage() {
     return null
   }
 
+  // Render role-specific dashboards
+  if (userRole === 'lawyer') {
+    return <LawyerDashboard />
+  }
+
+  if (userRole === 'accountant') {
+    return <AccountantDashboard />
+  }
+
+  if (userRole === 'ops') {
+    return <OpsDashboard />
+  }
+
+  // Admin dashboard (admin, admin-main)
   const pendingAppointments = appointments.filter((a) => a.status === 'pending_approval')
   const upcomingAppointments = appointments.filter(
     (a) => a.status === 'confirmed' || a.status === 'scheduled' || a.status === 'upcoming'

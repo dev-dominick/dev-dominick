@@ -271,10 +271,14 @@ export function AppointmentBooker({
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-3">Select Date</label>
           <Calendar
-            selectedDate={selectedDate ? new Date(selectedDate.split('-')[0], parseInt(selectedDate.split('-')[1]) - 1, parseInt(selectedDate.split('-')[2])) : null}
-            onDateSelect={handleDateSelect}
-            availableDates={availableDates}
-            className="w-full"
+            value={selectedDate}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSelectedDate(value);
+              setSelectedTime('');
+            }}
+            min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
+            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white"
           />
         </div>
 
@@ -284,7 +288,7 @@ export function AppointmentBooker({
             <label className="block text-sm font-medium text-gray-300 mb-3">
               Select Time
               <span className="ml-2 text-xs text-gray-500">
-                {new Date(selectedDate.split('-')[0], parseInt(selectedDate.split('-')[1]) - 1, parseInt(selectedDate.split('-')[2])).toLocaleDateString('en-US', {
+                {new Date(parseInt(selectedDate.split('-')[0]), parseInt(selectedDate.split('-')[1]) - 1, parseInt(selectedDate.split('-')[2])).toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',

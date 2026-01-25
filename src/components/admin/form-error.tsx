@@ -3,7 +3,7 @@
 import React from 'react';
 
 interface FormErrorProps {
-    error: string;
+    error?: string | null;
     fieldErrors?: Record<string, string>;
     onDismiss?: () => void;
     className?: string;

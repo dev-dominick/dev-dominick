@@ -148,7 +148,7 @@ export default function ProductDetailPage() {
                                 </div>
                             </div>
                             <div className="mt-4 grid gap-3">
-                                <Button className="w-full" onClick={() => handleAddToCart(product)}>
+                                <Button className="w-full" onClick={() => handleAddToCart()}>
                                     Add to cart
                                 </Button>
                                 <Button 

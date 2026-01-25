@@ -28,19 +28,21 @@ export async function GET(request: NextRequest) {
         allowedOrigins.push(requestOrigin)
       }
 
-      io = new SocketIOServer(server, {
+      const socketServer = new SocketIOServer(server, {
         path: '/api/socket',
         cors: {
           origin: allowedOrigins.length ? allowedOrigins : true,
           methods: ['GET', 'POST'],
         },
       })
+      
+      io = socketServer
 
-      io.on('connection', (socket) => {
+      socketServer.on('connection', (socket) => {
         console.log('Client connected:', socket.id)
 
         // Basic auth: require valid NextAuth session token cookie
-        (async () => {
+        void (async () => {
           try {
             const cookie = socket.handshake.headers.cookie || ''
             const match = cookie.match(/(?:^|; )next-auth\.session-token=([^;]+)/)

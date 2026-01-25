@@ -12,10 +12,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useNavActive } from "@/lib/hooks/useNavActive";
 
+type StaffRole = "user" | "admin" | "admin-main" | "lawyer" | "accountant" | "ops";
+
 interface TopbarProps {
   onMenuClick?: () => void;
   isAdmin?: boolean;
   userEmail?: string;
+  userRole?: StaffRole;
 }
 
 interface Crumb {
@@ -23,7 +26,17 @@ interface Crumb {
   href: string;
 }
 
-export function Topbar({ onMenuClick, isAdmin = false, userEmail: userEmailProp }: TopbarProps) {
+// Map roles to display labels
+const roleLabels: Record<StaffRole, string> = {
+  "user": "Member",
+  "admin": "Admin",
+  "admin-main": "Super Admin",
+  "lawyer": "Legal",
+  "accountant": "Finance",
+  "ops": "Operations",
+};
+
+export function Topbar({ onMenuClick, isAdmin = false, userEmail: userEmailProp, userRole = "user" }: TopbarProps) {
   const { data: session } = useSession();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -36,6 +49,8 @@ export function Topbar({ onMenuClick, isAdmin = false, userEmail: userEmailProp 
   }, []);
 
   const userEmail = mounted ? userEmailProp || session?.user?.email || "user@example.com" : "user@example.com";
+  const actualRole = ((session?.user as { role?: string })?.role || userRole) as StaffRole;
+  const roleLabel = roleLabels[actualRole] || "Member";
 
   const breadcrumbs: Crumb[] = useMemo(() => {
     const base: Crumb[] = [{ label: "Dashboard", href: "/app" }];
@@ -97,7 +112,7 @@ export function Topbar({ onMenuClick, isAdmin = false, userEmail: userEmailProp 
               <span className="text-xs font-semibold text-[var(--text-primary)] truncate max-w-[140px]">
                 {userEmail}
               </span>
-              <span className="text-[11px] text-[var(--text-muted)]">{isAdmin ? "Admin" : "Member"}</span>
+              <span className="text-[11px] text-[var(--text-muted)]">{roleLabel}</span>
             </div>
             <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center text-[var(--surface-base)] text-sm font-semibold">
               {(userEmail || "U")[0]?.toUpperCase()}

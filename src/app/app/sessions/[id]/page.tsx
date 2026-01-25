@@ -103,7 +103,7 @@ export default function SessionPage({ params }: PageProps) {
     )
   }
 
-  const isHost = session?.user?.role === 'admin' || session?.user?.role === 'owner'
+  const isHost = session?.user?.role === 'admin' || session?.user?.role === 'admin-main'
   const userName = session?.user?.name || appointment?.clientName || 'Guest'
 
   return (

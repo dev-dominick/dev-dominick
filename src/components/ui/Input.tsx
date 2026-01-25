@@ -203,10 +203,13 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
 
 export interface InputWithIconProps extends InputProps {
     icon?: ComponentType<{ className?: string }>;
+    startIcon?: React.ReactNode;
 }
 
-export function InputWithIcon({ icon: Icon, className, ...props }: InputWithIconProps) {
-    return <Input icon={Icon} className={className} {...props} />;
+export function InputWithIcon({ icon: Icon, startIcon, className, ...props }: InputWithIconProps) {
+    // If startIcon is provided as ReactNode, wrap it in a component
+    const iconComponent = Icon ? Icon : startIcon ? () => <>{startIcon}</> : undefined;
+    return <Input icon={iconComponent as ComponentType<{ className?: string }> | undefined} className={className} {...props} />;
 }
 
 export function Calendar(props: InputHTMLAttributes<HTMLInputElement>) {

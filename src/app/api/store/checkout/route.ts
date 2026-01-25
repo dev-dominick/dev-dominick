@@ -8,16 +8,6 @@ interface CheckoutItem {
   quantity?: number;
 }
 
-function generateOrderNumber() {
-  const now = new Date();
-  return `ORD-${now.getFullYear()}${String(now.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}${String(now.getDate()).padStart(2, "0")}-${randomUUID()
-    .slice(0, 6)
-    .toUpperCase()}`;
-}
-
 export async function POST(req: NextRequest) {
   const { items, customerEmail, customerName } = await req.json();
 
@@ -37,7 +27,7 @@ export async function POST(req: NextRequest) {
     .filter(Boolean);
 
   const products = await prisma.product.findMany({
-    where: { id: { in: productIds }, isActive: true },
+    where: { id: { in: productIds } },
   });
 
   if (products.length !== productIds.length) {
@@ -59,45 +49,24 @@ export async function POST(req: NextRequest) {
   });
 
   const subtotal = orderItems.reduce((sum, item) => sum + item.lineTotal, 0);
-  const currency = "USD";
+  const currency = "usd";
 
-  // Upsert customer
-  const customer = await prisma.customer.upsert({
-    where: { email: customerEmail },
-    update: {
-      name: customerName ?? undefined,
-      lastPurchaseAt: new Date(),
-    },
-    create: {
-      email: customerEmail,
-      name: customerName ?? null,
-      totalSpent: subtotal,
-      orderCount: 0,
-    },
-  });
-
-  const orderNumber = generateOrderNumber();
+  // Generate a unique session ID for this checkout
+  const stripeSessionId = `pending_${randomUUID()}`;
 
   const order = await prisma.order.create({
     data: {
-      orderNumber,
-      customerId: customer.id,
+      stripeSessionId,
       status: "pending",
-      subtotal,
-      tax: 0,
       total: subtotal,
       currency,
       customerEmail,
       customerName,
-      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0] ?? null,
-      userAgent: req.headers.get("user-agent") ?? null,
       items: {
         create: orderItems.map((item) => ({
           productId: item.product.id,
-          productName: item.product.name,
-          productType: item.product.productType,
           quantity: item.quantity,
-          price: item.product.price,
+          priceAtTime: item.product.price,
         })),
       },
     },
@@ -105,7 +74,7 @@ export async function POST(req: NextRequest) {
 
   const successUrl = `${
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001"
-  }/order/${order.id}?success=true`;
+  }/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
   const cancelUrl = `${
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001"
   }/cart?canceled=true`;
@@ -117,10 +86,10 @@ export async function POST(req: NextRequest) {
       quantity: item.quantity,
       price_data: {
         currency,
-        unit_amount: Math.round(item.product.price * 100),
+        unit_amount: item.product.price, // Already in cents
         product_data: {
           name: item.product.name,
-          description: item.product.description,
+          description: item.product.description || undefined,
         },
       },
     })),
@@ -132,9 +101,10 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  // Update order with actual Stripe session ID
   await prisma.order.update({
     where: { id: order.id },
-    data: { stripeCheckoutSessionId: session.id },
+    data: { stripeSessionId: session.id },
   });
 
   return NextResponse.json({

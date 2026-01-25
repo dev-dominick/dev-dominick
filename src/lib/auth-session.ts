@@ -4,11 +4,13 @@ import { encode } from "next-auth/jwt";
 const SESSION_COOKIE_NAME = "next-auth.session-token";
 const MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 
+type UserRole = "user" | "admin" | "admin-main";
+
 interface SessionUser {
   id: string;
   email: string;
   name?: string | null;
-  role?: string | null;
+  role?: UserRole | string | null;
 }
 
 function cookieOptions() {
@@ -36,7 +38,7 @@ export async function issueSessionResponse(
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role || "user",
+      role: (user.role || "user") as UserRole,
     },
     secret: process.env.NEXTAUTH_SECRET,
     maxAge: MAX_AGE,

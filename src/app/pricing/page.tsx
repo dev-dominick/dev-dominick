@@ -88,7 +88,6 @@ export default function PricingPage() {
       ],
       cta: "Get Started",
       popular: false,
-      planId: "starter",
       stripeId: "price_1Q123456"
     },
     {
@@ -111,7 +110,6 @@ export default function PricingPage() {
       ],
       cta: "Most Popular",
       popular: true,
-      planId: "business",
       stripeId: "price_1Q234567"
     },
     {
@@ -133,7 +131,6 @@ export default function PricingPage() {
       ],
       cta: "Contact for Quote",
       popular: false,
-      planId: "enterprise",
       stripeId: "price_1Q345678"
     },
   ];

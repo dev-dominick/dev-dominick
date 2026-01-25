@@ -6,50 +6,33 @@ export async function GET(
   { params }: { params: Promise<{ token: string }> }
 ) {
   const { token } = await params;
-  const download = await prisma.download.findUnique({
-    where: { downloadToken: token },
-    include: { product: true },
+  
+  // Find order with this download token in downloadLinks array
+  const order = await prisma.order.findFirst({
+    where: {
+      downloadLinks: { has: token },
+      status: "completed",
+    },
+    include: {
+      items: {
+        include: {
+          product: true,
+        },
+      },
+    },
   });
 
-  if (!download || !download.product) {
+  if (!order) {
     return NextResponse.json(
       { error: "Invalid download token" },
       { status: 404 }
     );
   }
 
-  const now = new Date();
-  if (download.expiresAt < now) {
-    return NextResponse.json(
-      { error: "Download link expired" },
-      { status: 410 }
-    );
-  }
-
-  if (download.downloadCount >= download.maxDownloads) {
-    return NextResponse.json(
-      { error: "Download limit reached" },
-      { status: 429 }
-    );
-  }
-
-  // Track download
-  await prisma.download.update({
-    where: { id: download.id },
-    data: {
-      downloadCount: { increment: 1 },
-      firstDownloadAt: download.firstDownloadAt ?? now,
-      lastDownloadAt: now,
-    },
+  // For now, return success - in production, this would redirect to actual file
+  return NextResponse.json({
+    success: true,
+    message: "Download authorized",
+    orderId: order.id,
   });
-
-  // For now, return the stored URL. In production, swap to a presigned S3 URL.
-  if (!download.product.downloadUrl) {
-    return NextResponse.json(
-      { error: "Download not available yet" },
-      { status: 404 }
-    );
-  }
-
-  return NextResponse.json({ url: download.product.downloadUrl });
 }

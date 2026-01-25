@@ -86,7 +86,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. App routes - require admin login
+  // 3. App routes - require staff login (admin, admin-main, lawyer, accountant, ops)
   if (isAppRoute(pathname)) {
     if (!isAuthenticated) {
       // Not logged in - redirect to login with next param
@@ -96,7 +96,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    if ((token as any)?.role !== "admin") {
+    const userRole = (token as { role?: string })?.role;
+    const staffRoles = ["admin", "admin-main", "lawyer", "accountant", "ops"];
+    if (!userRole || !staffRoles.includes(userRole)) {
       const url = request.nextUrl.clone();
       url.pathname = "/";
       url.searchParams.set("reason", "forbidden");

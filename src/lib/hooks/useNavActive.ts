@@ -12,8 +12,14 @@
 
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-import { navConfig } from "@/lib/config/nav-config";
-import type { ActiveNavState, NavItem, NavSection } from "@/types/nav-config";
+import { navConfig, type NavItem, type NavSection } from "@/lib/config/nav-config";
+
+export interface ActiveNavState {
+  /** Currently active navigation item */
+  activeItem: NavItem | null;
+  /** Currently active section */
+  activeSection: NavSection | null;
+}
 
 export function useNavActive(): ActiveNavState {
   const pathname = usePathname();

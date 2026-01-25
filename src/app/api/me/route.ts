@@ -8,13 +8,13 @@ import { NextRequest, NextResponse } from "next/server";
  * Backend source of truth: /entitlements endpoint
  */
 export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const backendUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 
     // If no backend is configured, return an offline profile to avoid noisy errors in dev

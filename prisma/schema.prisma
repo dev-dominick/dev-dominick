@@ -12,10 +12,11 @@ datasource db {
 }
 
 // User model for authentication
-// Roles: "user", "admin", "admin-main" (super admin who can message all users)
+// Roles: "user", "admin", "admin-main" (super admin), "lawyer", "accountant", "ops"
 model User {
   id               String    @id @default(cuid())
   email            String    @unique
+  name             String?
   password         String
   role             String    @default("user")
   createdAt        DateTime  @default(now())
@@ -28,6 +29,10 @@ model User {
   emailVerified    Boolean   @default(false)
   verificationToken String?  @unique
   verificationTokenExpiry DateTime?
+  
+  // Password reset
+  passwordResetToken   String?   @unique
+  passwordResetExpires DateTime?
 
   // Relations
   appointments     Appointment[]
@@ -35,6 +40,15 @@ model User {
   contactMessages  ContactMessage[]
   conversations    Conversation[]
   sentMessages     Message[]
+  stripeDeposits   StripeDeposit[]
+  deposits         Deposit[]
+  paymentReceipts  PaymentReceipt[]
+  treasuryTransfers TreasuryTransfer[]
+  
+  // Approval workflow relations
+  requestedApprovals  ApprovalRequest[] @relation("RequestedApprovals")
+  assignedApprovals   ApprovalRequest[] @relation("AssignedApprovals")
+  uploadedAttachments ApprovalAttachment[]
 }
 
 // Product model for e-commerce
@@ -259,4 +273,210 @@ model Attachment {
   createdAt DateTime @default(now())
 
   @@index([messageId])
+}
+
+// Stripe deposit tracking for USD deposits
+model StripeDeposit {
+  id                    String    @id @default(cuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id])
+  
+  amountUsd             Int       // Amount in cents
+  stripeSessionId       String    @unique
+  stripePaymentIntentId String?   @unique
+  
+  // Status: pending -> completed -> settled (or failed)
+  status                String    @default("pending")
+  
+  // Link to deposit record for Kraken settlement
+  depositId             String?   @unique
+  deposit               Deposit?  @relation(fields: [depositId], references: [id])
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  completedAt           DateTime?
+  
+  @@index([userId])
+  @@index([status])
+}
+
+// Deposit record for exchange funding (Kraken settlement bookkeeping)
+model Deposit {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  
+  amountUsd       Int       // Amount in cents
+  source          String    @default("stripe") // stripe, bank_transfer, etc.
+  
+  // Status: pending_kraken -> submitted -> confirmed (or failed)
+  status          String    @default("pending_kraken")
+  
+  // Kraken settlement tracking
+  krakenOrderId   String?   // Future: actual Kraken order ID
+  settledAt       DateTime?
+  settlementNotes String?
+  
+  // Link back to Stripe deposit
+  stripeDeposit   StripeDeposit?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+}
+
+// Generalized payment receipt for all payment methods (Stripe, Cash, ACH, Wire, etc.)
+model PaymentReceipt {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  
+  // Payment method: STRIPE, CASH, ACH, WIRE, CHECK, OTHER
+  method          String
+  
+  amountCents     Int       // Amount in cents
+  currency        String    @default("USD")
+  
+  // Status: PENDING, PENDING_APPROVAL, APPROVED, REJECTED, RECEIVED, FAILED, REFUNDED
+  status          String    @default("PENDING")
+  
+  receivedAt      DateTime?
+  
+  // External reference (Stripe session ID, bank ref, check number, etc.)
+  externalRef     String?
+  
+  // Description/notes for audit trail
+  description     String?
+  notes           String?
+  
+  // Optional: client info for non-user payments
+  clientName      String?
+  clientEmail     String?
+  
+  // Link to treasury transfer if funds were moved to Kraken
+  treasuryTransfers TreasuryTransfer[]
+  
+  // Link to approval request (for cash/large payments)
+  approvalRequest   ApprovalRequest?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([method])
+  @@index([status])
+  @@index([receivedAt])
+}
+
+// Treasury transfer tracking (Fulton Bank -> Kraken, etc.)
+model TreasuryTransfer {
+  id                  String    @id @default(cuid())
+  userId              String    // Admin who created the transfer
+  user                User      @relation(fields: [userId], references: [id])
+  
+  // Source account: FULTON_BANK, STRIPE_BALANCE, CASH_ON_HAND
+  sourceAccount       String
+  
+  // Destination: KRAKEN, COINBASE, etc.
+  destinationAccount  String    @default("KRAKEN")
+  
+  // Transfer method: ACH, WIRE
+  method              String
+  
+  amountCents         Int
+  currency            String    @default("USD")
+  
+  // Status: PLANNED, SUBMITTED, CONFIRMED, CANCELED
+  status              String    @default("PLANNED")
+  
+  // Timestamps for audit trail
+  plannedAt           DateTime  @default(now())
+  submittedAt         DateTime?
+  confirmedAt         DateTime?
+  
+  // External references
+  bankRef             String?   // Bank confirmation/reference number
+  krakenRef           String?   // Kraken deposit reference
+  
+  notes               String?
+  
+  // Optional link to payment receipt(s) this transfer is funding
+  paymentReceiptId    String?
+  paymentReceipt      PaymentReceipt? @relation(fields: [paymentReceiptId], references: [id])
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+  @@index([sourceAccount])
+  @@index([destinationAccount])
+}
+
+// Approval request for cash payments requiring lawyer/team sign-off
+model ApprovalRequest {
+  id                  String    @id @default(cuid())
+  
+  // Link to the payment being approved
+  paymentReceiptId    String    @unique
+  paymentReceipt      PaymentReceipt @relation(fields: [paymentReceiptId], references: [id])
+  
+  // Who requested approval
+  requestedById       String
+  requestedBy         User      @relation("RequestedApprovals", fields: [requestedById], references: [id])
+  requestedAt         DateTime  @default(now())
+  
+  // Who should approve (lawyer, accountant, ops, admin)
+  assignedToId        String
+  assignedTo          User      @relation("AssignedApprovals", fields: [assignedToId], references: [id])
+  assignedRole        String    // LAWYER, ACCOUNTANT, OPS, ADMIN
+  
+  // Status: PENDING, APPROVED, REJECTED
+  status              String    @default("PENDING")
+  
+  // Decision tracking
+  decisionAt          DateTime?
+  decisionNotes       String?
+  rejectionReason     String?
+  
+  // Secure token for external approval links (magic link)
+  approvalToken       String?   @unique
+  tokenExpiresAt      DateTime?
+  
+  // Link to conversation for discussion
+  conversationId      String?
+  
+  // Attachments (receipt photos, etc.)
+  attachments         ApprovalAttachment[]
+  
+  notes               String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  @@index([requestedById])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([approvalToken])
+}
+
+// Attachments for approval requests (receipt photos, documents)
+model ApprovalAttachment {
+  id                  String    @id @default(cuid())
+  
+  approvalRequestId   String
+  approvalRequest     ApprovalRequest @relation(fields: [approvalRequestId], references: [id], onDelete: Cascade)
+  
+  url                 String
+  filename            String
+  mimeType            String
+  size                Int       // bytes
+  
+  uploadedById        String
+  uploadedBy          User      @relation(fields: [uploadedById], references: [id])
+  
+  createdAt           DateTime  @default(now())
+  
+  @@index([approvalRequestId])
 }

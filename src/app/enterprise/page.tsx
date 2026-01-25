@@ -10,6 +10,20 @@ interface AppointmentStats {
   pending: number;
   confirmed: number;
   revenue: number;
+  upcoming?: number;
+  completed?: number;
+  conversion_rate?: number;
+}
+
+interface FinancialData {
+  revenue: number;
+  revenue_count?: number;
+  expenses: number;
+  profit_margin: number;
+}
+
+interface ProjectsData {
+  active: number;
 }
 
 interface BusinessOpsStats {
@@ -17,18 +31,34 @@ interface BusinessOpsStats {
   revenue_total: number;
   profit_margin: number;
   goals_completed: number;
+  financial?: FinancialData;
+  projects?: ProjectsData;
+}
+
+interface ResourceStats {
+  percent: number;
 }
 
 interface PaymentStats {
   total_processed: number;
+  total_processed_24h?: number;
   successful: number;
   pending: number;
+  status?: string;
+  error?: string;
+  recent_charges?: number;
+  successful_sessions?: number;
 }
 
 interface SystemStats {
   uptime_hours: number;
   api_calls_total: number;
   cache_hit_rate: number;
+  status?: string;
+  cpu?: ResourceStats;
+  memory?: ResourceStats;
+  disk?: ResourceStats;
+  platform?: string;
 }
 
 interface AutomationStats {
@@ -123,7 +153,7 @@ export default function EnterpriseDashboard() {
     );
   }
 
-  const systemStatus = dashboard.system.status === 'healthy' ? 'healthy' : 'warning';
+  const systemStatus = dashboard.system?.status === 'healthy' ? 'healthy' : 'warning';
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-950 to-black p-4 md:p-8">
@@ -161,7 +191,7 @@ export default function EnterpriseDashboard() {
             <AlertCircle className="w-5 h-5 text-yellow-400 mt-0.5 shrink-0" />
             <div>
               <p className="text-yellow-400 font-semibold">System Resources High</p>
-              <p className="text-yellow-300 text-sm">CPU: {dashboard.system.cpu.percent}% | Memory: {dashboard.system.memory.percent}%</p>
+              <p className="text-yellow-300 text-sm">CPU: {dashboard.system.cpu?.percent ?? 0}% | Memory: {dashboard.system.memory?.percent ?? 0}%</p>
             </div>
           </div>
         )}
@@ -172,8 +202,8 @@ export default function EnterpriseDashboard() {
           <MetricCard
             icon={<Clock className="w-6 h-6" />}
             label="Upcoming Appointments"
-            value={dashboard.appointments.upcoming}
-            subtext={`${dashboard.appointments.completed} completed`}
+            value={dashboard.appointments.upcoming ?? 0}
+            subtext={`${dashboard.appointments.completed ?? 0} completed`}
             color="blue"
           />
 
@@ -181,8 +211,8 @@ export default function EnterpriseDashboard() {
           <MetricCard
             icon={<TrendingUp className="w-6 h-6" />}
             label="Revenue (30d)"
-            value={`$${dashboard.business_ops.financial.revenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
-            subtext={`${dashboard.business_ops.financial.revenue_count} transactions`}
+            value={`$${(dashboard.business_ops.financial?.revenue ?? 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+            subtext={`${dashboard.business_ops.financial?.revenue_count ?? 0} transactions`}
             color="green"
           />
 
@@ -190,8 +220,8 @@ export default function EnterpriseDashboard() {
           <MetricCard
             icon={<Activity className="w-6 h-6" />}
             label="Stripe Transactions"
-            value={dashboard.payments.recent_charges || 0}
-            subtext={`$${(dashboard.payments.total_processed_24h || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`}
+            value={dashboard.payments.recent_charges ?? 0}
+            subtext={`$${(dashboard.payments.total_processed_24h ?? 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`}
             color="purple"
           />
 
@@ -220,9 +250,9 @@ export default function EnterpriseDashboard() {
             </div>
             <div className="space-y-3">
               <MetricRow label="Total" value={dashboard.appointments.total} />
-              <MetricRow label="Upcoming" value={dashboard.appointments.upcoming} highlight={true} />
-              <MetricRow label="Completed" value={dashboard.appointments.completed} />
-              <MetricRow label="Conversion Rate" value={`${dashboard.appointments.conversion_rate.toFixed(1)}%`} />
+              <MetricRow label="Upcoming" value={dashboard.appointments.upcoming ?? 0} highlight={true} />
+              <MetricRow label="Completed" value={dashboard.appointments.completed ?? 0} />
+              <MetricRow label="Conversion Rate" value={`${(dashboard.appointments.conversion_rate ?? 0).toFixed(1)}%`} />
             </div>
           </div>
 
@@ -240,18 +270,18 @@ export default function EnterpriseDashboard() {
             <div className="space-y-3">
               <MetricRow
                 label="Revenue"
-                value={`$${dashboard.business_ops.financial.revenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+                value={`$${(dashboard.business_ops.financial?.revenue ?? 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
               />
               <MetricRow
                 label="Expenses"
-                value={`$${dashboard.business_ops.financial.expenses.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+                value={`$${(dashboard.business_ops.financial?.expenses ?? 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
               />
               <MetricRow
                 label="Profit Margin"
-                value={`${dashboard.business_ops.financial.profit_margin.toFixed(1)}%`}
-                highlight={dashboard.business_ops.financial.profit_margin > 25}
+                value={`${(dashboard.business_ops.financial?.profit_margin ?? 0).toFixed(1)}%`}
+                highlight={(dashboard.business_ops.financial?.profit_margin ?? 0) > 25}
               />
-              <MetricRow label="Active Projects" value={dashboard.business_ops.projects.active} />
+              <MetricRow label="Active Projects" value={dashboard.business_ops.projects?.active ?? 0} />
             </div>
           </div>
         </div>
@@ -276,13 +306,13 @@ export default function EnterpriseDashboard() {
               <p className="text-red-400 text-sm">{dashboard.payments.error}</p>
             ) : (
               <div className="space-y-3">
-                <MetricRow label="Recent Charges" value={dashboard.payments.recent_charges} />
+                <MetricRow label="Recent Charges" value={dashboard.payments.recent_charges ?? 0} />
                 <MetricRow
                   label="24h Revenue"
-                  value={`$${(dashboard.payments.total_processed_24h || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`}
+                  value={`$${(dashboard.payments.total_processed_24h ?? 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`}
                   highlight={true}
                 />
-                <MetricRow label="Successful Sessions" value={dashboard.payments.successful_sessions} />
+                <MetricRow label="Successful Sessions" value={dashboard.payments.successful_sessions ?? 0} />
               </div>
             )}
           </div>
@@ -299,11 +329,11 @@ export default function EnterpriseDashboard() {
               </Link>
             </div>
             <div className="space-y-3">
-              <HealthBar label="CPU" value={dashboard.system.cpu.percent} max={100} />
-              <HealthBar label="Memory" value={dashboard.system.memory.percent} max={100} />
-              <HealthBar label="Disk" value={dashboard.system.disk.percent} max={100} />
+              <HealthBar label="CPU" value={dashboard.system.cpu?.percent ?? 0} max={100} />
+              <HealthBar label="Memory" value={dashboard.system.memory?.percent ?? 0} max={100} />
+              <HealthBar label="Disk" value={dashboard.system.disk?.percent ?? 0} max={100} />
               <MetricRow label="Uptime" value={`${dashboard.system.uptime_hours.toFixed(1)} hours`} />
-              <MetricRow label="Platform" value={dashboard.system.platform} />
+              <MetricRow label="Platform" value={dashboard.system.platform ?? 'Unknown'} />
             </div>
           </div>
         </div>

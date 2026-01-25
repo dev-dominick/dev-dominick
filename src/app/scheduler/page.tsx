@@ -149,7 +149,7 @@ export default function AdminScheduler() {
                   </div>
                   <div className="text-right">
                     <p className="font-medium text-white">
-                      {formatDateTime(appointment.datetime)}
+                      {formatDateTime(appointment.startTime)}
                     </p>
                     <span className="inline-block mt-1 px-2 py-1 text-xs font-medium rounded-full bg-green-900/30 text-green-300">
                       {appointment.status}
@@ -177,10 +177,10 @@ export default function AdminScheduler() {
                 <div className="flex justify-between items-center">
                   <div>
                     <h4 className="font-medium text-white">
-                      {appointment.customerName}
+                      {appointment.clientName}
                     </h4>
                     <p className="text-sm text-gray-400">
-                      {appointment.customerEmail}
+                      {appointment.clientEmail}
                     </p>
                   </div>
                   <p className="text-sm text-gray-500">

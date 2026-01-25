@@ -105,4 +105,5 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Setup error:", error);
     return apiError("Setup failed", 500);
+  }
 }

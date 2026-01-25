@@ -5,8 +5,8 @@ import { twMerge } from "tailwind-merge";
 import { Loader2 } from "lucide-react";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: "primary" | "secondary" | "ghost" | "danger" | "success" | "warning";
-    size?: "sm" | "md" | "lg" | "xl";
+    variant?: "primary" | "secondary" | "ghost" | "danger" | "success" | "warning" | "outline" | "destructive" | "default";
+    size?: "sm" | "md" | "lg" | "xl" | "icon";
     loading?: boolean;
     fullWidth?: boolean;
     icon?: React.ReactNode;
@@ -48,6 +48,12 @@ const variants = {
         "active:brightness-90",
         "shadow-[var(--shadow-sm)]",
     ].join(" "),
+    destructive: [
+        "bg-[var(--error)] text-white",
+        "hover:brightness-110",
+        "active:brightness-90",
+        "shadow-[var(--shadow-sm)]",
+    ].join(" "),
     success: [
         "bg-[var(--success)] text-[#0a0a0a]",
         "hover:brightness-110",
@@ -60,6 +66,18 @@ const variants = {
         "active:brightness-90",
         "shadow-[var(--shadow-sm)]",
     ].join(" "),
+    outline: [
+        "bg-transparent text-[var(--text-primary)]",
+        "border border-[var(--border-default)]",
+        "hover:bg-[var(--surface-raised)] hover:border-[var(--border-strong)]",
+        "active:bg-[var(--surface-overlay)]",
+    ].join(" "),
+    default: [
+        "bg-[var(--surface-raised)] text-[var(--text-primary)]",
+        "border border-[var(--border-default)]",
+        "hover:bg-[var(--surface-overlay)]",
+        "active:bg-[var(--surface-base)]",
+    ].join(" "),
 } as const;
 
 const sizes = {
@@ -67,6 +85,7 @@ const sizes = {
     md: "h-10 px-4 text-sm",
     lg: "h-11 px-5 text-base",
     xl: "h-12 px-6 text-base",
+    icon: "h-10 w-10 p-2",
 } as const;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

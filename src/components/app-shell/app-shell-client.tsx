@@ -12,10 +12,13 @@ import { useSession } from "next-auth/react";
 import { Topbar } from "@/components/app-shell";
 import { ChatPanel } from "@/components/app-shell/chat-panel";
 
+// All staff roles that can access /app
+type StaffRole = "user" | "admin" | "admin-main" | "lawyer" | "accountant" | "ops";
+
 interface AppShellClientProps {
   children: React.ReactNode;
   userEmail?: string;
-  userRole?: "user" | "admin" | "admin-main";
+  userRole?: StaffRole;
 }
 
 export function AppShellClient({ children, userEmail, userRole = "user" }: AppShellClientProps) {
@@ -23,15 +26,19 @@ export function AppShellClient({ children, userEmail, userRole = "user" }: AppSh
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Get role from session if available, fallback to prop
-  const actualRole = (session?.user as any)?.role || userRole;
+  const actualRole = ((session?.user as { role?: string })?.role || userRole) as StaffRole;
   const isAdminMain = actualRole === "admin-main";
   const isAdmin = actualRole === "admin" || isAdminMain;
+  
+  // Staff roles that should see admin-like UI
+  const isStaff = ["admin", "admin-main", "lawyer", "accountant", "ops"].includes(actualRole);
 
   return (
     <div className="min-h-screen bg-[var(--surface-sunken)]">
       <Topbar 
-        isAdmin={isAdmin} 
+        isAdmin={isStaff} 
         userEmail={userEmail}
+        userRole={actualRole}
       />
 
       <main 
