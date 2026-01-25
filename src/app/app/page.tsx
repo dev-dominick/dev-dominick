@@ -168,16 +168,16 @@ function AppointmentCard({
               <Button
                 size="sm"
                 onClick={() => onApprove(appointment.id)}
-                className="bg-[var(--success)] hover:bg-[var(--success)]/90 text-white"
+                className="bg-(--success) hover:bg-(--success)/90 text-white"
               >
                 <CheckCircle className="w-4 h-4 mr-1" />
                 Approve
               </Button>
               <Button
                 size="sm"
-                variant="outline"
+                variant="ghost"
                 onClick={() => onReject(appointment.id)}
-                className="border-[var(--error)]/50 text-[var(--error)] hover:bg-[var(--error-muted)]"
+                className="border border-(--error)/50 text-(--error) hover:bg-(--error-muted)"
               >
                 <XCircle className="w-4 h-4 mr-1" />
                 Reject
@@ -358,7 +358,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
               <Link href="/app/appointments">
-                <Button variant="outline" size="sm">Manage All</Button>
+                <Button variant="secondary" size="sm">Manage All</Button>
               </Link>
             </div>
 
@@ -425,7 +425,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-[var(--text-primary)]">Recent Orders</h3>
                 <Link href="/app/orders">
-                  <Button variant="outline" size="sm">View All</Button>
+                  <Button variant="secondary" size="sm">View All</Button>
                 </Link>
               </div>
             </div>
@@ -490,7 +490,7 @@ export default function DashboardPage() {
               </p>
             </div>
             <Link href="/app/appointments">
-              <Button variant="outline" size="sm">View All</Button>
+              <Button variant="secondary" size="sm">View All</Button>
             </Link>
           </div>
         </div>
