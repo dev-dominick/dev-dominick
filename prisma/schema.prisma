@@ -12,6 +12,7 @@ datasource db {
 }
 
 // User model for authentication
+// Roles: "user", "admin", "admin-main" (super admin who can message all users)
 model User {
   id               String    @id @default(cuid())
   email            String    @unique
@@ -27,6 +28,8 @@ model User {
   appointments     Appointment[]
   orders           Order[]
   contactMessages  ContactMessage[]
+  conversations    Conversation[]
+  sentMessages     Message[]
 }
 
 // Product model for e-commerce
@@ -205,4 +208,50 @@ model NewsletterSubscriber {
   
   @@index([email])
   @@index([status])
+}
+
+// In-app messaging system
+model Conversation {
+  id            String    @id @default(cuid())
+  userId        String?   // null for guest conversations
+  user          User?     @relation(fields: [userId], references: [id])
+  guestEmail    String?   // for non-registered users
+  guestName     String?
+  subject       String
+  status        String    @default("open") // open, closed, archived
+  messages      Message[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String?      // null = guest or system
+  sender         User?        @relation(fields: [senderId], references: [id])
+  senderType     String       // "guest", "user", "admin", "admin-main"
+  content        String
+  attachments    Attachment[]
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  messageId String
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  url       String
+  filename  String
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+
+  @@index([messageId])
 }
