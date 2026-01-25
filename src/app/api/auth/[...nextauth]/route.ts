@@ -112,17 +112,8 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
     error: "/login",
   },
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
-  },
+  // Let NextAuth handle cookie configuration automatically
+  // Custom config was causing issues with secure cookie prefix in production
   callbacks: {
     async redirect({ url, baseUrl }) {
       // Allow relative URLs
