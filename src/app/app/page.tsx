@@ -4,18 +4,21 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Calendar, Video, Clock, User } from 'lucide-react'
-import { Button } from '@/components/ui'
+import { 
+  Calendar, Video, Clock, User, CheckCircle, XCircle,
+  MessageSquare, ShoppingCart, Settings, FileText
+} from 'lucide-react'
+import { Button, BookingCalendar } from '@/components/ui'
 import { formatters } from '@/lib/formatters'
 
-interface Session {
+interface Appointment {
   id: string
   clientName: string
   clientEmail: string
   startTime: string
   endTime: string
   notes?: string
-  status: 'upcoming' | 'completed' | 'cancelled' | 'pending'
+  status: string
   billableHours?: number
 }
 
@@ -33,13 +36,169 @@ interface AvailabilityRow {
   endTime: string
 }
 
+// Stat card component
+function StatCard({ 
+  label, 
+  value, 
+  icon: Icon, 
+  accentColor = 'accent' 
+}: { 
+  label: string
+  value: string | number
+  icon: React.ElementType
+  accentColor?: 'accent' | 'success' | 'warning' | 'error'
+}) {
+  const bgColors = {
+    accent: 'bg-[var(--accent-muted)]',
+    success: 'bg-[var(--success-muted)]',
+    warning: 'bg-[var(--warning-muted)]',
+    error: 'bg-[var(--error-muted)]',
+  }
+  const textColors = {
+    accent: 'text-[var(--accent)]',
+    success: 'text-[var(--success)]',
+    warning: 'text-[var(--warning)]',
+    error: 'text-[var(--error)]',
+  }
+
+  return (
+    <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-5 transition-all hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-[var(--text-muted)] mb-1">{label}</p>
+          <p className="text-2xl font-bold text-[var(--text-primary)]">{value}</p>
+        </div>
+        <div className={`p-3 rounded-[var(--radius-md)] ${bgColors[accentColor]}`}>
+          <Icon className={`w-5 h-5 ${textColors[accentColor]}`} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Quick action button
+function QuickAction({ 
+  href, 
+  icon: Icon, 
+  label 
+}: { 
+  href: string
+  icon: React.ElementType
+  label: string
+}) {
+  return (
+    <Link href={href} className="group">
+      <div className="flex items-center gap-3 p-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-overlay)] transition-all group-hover:border-[var(--accent)]/40 group-hover:bg-[var(--accent-subtle)]">
+        <Icon className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors" />
+        <span className="text-sm font-medium text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">
+          {label}
+        </span>
+      </div>
+    </Link>
+  )
+}
+
+// Appointment card with approve/reject actions
+function AppointmentCard({
+  appointment,
+  onApprove,
+  onReject,
+}: {
+  appointment: Appointment
+  onApprove?: (id: string) => void
+  onReject?: (id: string) => void
+}) {
+  const sessionDate = new Date(appointment.startTime)
+  const now = new Date()
+  const isToday = sessionDate.toDateString() === now.toDateString()
+  const isNow = Math.abs(sessionDate.getTime() - now.getTime()) < 15 * 60 * 1000
+  const isPending = appointment.status === 'pending_approval'
+
+  const statusStyles: Record<string, string> = {
+    pending_approval: 'bg-[var(--warning-muted)] text-[var(--warning)]',
+    confirmed: 'bg-[var(--success-muted)] text-[var(--success)]',
+    completed: 'bg-[var(--accent-muted)] text-[var(--accent)]',
+    cancelled: 'bg-[var(--error-muted)] text-[var(--error)]',
+    scheduled: 'bg-[var(--accent-muted)] text-[var(--accent)]',
+  }
+
+  return (
+    <div className="p-4 transition-colors hover:bg-[var(--surface-overlay)]">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 rounded-[var(--radius-md)] bg-[var(--accent-muted)]">
+              <User className="w-4 h-4 text-[var(--accent)]" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-[var(--text-primary)]">{appointment.clientName}</h3>
+              <p className="text-sm text-[var(--text-muted)]">{appointment.clientEmail}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 text-sm text-[var(--text-secondary)] ml-11">
+            <div className="flex items-center gap-1">
+              <Clock className="w-4 h-4" />
+              {formatters.datetime(sessionDate)}
+            </div>
+            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusStyles[appointment.status] || statusStyles.scheduled}`}>
+              {appointment.status.replace('_', ' ')}
+            </span>
+            {isToday && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent-muted)] text-[var(--accent)]">
+                Today
+              </span>
+            )}
+            {isNow && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--success-muted)] text-[var(--success)] animate-pulse">
+                Starting Soon
+              </span>
+            )}
+          </div>
+
+          {appointment.notes && (
+            <p className="text-sm text-[var(--text-muted)] mt-2 ml-11 line-clamp-2">
+              {appointment.notes}
+            </p>
+          )}
+
+          {/* Approve/Reject buttons for pending appointments */}
+          {isPending && onApprove && onReject && (
+            <div className="flex items-center gap-2 mt-3 ml-11">
+              <Button
+                size="sm"
+                onClick={() => onApprove(appointment.id)}
+                className="bg-[var(--success)] hover:bg-[var(--success)]/90 text-white"
+              >
+                <CheckCircle className="w-4 h-4 mr-1" />
+                Approve
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onReject(appointment.id)}
+                className="border-[var(--error)]/50 text-[var(--error)] hover:bg-[var(--error-muted)]"
+              >
+                <XCircle className="w-4 h-4 mr-1" />
+                Reject
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [sessions, setSessions] = useState<Session[]>([])
+  const [appointments, setAppointments] = useState<Appointment[]>([])
   const [orders, setOrders] = useState<OrderSummary[]>([])
   const [availability, setAvailability] = useState<AvailabilityRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedDate, setSelectedDate] = useState('')
+  const [selectedTime, setSelectedTime] = useState('')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -50,9 +209,8 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        // Add timeout to prevent infinite loading
         const controller = new AbortController()
-        const timeout = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+        const timeout = setTimeout(() => controller.abort(), 10000)
 
         const [aptRes, ordersRes, availabilityRes] = await Promise.all([
           fetch('/api/appointments', { signal: controller.signal }),
@@ -64,7 +222,7 @@ export default function DashboardPage() {
 
         if (aptRes.ok) {
           const data = await aptRes.json()
-          setSessions(data.appointments || [])
+          setAppointments(data.appointments || [])
         }
 
         if (ordersRes.ok) {
@@ -78,260 +236,272 @@ export default function DashboardPage() {
         }
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error)
-        // Don't leave user stuck on loading - show dashboard anyway
       } finally {
         setLoading(false)
       }
     }
 
-    // Fetch data immediately - middleware already verified auth
     fetchData()
-  }, []) // Remove status dependency - just fetch on mount
+  }, [])
 
-  // Show loading only while data is loading, not while session is loading
-  // The middleware already verified auth before we got here
+  const handleApprove = async (id: string) => {
+    try {
+      const res = await fetch('/api/appointments', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: 'confirmed' }),
+      })
+
+      if (res.ok) {
+        setAppointments((prev) =>
+          prev.map((apt) =>
+            apt.id === id ? { ...apt, status: 'confirmed' } : apt
+          )
+        )
+      }
+    } catch (error) {
+      console.error('Error approving appointment:', error)
+    }
+  }
+
+  const handleReject = async (id: string) => {
+    if (!confirm('Are you sure you want to reject this appointment?')) return
+
+    try {
+      const res = await fetch('/api/appointments', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: 'cancelled' }),
+      })
+
+      if (res.ok) {
+        setAppointments((prev) => prev.filter((apt) => apt.id !== id))
+      }
+    } catch (error) {
+      console.error('Error rejecting appointment:', error)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse text-matrix-primary font-mono">Loading...</div>
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[var(--text-muted)] font-mono text-sm">Loading dashboard...</p>
+        </div>
       </div>
     )
   }
 
-  // If unauthenticated, show nothing (redirect will happen)
   if (status === 'unauthenticated') {
     return null
   }
 
-  const upcomingSessions = sessions.filter(s => s.status === 'upcoming' || s.status === 'scheduled' || s.status === 'pending')
+  const pendingAppointments = appointments.filter((a) => a.status === 'pending_approval')
+  const upcomingAppointments = appointments.filter(
+    (a) => a.status === 'confirmed' || a.status === 'scheduled' || a.status === 'upcoming'
+  )
   const now = new Date()
-  const todaySessions = upcomingSessions.filter(s => {
-    const sessionDate = new Date(s.startTime)
-    return sessionDate.toDateString() === now.toDateString()
+  const todayAppointments = appointments.filter((a) => {
+    const aptDate = new Date(a.startTime)
+    return aptDate.toDateString() === now.toDateString()
   })
-
-  const totalBillable = sessions.reduce((acc, s) => acc + (s.billableHours || 0), 0)
+  const totalBillable = appointments.reduce((acc, a) => acc + (a.billableHours || 0), 0)
   const hasAvailability = availability.length > 0
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto space-y-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          Welcome back, {session?.user?.name || 'there'}!
+      <div>
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">
+          Welcome back, {session?.user?.name || 'Admin'}!
         </h1>
-        <p className="text-slate-400">
-          {todaySessions.length > 0
-            ? `You have ${todaySessions.length} session${todaySessions.length > 1 ? 's' : ''} today`
-            : 'No sessions scheduled for today'}
+        <p className="text-[var(--text-secondary)]">
+          {todayAppointments.length > 0
+            ? `You have ${todayAppointments.length} appointment${todayAppointments.length > 1 ? 's' : ''} today`
+            : 'No appointments scheduled for today'}
         </p>
       </div>
 
+      {/* Pending Approval Alert */}
+      {pendingAppointments.length > 0 && (
+        <div className="rounded-[var(--radius-lg)] border border-[var(--warning)]/30 bg-[var(--warning-muted)] p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-full bg-[var(--warning)]/20">
+              <Clock className="w-5 h-5 text-[var(--warning)]" />
+            </div>
+            <div>
+              <p className="font-semibold text-[var(--text-primary)]">
+                {pendingAppointments.length} appointment{pendingAppointments.length > 1 ? 's' : ''} awaiting approval
+              </p>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Review and approve or reject pending bookings below
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-matrix-darker/50 border border-matrix-border/20 rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-slate-400 mb-1">Today</p>
-              <p className="text-2xl font-bold text-white">{todaySessions.length}</p>
-            </div>
-            <div className="p-3 bg-matrix-primary/10 rounded-lg">
-              <Calendar className="w-6 h-6 text-matrix-primary" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-matrix-darker/50 border border-matrix-border/20 rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-slate-400 mb-1">Upcoming</p>
-              <p className="text-2xl font-bold text-white">{upcomingSessions.length}</p>
-            </div>
-            <div className="p-3 bg-blue-500/10 rounded-lg">
-              <Video className="w-6 h-6 text-blue-400" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-matrix-darker/50 border border-matrix-border/20 rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-slate-400 mb-1">Billable Hours</p>
-              <p className="text-2xl font-bold text-white">{totalBillable.toFixed(1)}</p>
-            </div>
-            <div className="p-3 bg-purple-500/10 rounded-lg">
-              <Clock className="w-6 h-6 text-purple-400" />
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Today" value={todayAppointments.length} icon={Calendar} accentColor="accent" />
+        <StatCard label="Pending" value={pendingAppointments.length} icon={Clock} accentColor="warning" />
+        <StatCard label="Upcoming" value={upcomingAppointments.length} icon={Video} accentColor="success" />
+        <StatCard label="Billable Hours" value={totalBillable.toFixed(1)} icon={FileText} accentColor="accent" />
       </div>
 
-      {/* Upcoming Sessions */}
-      <div className="bg-matrix-darker/50 border border-matrix-border/20 rounded-lg">
-        <div className="p-6 border-b border-matrix-border/20">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-white">Upcoming Sessions</h2>
-            <Link href="/app/appointments">
-              <Button variant="outline" size="sm">
-                View All
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        <div className="divide-y divide-matrix-border/10">
-          {loading ? (
-            <div className="p-8 text-center text-slate-400">
-              <div className="animate-pulse">Loading sessions...</div>
-            </div>
-          ) : upcomingSessions.length === 0 ? (
-            <div className="p-8 text-center text-slate-400">
-              No upcoming sessions scheduled
-            </div>
-          ) : (
-            upcomingSessions.slice(0, 5).map((session) => {
-              const sessionDate = new Date(session.startTime)
-              const isToday = sessionDate.toDateString() === now.toDateString()
-              const isNow = Math.abs(sessionDate.getTime() - now.getTime()) < 15 * 60 * 1000 // Within 15 minutes
-
-              return (
-                <div key={session.id} className="p-6 hover:bg-matrix-border/5 transition-colors">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-matrix-primary/10 rounded-lg">
-                          <User className="w-4 h-4 text-matrix-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-white">{session.clientName}</h3>
-                          <p className="text-sm text-slate-400">{session.clientEmail}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-4 text-sm text-slate-400 ml-11">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {formatters.date(sessionDate)}
-                        </div>
-                        {isToday && (
-                          <span className="px-2 py-1 bg-matrix-primary/10 text-matrix-primary text-xs rounded-full">
-                            Today
-                          </span>
-                        )}
-                        {isNow && (
-                          <span className="px-2 py-1 bg-green-500/10 text-green-400 text-xs rounded-full animate-pulse">
-                            Starting Soon
-                          </span>
-                        )}
-                      </div>
-
-                      {session.notes && (
-                        <p className="text-sm text-slate-500 mt-2 ml-11 line-clamp-2">
-                          {session.notes}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="text-right">
-                      <p className="text-xs text-slate-500">{session.status}</p>
-                    </div>
-                  </div>
-                </div>
-              )
-            })
-          )}
-        </div>
-      </div>
-
-      {/* Quick Business Actions */}
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        <div className="bg-matrix-darker/50 border border-matrix-border/20 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h3 className="text-lg font-semibold text-white">Business Actions</h3>
-              <p className="text-slate-400 text-sm">One-tap admin shortcuts</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Link href="/app/appointments">
-              <Button className="w-full" variant="outline">Appointments</Button>
-            </Link>
-            <Link href="/app/appointments#availability">
-              <Button className="w-full" variant="outline">Availability</Button>
-            </Link>
-            <Link href="/app/orders">
-              <Button className="w-full" variant="outline">Orders</Button>
-            </Link>
-            <Link href="/app/contact-messages">
-              <Button className="w-full" variant="outline">Messages</Button>
-            </Link>
-            <Link href="/app/scheduler">
-              <Button className="w-full" variant="outline">Scheduler</Button>
-            </Link>
-            <Link href="/app/billing">
-              <Button className="w-full" variant="outline">Billing</Button>
-            </Link>
-          </div>
-        </div>
-
-        <div className="bg-matrix-darker/50 border border-matrix-border/20 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-semibold text-white">Setup Health</h3>
-          </div>
-          <ul className="space-y-2 text-sm text-slate-300">
-            <li className="flex items-center justify-between">
-              <span>Availability configured</span>
-              <span className={hasAvailability ? 'text-green-400' : 'text-red-400'}>
-                {hasAvailability ? 'OK' : 'Missing'}
-              </span>
-            </li>
-            <li className="flex items-center justify-between">
-              <span>Admin role</span>
-              <span className="text-green-400">Required (enforced)</span>
-            </li>
-            <li className="flex items-center justify-between">
-              <span>Auto consult creation</span>
-              <span className="text-green-400">Enabled</span>
-            </li>
-          </ul>
-          {!hasAvailability && (
-            <div className="mt-3">
-              <Link href="/app/appointments#availability">
-                <Button size="sm" className="w-full">Add availability</Button>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Calendar Column */}
+        <div className="lg:col-span-2">
+          <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
+              <Link href="/app/appointments">
+                <Button variant="outline" size="sm">Manage All</Button>
               </Link>
             </div>
-          )}
+
+            <BookingCalendar
+              availabilitySlots={availability}
+              appointments={appointments}
+              selectedDate={selectedDate}
+              selectedTime={selectedTime}
+              onDateSelect={setSelectedDate}
+              onTimeSelect={setSelectedTime}
+              monthsToShow={2}
+              showTimeSlots={true}
+              adminMode={true}
+              onAppointmentClick={(apt) => {
+                // Could open a modal or navigate to detail page
+                console.log('Clicked appointment:', apt)
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Sidebar Column */}
+        <div className="space-y-6">
+          {/* Quick Actions */}
+          <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-5">
+            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Quick Actions</h3>
+            <div className="space-y-2">
+              <QuickAction href="/app/appointments" icon={Calendar} label="Appointments" />
+              <QuickAction href="/app/orders" icon={ShoppingCart} label="Orders" />
+              <QuickAction href="/app/contact-messages" icon={MessageSquare} label="Messages" />
+              <QuickAction href="/app/settings" icon={Settings} label="Settings" />
+            </div>
+          </div>
+
+          {/* Setup Health */}
+          <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-5">
+            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Setup Health</h3>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-center justify-between">
+                <span className="text-[var(--text-secondary)]">Availability</span>
+                <span className={hasAvailability ? 'text-[var(--success)]' : 'text-[var(--error)]'}>
+                  {hasAvailability ? '✓ Configured' : '✗ Missing'}
+                </span>
+              </li>
+              <li className="flex items-center justify-between">
+                <span className="text-[var(--text-secondary)]">Admin Role</span>
+                <span className="text-[var(--success)]">✓ Active</span>
+              </li>
+              <li className="flex items-center justify-between">
+                <span className="text-[var(--text-secondary)]">Auto Booking</span>
+                <span className="text-[var(--success)]">✓ Enabled</span>
+              </li>
+            </ul>
+            {!hasAvailability && (
+              <Link href="/app/appointments#availability" className="block mt-4">
+                <Button size="sm" className="w-full">Add Availability</Button>
+              </Link>
+            )}
+          </div>
+
+          {/* Recent Orders */}
+          <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)]">
+            <div className="p-5 border-b border-[var(--border-default)]">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">Recent Orders</h3>
+                <Link href="/app/orders">
+                  <Button variant="outline" size="sm">View All</Button>
+                </Link>
+              </div>
+            </div>
+            <div className="divide-y divide-[var(--border-subtle)]">
+              {orders.length === 0 ? (
+                <div className="p-5 text-center text-[var(--text-muted)]">No orders yet</div>
+              ) : (
+                orders.slice(0, 3).map((order) => (
+                  <div key={order.id} className="p-4 flex items-center justify-between">
+                    <div>
+                      <p className="font-mono text-sm text-[var(--text-primary)]">{order.id.slice(0, 8)}...</p>
+                      <p className="text-xs text-[var(--text-muted)]">
+                        {formatters.timeago(order.createdAt)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-[var(--text-primary)]">
+                        {formatters.currency(order.total / 100)}
+                      </p>
+                      <p className="text-xs text-[var(--text-muted)] capitalize">{order.status}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Recent Orders */}
-      <div className="mt-8 bg-matrix-darker/50 border border-matrix-border/20 rounded-lg">
-        <div className="p-6 border-b border-matrix-border/20 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-white">Recent Orders</h2>
-            <p className="text-slate-400 text-sm">Paid consultations and purchases</p>
+      {/* Pending Appointments Section */}
+      {pendingAppointments.length > 0 && (
+        <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)]">
+          <div className="p-6 border-b border-[var(--border-default)]">
+            <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              Pending Approval ({pendingAppointments.length})
+            </h2>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
+              These bookings need your review
+            </p>
           </div>
-          <Link href="/app/orders">
-            <Button variant="outline" size="sm">View all</Button>
-          </Link>
+          <div className="divide-y divide-[var(--border-subtle)]">
+            {pendingAppointments.map((apt) => (
+              <AppointmentCard
+                key={apt.id}
+                appointment={apt}
+                onApprove={handleApprove}
+                onReject={handleReject}
+              />
+            ))}
+          </div>
         </div>
-        <div className="divide-y divide-matrix-border/10">
-          {orders.length === 0 ? (
-            <div className="p-6 text-slate-400">No orders yet</div>
+      )}
+
+      {/* Upcoming Appointments Section */}
+      <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)]">
+        <div className="p-6 border-b border-[var(--border-default)]">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-[var(--text-primary)]">Upcoming Appointments</h2>
+              <p className="text-sm text-[var(--text-secondary)] mt-1">
+                Confirmed sessions
+              </p>
+            </div>
+            <Link href="/app/appointments">
+              <Button variant="outline" size="sm">View All</Button>
+            </Link>
+          </div>
+        </div>
+        <div className="divide-y divide-[var(--border-subtle)]">
+          {upcomingAppointments.length === 0 ? (
+            <div className="p-8 text-center text-[var(--text-muted)]">
+              No upcoming appointments scheduled
+            </div>
           ) : (
-            orders.map((order) => (
-              <div key={order.id} className="p-6 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-white">{order.id}</p>
-                  <p className="text-sm text-slate-400">
-                    {order.createdAt ? new Date(order.createdAt).toLocaleString() : ''}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold text-white">${(order.total / 100).toFixed(2)}</p>
-                  <p className="text-xs text-slate-500 uppercase">{order.status}</p>
-                </div>
-              </div>
+            upcomingAppointments.slice(0, 5).map((apt) => (
+              <AppointmentCard key={apt.id} appointment={apt} />
             ))
           )}
         </div>

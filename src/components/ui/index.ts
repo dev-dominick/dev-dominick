@@ -40,3 +40,6 @@ export {
 
 export { ToastProvider, useToast } from "./toast";
 export type { ToastType, ToastMessage } from "./toast";
+
+export { BookingCalendar } from "./calendar";
+export type { default as BookingCalendarProps } from "./calendar";
