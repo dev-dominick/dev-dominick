@@ -14,7 +14,21 @@ const prisma = new PrismaClient()
 async function seedAdminUser() {
   const email = process.env.ADMIN_EMAIL || 'domalbano35@gmail.com'
   const role = 'admin'
-  const plain = process.env.ADMIN_PASSWORD || 'admin12345!'
+  
+  // SECURITY: Require ADMIN_PASSWORD env var - no default fallback
+  const plain = process.env.ADMIN_PASSWORD
+  if (!plain) {
+    throw new Error(
+      'ADMIN_PASSWORD environment variable is required.\n' +
+      'Set it in .env.local: ADMIN_PASSWORD=your-secure-password-here\n' +
+      'Use a strong password with at least 12 characters.'
+    )
+  }
+  
+  if (plain.length < 12) {
+    throw new Error('ADMIN_PASSWORD must be at least 12 characters long')
+  }
+  
   const password = await bcrypt.hash(plain, 12)
 
   const user = await prisma.user.upsert({
@@ -24,7 +38,7 @@ async function seedAdminUser() {
     select: { id: true, email: true, role: true },
   })
 
-  return { user, passwordSet: !!process.env.ADMIN_PASSWORD }
+  return { user }
 }
 
 async function seedAvailability() {
@@ -90,15 +104,11 @@ async function seedProducts() {
 
 async function main() {
   console.log('🌱 Seeding database...')
-  const { user, passwordSet } = await seedAdminUser()
+  const { user } = await seedAdminUser()
   const availability = await seedAvailability()
   const products = await seedProducts()
 
   console.log('✅ Admin user:', user)
-  if (!passwordSet) {
-    console.log('ℹ️ Admin password set to default: "admin12345!" (change after first login)')
-  }
-
   console.log('✅ Availability windows:', availability.map(a => ({ dow: a.dayOfWeek, start: a.startTime, end: a.endTime })))
   console.log('✅ Products:', products.map(p => ({ id: p.id, name: p.name, price: p.price })))
 

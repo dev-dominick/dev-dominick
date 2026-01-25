@@ -408,13 +408,14 @@ export default function AdminAppointmentsPage() {
 
               <div className="grid md:grid-cols-2 gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  <label htmlFor="dayOfWeek" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                     Day of Week
                   </label>
                   <select
+                    id="dayOfWeek"
                     value={formData.dayOfWeek}
                     onChange={e => setFormData({ ...formData, dayOfWeek: Number(e.target.value) })}
-                    title="Select day of week"
+                    aria-label="Select day of week"
                     className="w-full h-10 px-3 rounded-md border border-[var(--border-default)] bg-[var(--surface-overlay)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   >
                     {DAYS.map((day, i) => (
@@ -426,13 +427,14 @@ export default function AdminAppointmentsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  <label htmlFor="timezone" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                     Timezone
                   </label>
                   <select
+                    id="timezone"
                     value={formData.timezone}
                     onChange={e => setFormData({ ...formData, timezone: e.target.value })}
-                    title="Select timezone"
+                    aria-label="Select timezone"
                     className="w-full h-10 px-3 rounded-md border border-[var(--border-default)] bg-[var(--surface-overlay)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   >
                     <option value="UTC">UTC</option>
@@ -444,12 +446,12 @@ export default function AdminAppointmentsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  <label htmlFor="startTime" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                     Start Time
                   </label>
                   <input
                     type="time"
-                    placeholder="Start Time"
+                    id="startTime"
                     value={formData.startTime}
                     onChange={e => setFormData({ ...formData, startTime: e.target.value })}
                     className="w-full h-10 px-3 rounded-md border border-[var(--border-default)] bg-[var(--surface-overlay)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
@@ -457,12 +459,12 @@ export default function AdminAppointmentsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  <label htmlFor="endTime" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                     End Time
                   </label>
                   <input
                     type="time"
-                    placeholder="End Time"
+                    id="endTime"
                     value={formData.endTime}
                     onChange={e => setFormData({ ...formData, endTime: e.target.value })}
                     className="w-full h-10 px-3 rounded-md border border-[var(--border-default)] bg-[var(--surface-overlay)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"

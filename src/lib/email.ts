@@ -16,6 +16,28 @@ function getResend(): Resend {
   return resendInstance
 }
 
+/**
+ * Escape HTML special characters to prevent XSS in email templates
+ * SECURITY: Always use this for user-provided content in emails
+ */
+export function escapeHtml(str: string): string {
+  if (!str) return ''
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+/**
+ * Escape HTML and convert newlines to <br> tags
+ * Use for multi-line user content like notes and messages
+ */
+export function escapeHtmlWithLineBreaks(str: string): string {
+  return escapeHtml(str).replace(/\n/g, '<br>')
+}
+
 interface EmailOptions {
   to: string
   subject: string
@@ -138,7 +160,7 @@ export function appointmentConfirmationEmail({
               <span style="color: #00ff41; font-size: 18px; margin-right: 12px;">📝</span>
               <div>
                 <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Your Notes</p>
-                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${notes}</p>
+                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${escapeHtmlWithLineBreaks(notes || '')}</p>
               </div>
             </div>
             ` : ''}
@@ -313,7 +335,7 @@ export function orderConfirmationEmail({
         <!-- Content -->
         <div style="padding: 30px;">
           <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.6;">
-            Hey ${customerName},<br><br>
+            Hey ${escapeHtml(customerName)},<br><br>
             Thanks for your purchase! Here's your order summary:
           </p>
           
@@ -411,14 +433,14 @@ export function contactReplyEmail({
         <!-- Content -->
         <div style="padding: 30px;">
           <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.6;">
-            Hey ${senderName},<br><br>
+            Hey ${escapeHtml(senderName)},<br><br>
             Thanks for reaching out! I've received your message and will get back to you as soon as possible.
           </p>
           
           <!-- Message Quote -->
           <div style="background: #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 25px; border-left: 3px solid #00ff41;">
             <p style="margin: 0 0 8px 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Your Message</p>
-            <p style="margin: 0; color: #ccc; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+            <p style="margin: 0; color: #ccc; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${escapeHtmlWithLineBreaks(message)}</p>
           </div>
           
           <!-- Response Time -->
@@ -519,14 +541,14 @@ export function appointmentAdminNotificationEmail({
               <span style="color: #fbbf24; font-size: 18px; margin-right: 12px;">👤</span>
               <div>
                 <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Client</p>
-                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${clientName}</p>
+                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${escapeHtml(clientName)}</p>
               </div>
             </div>
             <div style="display: flex; margin-bottom: 15px;">
               <span style="color: #fbbf24; font-size: 18px; margin-right: 12px;">📧</span>
               <div>
                 <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Email</p>
-                <a href="mailto:${clientEmail}" style="margin: 4px 0 0 0; color: #00ff41; font-size: 15px; text-decoration: none;">${clientEmail}</a>
+                <a href="mailto:${escapeHtml(clientEmail)}" style="margin: 4px 0 0 0; color: #00ff41; font-size: 15px; text-decoration: none;">${escapeHtml(clientEmail)}</a>
               </div>
             </div>
             <div style="display: flex; margin-bottom: 15px;">
@@ -548,7 +570,7 @@ export function appointmentAdminNotificationEmail({
               <span style="color: #fbbf24; font-size: 18px; margin-right: 12px;">📝</span>
               <div>
                 <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Notes</p>
-                <p style="margin: 4px 0 0 0; color: #ccc; font-size: 14px; line-height: 1.5;">${notes}</p>
+                <p style="margin: 4px 0 0 0; color: #ccc; font-size: 14px; line-height: 1.5;">${escapeHtmlWithLineBreaks(notes)}</p>
               </div>
             </div>
             ` : ''}
@@ -637,7 +659,7 @@ export function appointmentApprovedEmail({
         <!-- Content -->
         <div style="padding: 30px;">
           <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.6;">
-            Hey ${clientName},<br><br>
+            Hey ${escapeHtml(clientName)},<br><br>
             Great news! Your consultation has been approved. Here's everything you need to join:
           </p>
           
@@ -751,7 +773,7 @@ export function appointmentRejectedEmail({
         <!-- Content -->
         <div style="padding: 30px;">
           <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.6;">
-            Hey ${clientName},<br><br>
+            Hey ${escapeHtml(clientName)},<br><br>
             Unfortunately, I'm unable to accommodate your consultation request for this time slot.
           </p>
           
@@ -770,7 +792,7 @@ export function appointmentRejectedEmail({
           <!-- Reason -->
           <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; padding: 16px; margin-bottom: 25px;">
             <p style="margin: 0; color: #ef4444; font-size: 13px; font-weight: 500;">Reason</p>
-            <p style="margin: 8px 0 0 0; color: #ccc; font-size: 14px; line-height: 1.5;">${reason}</p>
+            <p style="margin: 8px 0 0 0; color: #ccc; font-size: 14px; line-height: 1.5;">${escapeHtml(reason)}</p>
           </div>
           ` : ''}
 
@@ -789,6 +811,86 @@ export function appointmentRejectedEmail({
           <!-- Help Text -->
           <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.6; text-align: center;">
             Or just reply to this email and we'll find a time that works.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="text-align: center; padding: 30px 20px;">
+        <p style="margin: 0 0 10px 0; color: #444; font-size: 12px;">
+          <a href="${baseUrl}" style="color: #00ff41; text-decoration: none;">dev-dominick.com</a>
+        </p>
+        <p style="margin: 0; color: #333; font-size: 11px;">
+          © ${new Date().getFullYear()} Dominick. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
+  `
+}
+
+export function emailVerificationEmail({
+  verificationUrl,
+}: {
+  verificationUrl: string
+}) {
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://dev-dominick.com'
+
+  return `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background-color: #0a0a0a;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+      
+      <!-- Logo/Brand -->
+      <div style="text-align: center; margin-bottom: 30px;">
+        <span style="font-size: 24px; font-weight: 700; color: #00ff41; letter-spacing: -0.5px;">dev-dominick</span>
+      </div>
+      
+      <!-- Main Card -->
+      <div style="background: linear-gradient(180deg, #111111 0%, #0d0d0d 100%); border: 1px solid #222; border-radius: 16px; overflow: hidden;">
+        
+        <!-- Header -->
+        <div style="padding: 30px; text-align: center; border-bottom: 1px solid #222;">
+          <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #ffffff;">
+            Verify Your Email ✉️
+          </h1>
+        </div>
+        
+        <!-- Content -->
+        <div style="padding: 30px;">
+          <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.6;">
+            Thanks for signing up! Please verify your email address to complete your account setup.
+          </p>
+          
+          <!-- CTA Button -->
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${verificationUrl}" style="display: inline-block; background: #00ff41; color: #000; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+              Verify Email →
+            </a>
+          </div>
+          
+          <!-- Link fallback -->
+          <p style="color: #666; font-size: 13px; margin: 25px 0 0 0; line-height: 1.6; text-align: center;">
+            Or copy and paste this link:<br>
+            <code style="background: #1a1a1a; padding: 8px 12px; border-radius: 4px; color: #888; font-size: 11px; display: inline-block; margin-top: 8px; word-break: break-all;">${verificationUrl}</code>
+          </p>
+          
+          <!-- Expiry notice -->
+          <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 10px; padding: 16px; margin-top: 25px; text-align: center;">
+            <p style="margin: 0; color: #fbbf24; font-size: 13px;">
+              ⏰ This link expires in 24 hours
+            </p>
+          </div>
+          
+          <!-- Security note -->
+          <p style="color: #666; font-size: 12px; margin: 25px 0 0 0; line-height: 1.5; text-align: center;">
+            If you didn't create an account, you can safely ignore this email.
           </p>
         </div>
       </div>

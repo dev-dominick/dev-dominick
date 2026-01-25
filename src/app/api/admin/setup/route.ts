@@ -1,9 +1,18 @@
 import { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
+import { getClientIp } from "@/lib/request-utils";
+
+// Allowed IPs for setup endpoint (add your IPs here)
+const ALLOWED_IPS = process.env.ADMIN_SETUP_ALLOWED_IPS?.split(",").map((ip) => ip.trim()) || [];
 
 /**
- * TEMPORARY SETUP ENDPOINT - DELETE AFTER USE
+ * ADMIN SETUP ENDPOINT - SECURED
+ * 
+ * Requires:
+ * 1. ADMIN_SETUP_SECRET environment variable
+ * 2. Admin authentication OR IP whitelist
  * 
  * POST /api/admin/setup?action=cleanup - Delete all test appointments
  * POST /api/admin/setup?action=promote&email=xxx - Promote user to admin-main
@@ -14,12 +23,36 @@ export async function POST(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const action = searchParams.get("action");
     const email = searchParams.get("email");
-
-    // Simple secret check - use a query param for basic protection
     const secret = searchParams.get("secret");
-    if (secret !== "temp-setup-2026") {
+
+    // SECURITY: Require env-based secret (fail-closed)
+    const setupSecret = process.env.ADMIN_SETUP_SECRET;
+    if (!setupSecret) {
+      console.error("ADMIN_SETUP_SECRET not configured - endpoint disabled");
+      return apiError("Setup endpoint disabled", 503);
+    }
+
+    if (secret !== setupSecret) {
       return apiError("Unauthorized", 401);
     }
+
+    // Additional security layer: require admin auth OR whitelisted IP
+    const clientIp = getClientIp(request);
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    
+    const isAdmin = token && (token.role === "admin" || token.role === "admin-main");
+    const isWhitelistedIp = ALLOWED_IPS.length > 0 && ALLOWED_IPS.includes(clientIp);
+    
+    if (!isAdmin && !isWhitelistedIp) {
+      console.warn(`Setup endpoint access denied for IP: ${clientIp}`);
+      return apiError("Unauthorized - admin access or whitelisted IP required", 403);
+    }
+
+    // Log all setup actions for audit trail
+    console.log(`[ADMIN SETUP] Action: ${action}, IP: ${clientIp}, User: ${token?.email || "none"}`);
 
     switch (action) {
       case "cleanup": {
@@ -71,6 +104,5 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error("Setup error:", error);
-    return apiError(`Setup failed: ${error instanceof Error ? error.message : "Unknown error"}`, 500);
-  }
+    return apiError("Setup failed", 500);
 }

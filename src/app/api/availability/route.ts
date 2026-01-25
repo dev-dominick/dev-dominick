@@ -1,6 +1,23 @@
 import { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiError } from '@/lib/api-response'
+
+/**
+ * Helper to check if request is from admin
+ */
+async function requireAdmin(request: NextRequest) {
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  })
+  
+  if (!token || (token.role !== 'admin' && token.role !== 'admin-main')) {
+    return null
+  }
+  
+  return token
+}
 
 export async function GET() {
   try {
@@ -17,6 +34,12 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Require admin auth for creating availability
+    const admin = await requireAdmin(request)
+    if (!admin) {
+      return apiError('Unauthorized - admin access required', 401)
+    }
+
     const body = await request.json()
     const { dayOfWeek, startTime, endTime, timezone } = body
 
@@ -43,6 +66,12 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // SECURITY: Require admin auth for deleting availability
+    const admin = await requireAdmin(request)
+    if (!admin) {
+      return apiError('Unauthorized - admin access required', 401)
+    }
+
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 

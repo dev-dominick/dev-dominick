@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 import { prisma } from '@/lib/prisma'
 import { generalRateLimiter } from '@/lib/rate-limit'
 import { getClientIp } from '@/lib/request-utils'
@@ -9,6 +10,19 @@ async function findNextAvailableSlot(durationMinutes = 60) {
   if (!availability.length) return null;
 
   const start = new Date();
+  // Pre-fetch all appointments in the date range to avoid N+1 queries
+  const endDate = new Date(start);
+  endDate.setDate(start.getDate() + 14);
+  
+  const existingAppointments = await prisma.appointment.findMany({
+    where: {
+      startTime: { gte: start },
+      endTime: { lte: endDate },
+      status: { in: ['scheduled', 'confirmed', 'pending'] },
+    },
+    select: { startTime: true, endTime: true },
+  });
+
   for (let day = 0; day < 14; day++) {
     const date = new Date(start);
     date.setDate(start.getDate() + day);
@@ -32,14 +46,10 @@ async function findNextAvailableSlot(durationMinutes = 60) {
         const slotEnd = new Date(slotStart.getTime() + durationMinutes * 60 * 1000);
         if (slotEnd > windowEnd) break;
 
-        const conflict = await prisma.appointment.findFirst({
-          where: {
-            startTime: { lt: slotEnd },
-            endTime: { gt: slotStart },
-            status: { in: ['scheduled', 'confirmed', 'pending'] },
-          },
-          select: { id: true },
-        });
+        // Check conflict in-memory instead of querying DB
+        const conflict = existingAppointments.some(
+          (apt) => apt.startTime < slotEnd && apt.endTime > slotStart
+        );
 
         if (!conflict) {
           return { startTime: slotStart, endTime: slotEnd };
@@ -55,10 +65,21 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const email = searchParams.get('email')
-    const limit = parseInt(searchParams.get('limit') || '50')
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100) // Cap at 100
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    const where: any = {}
+    // SECURITY: Require admin auth for querying orders
+    // Users should only see their own orders through /api/me/orders
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    })
+
+    if (!token || (token.role !== 'admin' && token.role !== 'admin-main')) {
+      return apiError('Unauthorized - admin access required', 401)
+    }
+
+    const where: Record<string, unknown> = {}
     if (email) {
       where.customerEmail = email
     }
