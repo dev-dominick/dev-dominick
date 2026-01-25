@@ -50,11 +50,17 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        // Add timeout to prevent infinite loading
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+
         const [aptRes, ordersRes, availabilityRes] = await Promise.all([
-          fetch('/api/appointments'),
-          fetch('/api/orders?limit=5'),
-          fetch('/api/availability'),
+          fetch('/api/appointments', { signal: controller.signal }),
+          fetch('/api/orders?limit=5', { signal: controller.signal }),
+          fetch('/api/availability', { signal: controller.signal }),
         ])
+
+        clearTimeout(timeout)
 
         if (aptRes.ok) {
           const data = await aptRes.json()
@@ -71,18 +77,16 @@ export default function DashboardPage() {
           setAvailability(data.availability || [])
         }
       } catch (error) {
-        console.error('Failed to fetch sessions:', error)
+        console.error('Failed to fetch dashboard data:', error)
+        // Don't leave user stuck on loading - show dashboard anyway
       } finally {
         setLoading(false)
       }
     }
 
-    // Fetch data when authenticated OR when status is loading but we've waited long enough
-    // The middleware already verified auth, so we can proceed
-    if (status === 'authenticated' || status === 'loading') {
-      fetchData()
-    }
-  }, [status])
+    // Fetch data immediately - middleware already verified auth
+    fetchData()
+  }, []) // Remove status dependency - just fetch on mount
 
   // Show loading only while data is loading, not while session is loading
   // The middleware already verified auth before we got here
