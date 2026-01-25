@@ -8,8 +8,8 @@ export { CardHeader, CardTitle, CardDescription, CardContent } from "./Card";
 export { Input, InputWithIcon, Calendar, PasswordStrength, Textarea } from "./Input";
 export type { InputProps, TextareaProps } from "./Input";
 
-export { Modal } from "./modal";
-export type { ModalProps } from "./modal";
+export { Modal, ConfirmModal } from "./modal";
+export type { ModalProps, ConfirmModalProps } from "./modal";
 
 export { Alert, ConfirmDialog } from "./alert";
 export type { AlertProps, ConfirmDialogProps } from "./alert";

@@ -8,7 +8,7 @@ import {
   Calendar, Video, Clock, User, CheckCircle, XCircle,
   MessageSquare, ShoppingCart, Settings, FileText
 } from 'lucide-react'
-import { Button, BookingCalendar } from '@/components/ui'
+import { Button, BookingCalendar, ConfirmModal } from '@/components/ui'
 import { formatters } from '@/lib/formatters'
 
 interface Appointment {
@@ -199,6 +199,10 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
+  const [rejectModal, setRejectModal] = useState<{ open: boolean; appointmentId: string | null }>({
+    open: false,
+    appointmentId: null,
+  })
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -265,8 +269,6 @@ export default function DashboardPage() {
   }
 
   const handleReject = async (id: string) => {
-    if (!confirm('Are you sure you want to reject this appointment?')) return
-
     try {
       const res = await fetch('/api/appointments', {
         method: 'PATCH',
@@ -472,7 +474,7 @@ export default function DashboardPage() {
                 key={apt.id}
                 appointment={apt}
                 onApprove={handleApprove}
-                onReject={handleReject}
+                onReject={(id) => setRejectModal({ open: true, appointmentId: id })}
               />
             ))}
           </div>
@@ -506,6 +508,22 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Reject Confirmation Modal */}
+      <ConfirmModal
+        open={rejectModal.open}
+        onOpenChange={(open) => setRejectModal({ open, appointmentId: open ? rejectModal.appointmentId : null })}
+        title="Reject Appointment"
+        description="Are you sure you want to reject this appointment? This will cancel the booking and notify the client."
+        confirmLabel="Reject"
+        cancelLabel="Keep"
+        variant="danger"
+        onConfirm={() => {
+          if (rejectModal.appointmentId) {
+            handleReject(rejectModal.appointmentId)
+          }
+        }}
+      />
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Calendar, Clock, CheckCircle, XCircle, AlertCircle, Trash2, Plus, User } from 'lucide-react'
-import { Button, Input, Textarea } from '@/components/ui'
+import { Button, Input, Textarea, ConfirmModal } from '@/components/ui'
 import { formatters } from '@/lib/formatters'
 
 interface Appointment {
@@ -60,6 +60,10 @@ export default function AdminAppointmentsPage() {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<'appointments' | 'availability'>('appointments')
   const [showAddAvailability, setShowAddAvailability] = useState(false)
+  const [rejectModal, setRejectModal] = useState<{ open: boolean; appointmentId: string | null }>({
+    open: false,
+    appointmentId: null,
+  })
   const [formData, setFormData] = useState({
     dayOfWeek: 1,
     startTime: '09:00',
@@ -174,8 +178,6 @@ export default function AdminAppointmentsPage() {
   }
 
   const handleRejectAppointment = async (appointmentId: string) => {
-    if (!confirm('Are you sure? This will cancel the appointment.')) return
-
     try {
       const res = await fetch('/api/appointments', {
         method: 'PATCH',
@@ -312,7 +314,7 @@ export default function AdminAppointmentsPage() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => handleRejectAppointment(apt.id)}
+                              onClick={() => setRejectModal({ open: true, appointmentId: apt.id })}
                               className="text-[var(--error)] hover:bg-[var(--error-muted)]"
                             >
                               <XCircle className="w-4 h-4 mr-1" />
@@ -517,6 +519,22 @@ export default function AdminAppointmentsPage() {
           )}
         </div>
       )}
+
+      {/* Reject Confirmation Modal */}
+      <ConfirmModal
+        open={rejectModal.open}
+        onOpenChange={(open) => setRejectModal({ open, appointmentId: open ? rejectModal.appointmentId : null })}
+        title="Reject Appointment"
+        description="Are you sure you want to reject this appointment? This will cancel the booking and notify the client."
+        confirmLabel="Reject"
+        cancelLabel="Keep"
+        variant="danger"
+        onConfirm={() => {
+          if (rejectModal.appointmentId) {
+            handleRejectAppointment(rejectModal.appointmentId)
+          }
+        }}
+      />
     </div>
   )
 }
