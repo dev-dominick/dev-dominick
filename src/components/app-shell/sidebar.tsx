@@ -71,18 +71,18 @@ export function Sidebar({ isAdmin = false, isOpen = false, onClose }: SidebarPro
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-slate-950 text-slate-100 border-r border-slate-800">
+    <div className="flex flex-col h-full bg-[var(--surface-base)] text-[var(--text-primary)] border-r border-[var(--border-default)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-3 border-b border-slate-800">
+      <div className="flex items-center justify-between px-3 py-3 border-b border-[var(--border-default)]">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-sm font-semibold">
+          <div className="w-9 h-9 rounded-lg bg-[var(--accent)] flex items-center justify-center text-sm font-semibold text-[var(--surface-base)]">
             CC
           </div>
-          {!collapsed && <span className="text-sm font-semibold text-white">App Workspace</span>}
+          {!collapsed && <span className="text-sm font-semibold text-[var(--text-primary)]">App Workspace</span>}
         </div>
         <button
           onClick={toggleCollapse}
-          className="hidden lg:inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-800 text-slate-300"
+          className="hidden lg:inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-[var(--surface-overlay)] text-[var(--text-secondary)]"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -94,7 +94,7 @@ export function Sidebar({ isAdmin = false, isOpen = false, onClose }: SidebarPro
         {visibleSections.map((section) => (
           <div key={section.title}>
             {!collapsed && (
-              <h3 className="px-3 mb-2 text-[11px] uppercase tracking-wide text-slate-500 font-semibold">
+              <h3 className="px-3 mb-2 text-[11px] uppercase tracking-wide text-[var(--text-muted)] font-semibold">
                 {section.title}
               </h3>
             )}
@@ -111,8 +111,8 @@ export function Sidebar({ isAdmin = false, isOpen = false, onClose }: SidebarPro
                         group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium
                         transition-all duration-150
                         ${isActive
-                          ? "bg-blue-600/15 border border-blue-600/40 text-blue-100"
-                          : "text-slate-300 hover:text-white hover:bg-slate-800/80 border border-transparent"
+                          ? "bg-[var(--accent-muted)] border border-[var(--accent)]/40 text-[var(--accent)]"
+                          : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-overlay)] border border-transparent"
                         }
                         ${collapsed ? "justify-center" : ""}
                       `}
@@ -122,7 +122,7 @@ export function Sidebar({ isAdmin = false, isOpen = false, onClose }: SidebarPro
                       {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
                       {!collapsed && item.badge && (
                         <span
-                          className="px-2 py-0.5 text-[11px] rounded-full bg-slate-800 text-slate-200 border border-slate-700"
+                          className="px-2 py-0.5 text-[11px] rounded-full bg-[var(--surface-overlay)] text-[var(--text-secondary)] border border-[var(--border-subtle)]"
                         >
                           {item.badge}
                         </span>
@@ -165,18 +165,18 @@ export function Sidebar({ isAdmin = false, isOpen = false, onClose }: SidebarPro
         {/* Drawer panel */}
         <div
           className={`
-            fixed left-0 top-0 h-screen w-64 bg-slate-950
+            fixed left-0 top-0 h-screen w-64 bg-[var(--surface-base)]
             transition-transform duration-300
             ${isOpen ? "translate-x-0" : "-translate-x-full"}
           `}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Mobile header */}
-          <div className="flex items-center justify-between px-4 py-4 border-b border-slate-800">
-            <h2 className="text-lg font-semibold">Navigation</h2>
+          <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--border-default)]">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">Navigation</h2>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-slate-800 rounded-lg transition-colors"
+              className="p-1 hover:bg-[var(--surface-overlay)] rounded-lg transition-colors text-[var(--text-secondary)]"
               aria-label="Close menu"
             >
               <X className="w-5 h-5" />

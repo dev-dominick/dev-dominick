@@ -19,7 +19,7 @@ export function AppShellClient({ children, userEmail, userRole = "user" }: AppSh
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-[var(--surface-sunken)]">
       <Topbar onMenuClick={() => setIsSidebarOpen(true)} isAdmin={userRole === "admin"} userEmail={userEmail} />
 
       <div className="flex h-[calc(100vh-56px)]" style={{ paddingLeft: "var(--app-sidebar-width, 0px)" }}>
