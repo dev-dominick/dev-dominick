@@ -62,11 +62,25 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. Auth routes - allow if logged out; redirect to /app if logged in
+  // 2. Auth routes - allow if logged out; redirect to intended destination if logged in
   if (isAuthRoute(pathname)) {
     if (isAuthenticated) {
       const url = request.nextUrl.clone();
-      url.pathname = "/app";
+      // Respect the 'next' param if present, otherwise default to /app
+      const nextParam = request.nextUrl.searchParams.get('next');
+      // Validate: must start with /, must not be a login route (prevent loops)
+      const isValidNext = nextParam && 
+        nextParam.startsWith('/') && 
+        !nextParam.startsWith('/login') &&
+        !nextParam.startsWith('/signup');
+      url.pathname = isValidNext ? nextParam.split('?')[0] : '/app';
+      // Preserve query string from next param if present
+      if (isValidNext && nextParam.includes('?')) {
+        const queryPart = nextParam.split('?')[1];
+        url.search = queryPart ? `?${queryPart}` : '';
+      } else {
+        url.search = '';
+      }
       return NextResponse.redirect(url);
     }
     return NextResponse.next();

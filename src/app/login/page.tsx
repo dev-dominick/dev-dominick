@@ -20,14 +20,21 @@ export default function LoginPage() {
     const searchParams = useSearchParams()
     const { status } = useSession()
 
-    // Fix default redirect from /dashboard to /app
+    // Compute safe redirect destination
     const nextParam = searchParams.get('next')
-    const next = nextParam && nextParam.startsWith('/') ? nextParam : '/app'
+    // Validate: must start with /, must not be login route (prevent loops)
+    const isValidNext = nextParam && 
+        nextParam.startsWith('/') && 
+        !nextParam.startsWith('/login') &&
+        !nextParam.startsWith('/signup')
+    const next = isValidNext ? nextParam : '/app'
 
     // Redirect if already authenticated
+    // Use replace to prevent back-button returning to login
     useEffect(() => {
         if (status === 'authenticated') {
-            router.push(next)
+            // Middleware should handle this, but as fallback use replace
+            router.replace(next)
         }
     }, [status, router, next])
 
@@ -63,8 +70,8 @@ export default function LoginPage() {
             } else if (result?.ok) {
                 toast.success('Welcome back!')
                 // Keep loading state true during redirect to prevent flashing
-                // Use hard redirect to ensure session cookie is properly sent
-                window.location.href = next
+                // Use replace to prevent back-button returning to login
+                window.location.replace(next)
                 // Don't setLoading(false) - we're navigating away
                 return
             } else {

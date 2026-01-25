@@ -124,6 +124,22 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Allow relative URLs
+      if (url.startsWith('/')) {
+        // Prevent redirect loops to login/signup
+        if (url.startsWith('/login') || url.startsWith('/signup')) {
+          return `${baseUrl}/app`;
+        }
+        return `${baseUrl}${url}`;
+      }
+      // Allow same-origin absolute URLs
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+      // Default fallback
+      return `${baseUrl}/app`;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
