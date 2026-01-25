@@ -13,6 +13,13 @@ interface TimeSlot {
     endTime: string
 }
 
+interface BookedAppointment {
+    id: string
+    startTime: string
+    endTime: string
+    status: string
+}
+
 export default function BookingsPage() {
     const searchParams = useSearchParams()
     const consultationType = searchParams.get('type') || 'free'
@@ -20,6 +27,7 @@ export default function BookingsPage() {
     const simpleMode = SIMPLE_CONSULTING_MODE
 
     const [availabilitySlots, setAvailabilitySlots] = useState<TimeSlot[]>([])
+    const [bookedAppointments, setBookedAppointments] = useState<BookedAppointment[]>([])
     const [loading, setLoading] = useState(true)
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -35,23 +43,36 @@ export default function BookingsPage() {
         window.scrollTo(0, 0)
     }, [])
 
-    // Fetch availability on mount
+    // Fetch availability and existing appointments on mount
     useEffect(() => {
-        const fetchAvailability = async () => {
+        const fetchData = async () => {
             try {
-                const res = await fetch('/api/availability')
-                if (!res.ok) throw new Error('Failed to fetch availability')
-                const data = await res.json()
-                setAvailabilitySlots(data.availability || [])
+                const [availRes, aptRes] = await Promise.all([
+                    fetch('/api/availability'),
+                    fetch('/api/appointments')
+                ])
+                
+                if (!availRes.ok) throw new Error('Failed to fetch availability')
+                const availData = await availRes.json()
+                setAvailabilitySlots(availData.availability || [])
+                
+                if (aptRes.ok) {
+                    const aptData = await aptRes.json()
+                    // Only keep pending or confirmed appointments (not cancelled)
+                    const activeApts = (aptData.appointments || []).filter(
+                        (apt: BookedAppointment) => apt.status === 'pending_approval' || apt.status === 'confirmed'
+                    )
+                    setBookedAppointments(activeApts)
+                }
             } catch (err) {
-                console.error('Error fetching availability:', err)
+                console.error('Error fetching data:', err)
                 setError('Could not load available times. Please try again.')
             } finally {
                 setLoading(false)
             }
         }
 
-        fetchAvailability()
+        fetchData()
     }, [])
 
   // Generate calendar for current and next month
@@ -100,12 +121,13 @@ export default function BookingsPage() {
     return months
   }, [])
 
-  // Get available time slots for selected date
+  // Get available time slots for selected date (excluding already-booked slots)
   const timeSlotsForDate = useMemo(() => {
     if (!selectedDate) return []
 
-    const date = new Date(selectedDate)
-    const dayOfWeek = date.getUTCDay()
+    const [year, month, day] = selectedDate.split('-').map(Number)
+    const localDate = new Date(year, month - 1, day)
+    const dayOfWeek = localDate.getDay()
 
     const daySlots = availabilitySlots.filter((slot) => slot.dayOfWeek === dayOfWeek)
 
@@ -129,8 +151,25 @@ export default function BookingsPage() {
       }
     })
 
-    return times
-  }, [selectedDate, availabilitySlots])
+    // Filter out times that overlap with existing booked appointments
+    const availableTimes = times.filter((time) => {
+      const [slotHour, slotMin] = time.split(':').map(Number)
+      const slotStart = new Date(year, month - 1, day, slotHour, slotMin)
+      const slotEnd = new Date(slotStart.getTime() + 30 * 60 * 1000) // 30 min duration
+
+      // Check if this slot overlaps with any booked appointment
+      const isBooked = bookedAppointments.some((apt) => {
+        const aptStart = new Date(apt.startTime)
+        const aptEnd = new Date(apt.endTime)
+        // Overlap check: slot starts before apt ends AND slot ends after apt starts
+        return slotStart < aptEnd && slotEnd > aptStart
+      })
+
+      return !isBooked
+    })
+
+    return availableTimes
+  }, [selectedDate, availabilitySlots, bookedAppointments])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -200,6 +200,11 @@ export function BookingCalendar({
                 const isToday = dayData.date.toDateString() === new Date().toDateString() && dayData.isCurrentMonth
                 const dayAppointments = adminMode ? getAppointmentsForDate(dateStr) : []
                 const hasAppointments = dayAppointments.length > 0
+                
+                // Status-specific counts for colored indicators
+                const hasPending = dayAppointments.some(a => a.status === 'pending_approval')
+                const hasConfirmed = dayAppointments.some(a => a.status === 'confirmed')
+                const hasCompleted = dayAppointments.some(a => a.status === 'completed')
 
                 return (
                   <button
@@ -219,11 +224,21 @@ export function BookingCalendar({
                       ${isSelected ? 'bg-[var(--accent)] text-[var(--surface-base)] font-bold' : ''}
                       ${!dayData.isAvailable && dayData.isCurrentMonth && !adminMode ? 'text-[var(--text-muted)] opacity-50 cursor-not-allowed' : ''}
                       ${isToday && !isSelected ? 'ring-1 ring-[var(--accent)]/50' : ''}
-                      ${hasAppointments && !isSelected ? 'bg-[var(--accent-muted)]' : ''}
+                      ${hasPending && !isSelected ? 'bg-[var(--warning-muted)] ring-1 ring-[var(--warning)]/40' : ''}
+                      ${hasConfirmed && !hasPending && !isSelected ? 'bg-[var(--success-muted)]' : ''}
+                      ${hasCompleted && !hasPending && !hasConfirmed && !isSelected ? 'bg-[var(--accent-muted)]' : ''}
                     `}
                   >
                     {dayData.date.getDate()}
-                    {hasAppointments && (
+                    {/* Status-colored indicators */}
+                    {hasAppointments && adminMode && (
+                      <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
+                        {hasPending && <span className="w-1 h-1 rounded-full bg-[var(--warning)]" />}
+                        {hasConfirmed && <span className="w-1 h-1 rounded-full bg-[var(--success)]" />}
+                        {hasCompleted && <span className="w-1 h-1 rounded-full bg-[var(--accent)]" />}
+                      </span>
+                    )}
+                    {hasAppointments && !adminMode && (
                       <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--accent)]" />
                     )}
                   </button>
