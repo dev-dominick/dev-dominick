@@ -59,18 +59,22 @@ export default function LoginPage() {
             if (result?.error) {
                 console.error('Login error:', result.error)
                 toast.error(result.error || 'Login failed')
+                setLoading(false)
             } else if (result?.ok) {
                 toast.success('Welcome back!')
-                // Use hard redirect to ensure session is properly recognized
+                // Keep loading state true during redirect to prevent flashing
+                // Use hard redirect to ensure session cookie is properly sent
                 window.location.href = next
+                // Don't setLoading(false) - we're navigating away
+                return
             } else {
                 console.warn('Unexpected signIn response:', result)
                 toast.error('Login failed - unexpected response')
+                setLoading(false)
             }
         } catch (err) {
             console.error('Login exception:', err)
             toast.error('An unexpected error occurred')
-        } finally {
             setLoading(false)
         }
     }
@@ -82,10 +86,21 @@ export default function LoginPage() {
         }))
     }
 
-    if (status === 'loading' || status === 'authenticated') {
+    // While loading form submission or already authenticated, show loading state
+    // But don't block forever - only show loading if actively submitting or redirecting
+    if (status === 'authenticated') {
+        // Already authenticated - redirect will happen via useEffect
         return (
             <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
-                <div className="animate-pulse text-primary-400">Loading...</div>
+                <div className="animate-pulse text-primary-400">Redirecting...</div>
+            </div>
+        )
+    }
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
+                <div className="animate-pulse text-primary-400">Signing in...</div>
             </div>
         )
     }
