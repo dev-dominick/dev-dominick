@@ -168,6 +168,7 @@ export default function BookingsPage() {
             }
 
             setSuccess(true)
+            window.scrollTo(0, 0) // Scroll to top to show success message
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred')
         } finally {

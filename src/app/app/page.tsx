@@ -77,17 +77,26 @@ export default function DashboardPage() {
       }
     }
 
-    if (status === 'authenticated') {
+    // Fetch data when authenticated OR when status is loading but we've waited long enough
+    // The middleware already verified auth, so we can proceed
+    if (status === 'authenticated' || status === 'loading') {
       fetchData()
     }
   }, [status])
 
-  if (status === 'loading' || status === 'unauthenticated') {
+  // Show loading only while data is loading, not while session is loading
+  // The middleware already verified auth before we got here
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-pulse text-matrix-primary font-mono">Loading...</div>
       </div>
     )
+  }
+
+  // If unauthenticated, show nothing (redirect will happen)
+  if (status === 'unauthenticated') {
+    return null
   }
 
   const upcomingSessions = sessions.filter(s => s.status === 'upcoming' || s.status === 'scheduled' || s.status === 'pending')
