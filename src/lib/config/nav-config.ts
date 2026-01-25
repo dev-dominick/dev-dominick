@@ -7,6 +7,7 @@ import {
   FileText,
   Settings,
   ShoppingCart,
+  Mail,
 } from "lucide-react";
 
 export interface NavItem {
@@ -68,6 +69,11 @@ export function getNavItemsForUser(isAdmin: boolean = false): NavSection[] {
           href: "/app/invoices",
           label: "Invoices",
           icon: FileText,
+        },
+        {
+          href: "/app/subscribers",
+          label: "Subscribers",
+          icon: Mail,
         },
       ],
     },
