@@ -27,7 +27,7 @@ export async function sendEmail({
   to,
   subject,
   html,
-  from = `noreply@${process.env.NEXT_PUBLIC_APP_DOMAIN || 'dev-dominick.com'}`,
+  from = `Dominick <info@${process.env.NEXT_PUBLIC_APP_DOMAIN || 'dev-dominick.com'}>`,
 }: EmailOptions) {
   try {
     const resend = getResend()
