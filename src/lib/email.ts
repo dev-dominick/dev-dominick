@@ -79,66 +79,110 @@ export function appointmentConfirmationEmail({
     timeZoneName: 'short',
   })
 
-  const consultationLabel = consultationType === 'free' ? 'Free Discovery Call' : '$50 Consultation'
+  const consultationLabel = consultationType === 'free' ? 'Free Discovery Call' : 'Paid Consultation'
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://dev-dominick.com'
 
   return `
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
-    <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #333; }
-      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-      .header { background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%); color: #000; padding: 20px; border-radius: 8px 8px 0 0; }
-      .content { background: #f5f5f5; padding: 30px 20px; border-radius: 0 0 8px 8px; }
-      .details { background: white; padding: 15px; border-radius: 4px; margin: 15px 0; border-left: 4px solid #00ff00; }
-      .button { display: inline-block; background: #00ff00; color: #000; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; margin-top: 10px; }
-      .footer { color: #666; font-size: 12px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
-      .status-box { background: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 12px; border-radius: 4px; margin: 15px 0; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>${consultationLabel} Confirmed! 🎯</h1>
+  <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background-color: #0a0a0a;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+      
+      <!-- Logo/Brand -->
+      <div style="text-align: center; margin-bottom: 30px;">
+        <span style="font-size: 24px; font-weight: 700; color: #00ff41; letter-spacing: -0.5px;">dev-dominick</span>
       </div>
-      <div class="content">
-        <p>Hi ${clientName},</p>
-        <p>Your ${consultationLabel.toLowerCase()} has been scheduled. Here are the details:</p>
+      
+      <!-- Main Card -->
+      <div style="background: linear-gradient(180deg, #111111 0%, #0d0d0d 100%); border: 1px solid #222; border-radius: 16px; overflow: hidden;">
         
-        <div class="details">
-          <strong>📅 Date & Time:</strong><br>${timeStr}<br>
-          <strong>⏱️ Duration:</strong> ${duration} minutes<br>
-          ${notes ? `<strong>📝 Notes:</strong><br>${notes}<br>` : ''}
+        <!-- Header -->
+        <div style="padding: 30px; text-align: center; border-bottom: 1px solid #222;">
+          <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #ffffff;">
+            ${isAwaitingApproval ? 'Booking Received' : 'You\'re All Set!'} ✨
+          </h1>
+          <p style="margin: 10px 0 0 0; color: #888; font-size: 14px;">${consultationLabel}</p>
         </div>
+        
+        <!-- Content -->
+        <div style="padding: 30px;">
+          <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.6;">
+            Hey ${clientName},<br><br>
+            ${isAwaitingApproval 
+              ? 'Thanks for booking! I\'ll review your request and get back to you shortly with the meeting details.'
+              : 'Your consultation is confirmed. Here\'s everything you need to know:'}
+          </p>
+          
+          <!-- Details Box -->
+          <div style="background: #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+            <div style="display: flex; margin-bottom: 15px;">
+              <span style="color: #00ff41; font-size: 18px; margin-right: 12px;">📅</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Date & Time</p>
+                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${timeStr}</p>
+              </div>
+            </div>
+            <div style="display: flex; margin-bottom: ${notes ? '15px' : '0'};">
+              <span style="color: #00ff41; font-size: 18px; margin-right: 12px;">⏱️</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Duration</p>
+                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${duration} minutes</p>
+              </div>
+            </div>
+            ${notes ? `
+            <div style="display: flex;">
+              <span style="color: #00ff41; font-size: 18px; margin-right: 12px;">📝</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Your Notes</p>
+                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${notes}</p>
+              </div>
+            </div>
+            ` : ''}
+          </div>
 
-        ${
-          isAwaitingApproval
-            ? `<div class="status-box">
-          <strong>⏳ Awaiting Confirmation</strong><br>
-          I'll review your request and send you the call details within 1 hour (business hours). You'll receive a follow-up email with the Zoom/call link.
-        </div>`
-            : ''
-        }
-        
-        ${
-          sessionLink && !isAwaitingApproval
-            ? `<p><strong>Ready to start?</strong></p>
-        <a href="${sessionLink}" class="button">Join Call</a>
-        
-        <p style="color: #666; font-size: 14px;">
-          Or copy this link: <br>
-          <code style="background: #f0f0f0; padding: 8px 12px; border-radius: 4px; display: inline-block; margin-top: 5px;">${sessionLink}</code>
-        </p>`
-            : ''
-        }
-        
-        <p>If you need to reschedule, just reply to this email with your availability.</p>
-        
-        <div class="footer">
-          <p>This is an automated message. Please do not reply to this email directly.</p>
-          <p>&copy; 2026 Dominick's Portfolio. All rights reserved.</p>
+          ${isAwaitingApproval ? `
+          <!-- Status Badge -->
+          <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 10px; padding: 16px; margin-bottom: 25px;">
+            <p style="margin: 0; color: #fbbf24; font-size: 14px; font-weight: 500;">
+              ⏳ Awaiting Confirmation
+            </p>
+            <p style="margin: 8px 0 0 0; color: #999; font-size: 13px; line-height: 1.5;">
+              I'll review your request and send you the meeting link within a few hours during business hours.
+            </p>
+          </div>
+          ` : ''}
+          
+          ${sessionLink && !isAwaitingApproval ? `
+          <!-- Join Button -->
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${sessionLink}" style="display: inline-block; background: #00ff41; color: #000; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+              Join Call →
+            </a>
+            <p style="margin: 12px 0 0 0; color: #666; font-size: 12px;">
+              or copy: <code style="background: #1a1a1a; padding: 4px 8px; border-radius: 4px; color: #888;">${sessionLink}</code>
+            </p>
+          </div>
+          ` : ''}
+          
+          <!-- Help Text -->
+          <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.6; text-align: center;">
+            Need to reschedule? Just reply to this email.
+          </p>
         </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="text-align: center; padding: 30px 20px;">
+        <p style="margin: 0 0 10px 0; color: #444; font-size: 12px;">
+          <a href="${baseUrl}" style="color: #00ff41; text-decoration: none;">dev-dominick.com</a>
+        </p>
+        <p style="margin: 0; color: #333; font-size: 11px;">
+          © ${new Date().getFullYear()} Dominick. All rights reserved.
+        </p>
       </div>
     </div>
   </body>
@@ -151,50 +195,69 @@ export function newsletterWelcomeEmail({
 }: {
   email: string
 }) {
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://dev-dominick.com'
+  
   return `
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
-    <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
-      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-      .header { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); color: #00ff41; padding: 30px 20px; border-radius: 8px 8px 0 0; text-align: center; }
-      .content { background: #f9f9f9; padding: 30px 20px; border-radius: 0 0 8px 8px; }
-      .section { margin: 20px 0; }
-      .button { display: inline-block; background: #00ff41; color: #000; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; }
-      .footer { color: #666; font-size: 12px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>Welcome! 🚀</h1>
-        <p>You're now subscribed to updates</p>
+  <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background-color: #0a0a0a;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+      
+      <!-- Logo/Brand -->
+      <div style="text-align: center; margin-bottom: 30px;">
+        <span style="font-size: 24px; font-weight: 700; color: #00ff41; letter-spacing: -0.5px;">dev-dominick</span>
       </div>
-      <div class="content">
-        <p>Hey there,</p>
-        <p>Thanks for subscribing! You'll now get the latest updates, insights, and launches directly in your inbox.</p>
+      
+      <!-- Main Card -->
+      <div style="background: linear-gradient(180deg, #111111 0%, #0d0d0d 100%); border: 1px solid #222; border-radius: 16px; overflow: hidden;">
         
-        <div class="section">
-          <h3>What to expect:</h3>
-          <ul>
-            <li>💻 New templates & tools for builders</li>
-            <li>📈 Growth strategies & case studies</li>
-            <li>🎯 Exclusive offers & early access</li>
-            <li>📚 Coaching tips & resources</li>
-          </ul>
+        <!-- Header -->
+        <div style="padding: 30px; text-align: center; border-bottom: 1px solid #222;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 600; color: #ffffff;">
+            You're In! 🚀
+          </h1>
         </div>
-
-        <div class="section">
-          <p><a href="${process.env.NEXTAUTH_URL || 'https://dev-dominick.com'}/explore" class="button">Explore What I Offer</a></p>
+        
+        <!-- Content -->
+        <div style="padding: 30px;">
+          <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.7;">
+            Thanks for subscribing to my newsletter. You'll get updates on new projects, tools, and insights delivered straight to your inbox.
+          </p>
+          
+          <!-- What to expect -->
+          <div style="background: #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+            <p style="margin: 0 0 15px 0; color: #fff; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">What to expect</p>
+            <div style="color: #999; font-size: 14px; line-height: 2;">
+              <div>💻 New templates & tools</div>
+              <div>📈 Growth strategies</div>
+              <div>🎯 Exclusive early access</div>
+              <div>📚 Tech insights & tips</div>
+            </div>
+          </div>
+          
+          <!-- CTA Button -->
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${baseUrl}/explore" style="display: inline-block; background: #00ff41; color: #000; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+              Explore My Work →
+            </a>
+          </div>
         </div>
-
-        <div class="footer">
-          <p>Questions? <a href="mailto:${process.env.ADMIN_EMAIL}">Reach out anytime</a>.</p>
-          <p>&copy; 2026 Dominick's Portfolio. All rights reserved.</p>
-          <p><a href="${process.env.NEXTAUTH_URL || 'https://dev-dominick.com'}/unsubscribe?email=${email}">Unsubscribe</a></p>
-        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="text-align: center; padding: 30px 20px;">
+        <p style="margin: 0 0 10px 0; color: #444; font-size: 12px;">
+          <a href="${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #666; text-decoration: underline;">Unsubscribe</a>
+          <span style="color: #333; margin: 0 8px;">•</span>
+          <a href="${baseUrl}" style="color: #00ff41; text-decoration: none;">dev-dominick.com</a>
+        </p>
+        <p style="margin: 0; color: #333; font-size: 11px;">
+          © ${new Date().getFullYear()} Dominick. All rights reserved.
+        </p>
       </div>
     </div>
   </body>
@@ -219,79 +282,91 @@ export function orderConfirmationEmail({
     style: 'currency',
     currency: 'USD',
   })
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://dev-dominick.com'
 
   return `
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
-    <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #333; }
-      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-      .header { background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%); color: #000; padding: 20px; border-radius: 8px 8px 0 0; }
-      .content { background: #f5f5f5; padding: 30px 20px; border-radius: 0 0 8px 8px; }
-      table { width: 100%; border-collapse: collapse; background: white; border-radius: 4px; overflow: hidden; }
-      th { background: #f0f0f0; padding: 10px; text-align: left; font-weight: bold; border-bottom: 2px solid #00ff00; }
-      td { padding: 10px; border-bottom: 1px solid #ddd; }
-      .total { font-weight: bold; font-size: 18px; color: #00ff00; }
-      .button { display: inline-block; background: #00ff00; color: #000; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; margin-top: 10px; }
-      .footer { color: #666; font-size: 12px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>Order Confirmed! ✅</h1>
-        <p>Order #${orderId}</p>
+  <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background-color: #0a0a0a;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+      
+      <!-- Logo/Brand -->
+      <div style="text-align: center; margin-bottom: 30px;">
+        <span style="font-size: 24px; font-weight: 700; color: #00ff41; letter-spacing: -0.5px;">dev-dominick</span>
       </div>
-      <div class="content">
-        <p>Hi ${customerName},</p>
-        <p>Thank you for your purchase! Your order has been processed successfully.</p>
+      
+      <!-- Main Card -->
+      <div style="background: linear-gradient(180deg, #111111 0%, #0d0d0d 100%); border: 1px solid #222; border-radius: 16px; overflow: hidden;">
         
-        <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Qty</th>
-              <th style="text-align: right;">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${items
-              .map(
-                (item) => `
-            <tr>
-              <td>${item.name}</td>
-              <td>${item.quantity}</td>
-              <td style="text-align: right;">$${(item.price / 100).toFixed(2)}</td>
-            </tr>
-            `,
-              )
-              .join('')}
-            <tr style="background: #f9f9f9;">
-              <td colspan="2"><strong>Total</strong></td>
-              <td style="text-align: right;" class="total">${totalStr}</td>
-            </tr>
-          </tbody>
-        </table>
-        
-        ${
-          downloadLinks.length > 0
-            ? `
-        <p><strong>📥 Your Downloads:</strong></p>
-        <ul>
-          ${downloadLinks.map((link) => `<li><a href="${link}">Download Product</a></li>`).join('')}
-        </ul>
-        `
-            : ''
-        }
-        
-        <p>You can view your full order history in your account dashboard.</p>
-        
-        <div class="footer">
-          <p>Thank you for supporting my work!</p>
-          <p>&copy; 2026 Dominick's Portfolio. All rights reserved.</p>
+        <!-- Header -->
+        <div style="padding: 30px; text-align: center; border-bottom: 1px solid #222;">
+          <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #ffffff;">
+            Order Confirmed! ✅
+          </h1>
+          <p style="margin: 10px 0 0 0; color: #666; font-size: 13px;">Order #${orderId.slice(0, 8).toUpperCase()}</p>
         </div>
+        
+        <!-- Content -->
+        <div style="padding: 30px;">
+          <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.6;">
+            Hey ${customerName},<br><br>
+            Thanks for your purchase! Here's your order summary:
+          </p>
+          
+          <!-- Order Items -->
+          <div style="background: #1a1a1a; border-radius: 12px; overflow: hidden; margin-bottom: 25px;">
+            ${items.map((item, i) => `
+            <div style="padding: 15px 20px; ${i < items.length - 1 ? 'border-bottom: 1px solid #2a2a2a;' : ''}">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <p style="margin: 0; color: #fff; font-size: 15px; font-weight: 500;">${item.name}</p>
+                  <p style="margin: 4px 0 0 0; color: #666; font-size: 13px;">Qty: ${item.quantity}</p>
+                </div>
+                <p style="margin: 0; color: #00ff41; font-size: 15px; font-weight: 600;">$${(item.price / 100).toFixed(2)}</p>
+              </div>
+            </div>
+            `).join('')}
+            
+            <!-- Total -->
+            <div style="padding: 15px 20px; background: #0d0d0d; border-top: 1px solid #333;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <p style="margin: 0; color: #888; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Total</p>
+                <p style="margin: 0; color: #00ff41; font-size: 20px; font-weight: 700;">${totalStr}</p>
+              </div>
+            </div>
+          </div>
+          
+          ${downloadLinks.length > 0 ? `
+          <!-- Download Section -->
+          <div style="background: rgba(0, 255, 65, 0.1); border: 1px solid rgba(0, 255, 65, 0.3); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+            <p style="margin: 0 0 15px 0; color: #00ff41; font-size: 14px; font-weight: 600;">📥 Your Downloads</p>
+            ${downloadLinks.map((link) => `
+            <a href="${link}" style="display: block; background: #00ff41; color: #000; padding: 12px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; text-align: center; margin-bottom: 8px;">
+              Download →
+            </a>
+            `).join('')}
+          </div>
+          ` : ''}
+          
+          <!-- Help Text -->
+          <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.6; text-align: center;">
+            Questions about your order? Just reply to this email.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="text-align: center; padding: 30px 20px;">
+        <p style="margin: 0 0 10px 0; color: #444; font-size: 12px;">
+          <a href="${baseUrl}" style="color: #00ff41; text-decoration: none;">dev-dominick.com</a>
+        </p>
+        <p style="margin: 0; color: #333; font-size: 11px;">
+          © ${new Date().getFullYear()} Dominick. All rights reserved.
+        </p>
       </div>
     </div>
   </body>
@@ -306,39 +381,70 @@ export function contactReplyEmail({
   senderName: string
   message: string
 }) {
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://dev-dominick.com'
+  
   return `
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
-    <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #333; }
-      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-      .header { background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%); color: #000; padding: 20px; border-radius: 8px 8px 0 0; }
-      .content { background: #f5f5f5; padding: 30px 20px; border-radius: 0 0 8px 8px; }
-      .message-box { background: white; padding: 15px; border-left: 4px solid #00ff00; border-radius: 4px; margin: 15px 0; }
-      .footer { color: #666; font-size: 12px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>Message Received 📧</h1>
+  <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background-color: #0a0a0a;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+      
+      <!-- Logo/Brand -->
+      <div style="text-align: center; margin-bottom: 30px;">
+        <span style="font-size: 24px; font-weight: 700; color: #00ff41; letter-spacing: -0.5px;">dev-dominick</span>
       </div>
-      <div class="content">
-        <p>Hi ${senderName},</p>
-        <p>Thanks for reaching out! I've received your message and will get back to you soon.</p>
+      
+      <!-- Main Card -->
+      <div style="background: linear-gradient(180deg, #111111 0%, #0d0d0d 100%); border: 1px solid #222; border-radius: 16px; overflow: hidden;">
         
-        <div class="message-box">
-          <p><strong>Your Message:</strong></p>
-          <p>${message.replace(/\n/g, '<br>')}</p>
+        <!-- Header -->
+        <div style="padding: 30px; text-align: center; border-bottom: 1px solid #222;">
+          <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #ffffff;">
+            Got Your Message! 📬
+          </h1>
         </div>
         
-        <p>I typically respond to inquiries within 24 hours. In the meantime, feel free to check out my portfolio or book a consultation session.</p>
-        
-        <div class="footer">
-          <p>&copy; 2026 Dominick's Portfolio. All rights reserved.</p>
+        <!-- Content -->
+        <div style="padding: 30px;">
+          <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.6;">
+            Hey ${senderName},<br><br>
+            Thanks for reaching out! I've received your message and will get back to you as soon as possible.
+          </p>
+          
+          <!-- Message Quote -->
+          <div style="background: #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 25px; border-left: 3px solid #00ff41;">
+            <p style="margin: 0 0 8px 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Your Message</p>
+            <p style="margin: 0; color: #ccc; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+          </div>
+          
+          <!-- Response Time -->
+          <div style="background: rgba(0, 255, 65, 0.1); border: 1px solid rgba(0, 255, 65, 0.2); border-radius: 10px; padding: 16px; margin-bottom: 25px; text-align: center;">
+            <p style="margin: 0; color: #00ff41; font-size: 14px;">
+              ⚡ I typically respond within 24 hours
+            </p>
+          </div>
+          
+          <!-- CTA -->
+          <div style="text-align: center;">
+            <a href="${baseUrl}/bookings" style="display: inline-block; background: #00ff41; color: #000; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+              Book a Call Instead →
+            </a>
+          </div>
         </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="text-align: center; padding: 30px 20px;">
+        <p style="margin: 0 0 10px 0; color: #444; font-size: 12px;">
+          <a href="${baseUrl}" style="color: #00ff41; text-decoration: none;">dev-dominick.com</a>
+        </p>
+        <p style="margin: 0; color: #333; font-size: 11px;">
+          © ${new Date().getFullYear()} Dominick. All rights reserved.
+        </p>
       </div>
     </div>
   </body>
@@ -381,42 +487,97 @@ export function appointmentAdminNotificationEmail({
 <html>
   <head>
     <meta charset="utf-8">
-    <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #333; }
-      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-      .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000; padding: 20px; border-radius: 8px 8px 0 0; }
-      .content { background: #f5f5f5; padding: 30px 20px; border-radius: 0 0 8px 8px; }
-      .details { background: white; padding: 15px; border-radius: 4px; margin: 15px 0; border-left: 4px solid #f59e0b; }
-      .button { display: inline-block; background: #f59e0b; color: #000; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; margin: 5px; }
-      .footer { color: #666; font-size: 12px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>🔔 New Booking Request</h1>
+  <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background-color: #0a0a0a;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+      
+      <!-- Logo/Brand -->
+      <div style="text-align: center; margin-bottom: 30px;">
+        <span style="font-size: 24px; font-weight: 700; color: #00ff41; letter-spacing: -0.5px;">dev-dominick</span>
       </div>
-      <div class="content">
-        <p>A new ${consultationType === 'free' ? 'free consultation' : '$50 consultation'} has been requested.</p>
+      
+      <!-- Main Card -->
+      <div style="background: linear-gradient(180deg, #111111 0%, #0d0d0d 100%); border: 1px solid #222; border-radius: 16px; overflow: hidden;">
         
-        <div class="details">
-          <strong>👤 Client:</strong> ${clientName}<br>
-          <strong>📧 Email:</strong> <a href="mailto:${clientEmail}">${clientEmail}</a><br>
-          <strong>📅 Requested Time:</strong> ${timeStr}<br>
-          <strong>⏱️ Duration:</strong> ${duration} minutes<br>
-          ${notes ? `<strong>📝 Notes:</strong><br>${notes}<br>` : ''}
+        <!-- Header -->
+        <div style="padding: 30px; text-align: center; border-bottom: 1px solid #222; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, transparent 100%);">
+          <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #fbbf24;">
+            🔔 New Booking Request
+          </h1>
+          <p style="margin: 10px 0 0 0; color: #888; font-size: 14px;">
+            ${consultationType === 'free' ? 'Free Discovery Call' : 'Paid Consultation'}
+          </p>
         </div>
         
-        <p><strong>Action required:</strong> Review and approve or reject this booking.</p>
-        
-        <p style="text-align: center;">
-          <a href="${adminUrl}" class="button">View in Dashboard</a>
+        <!-- Content -->
+        <div style="padding: 30px;">
+          
+          <!-- Client Details -->
+          <div style="background: #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+            <div style="display: flex; margin-bottom: 15px;">
+              <span style="color: #fbbf24; font-size: 18px; margin-right: 12px;">👤</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Client</p>
+                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${clientName}</p>
+              </div>
+            </div>
+            <div style="display: flex; margin-bottom: 15px;">
+              <span style="color: #fbbf24; font-size: 18px; margin-right: 12px;">📧</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Email</p>
+                <a href="mailto:${clientEmail}" style="margin: 4px 0 0 0; color: #00ff41; font-size: 15px; text-decoration: none;">${clientEmail}</a>
+              </div>
+            </div>
+            <div style="display: flex; margin-bottom: 15px;">
+              <span style="color: #fbbf24; font-size: 18px; margin-right: 12px;">📅</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Requested Time</p>
+                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${timeStr}</p>
+              </div>
+            </div>
+            <div style="display: flex; ${notes ? 'margin-bottom: 15px;' : ''}">
+              <span style="color: #fbbf24; font-size: 18px; margin-right: 12px;">⏱️</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Duration</p>
+                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${duration} minutes</p>
+              </div>
+            </div>
+            ${notes ? `
+            <div style="display: flex;">
+              <span style="color: #fbbf24; font-size: 18px; margin-right: 12px;">📝</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Notes</p>
+                <p style="margin: 4px 0 0 0; color: #ccc; font-size: 14px; line-height: 1.5;">${notes}</p>
+              </div>
+            </div>
+            ` : ''}
+          </div>
+          
+          <!-- Action Required -->
+          <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 10px; padding: 16px; margin-bottom: 25px; text-align: center;">
+            <p style="margin: 0; color: #fbbf24; font-size: 14px; font-weight: 500;">
+              ⚡ Action Required: Review and approve or reject
+            </p>
+          </div>
+          
+          <!-- CTA -->
+          <div style="text-align: center;">
+            <a href="${adminUrl}" style="display: inline-block; background: #fbbf24; color: #000; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+              Open Dashboard →
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="text-align: center; padding: 30px 20px;">
+        <p style="margin: 0 0 10px 0; color: #444; font-size: 12px;">
+          Appointment ID: ${appointmentId.slice(0, 8)}
         </p>
-        
-        <div class="footer">
-          <p>Appointment ID: ${appointmentId}</p>
-          <p>This is an automated notification from your booking system.</p>
-        </div>
+        <p style="margin: 0; color: #333; font-size: 11px;">
+          This is an automated notification from your booking system.
+        </p>
       </div>
     </div>
   </body>
@@ -445,58 +606,96 @@ export function appointmentApprovedEmail({
     timeZoneName: 'short',
   })
 
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://dev-dominick.com'
+
   return `
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
-    <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #333; }
-      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-      .header { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: #fff; padding: 20px; border-radius: 8px 8px 0 0; }
-      .content { background: #f5f5f5; padding: 30px 20px; border-radius: 0 0 8px 8px; }
-      .details { background: white; padding: 15px; border-radius: 4px; margin: 15px 0; border-left: 4px solid #22c55e; }
-      .button { display: inline-block; background: #22c55e; color: #fff; padding: 14px 28px; border-radius: 4px; text-decoration: none; font-weight: bold; margin-top: 10px; font-size: 16px; }
-      .meeting-link { background: #f0fdf4; border: 2px solid #22c55e; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; }
-      .footer { color: #666; font-size: 12px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>✅ Your Call is Confirmed!</h1>
+  <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background-color: #0a0a0a;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+      
+      <!-- Logo/Brand -->
+      <div style="text-align: center; margin-bottom: 30px;">
+        <span style="font-size: 24px; font-weight: 700; color: #00ff41; letter-spacing: -0.5px;">dev-dominick</span>
       </div>
-      <div class="content">
-        <p>Hi ${clientName},</p>
-        <p>Great news! Your consultation has been approved and confirmed.</p>
+      
+      <!-- Main Card -->
+      <div style="background: linear-gradient(180deg, #111111 0%, #0d0d0d 100%); border: 1px solid #222; border-radius: 16px; overflow: hidden;">
         
-        <div class="details">
-          <strong>📅 Date & Time:</strong> ${timeStr}<br>
-          <strong>⏱️ Duration:</strong> ${duration} minutes
+        <!-- Header -->
+        <div style="padding: 30px; text-align: center; border-bottom: 1px solid #222;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 600; color: #00ff41;">
+            You're Confirmed! ✅
+          </h1>
+          <p style="margin: 10px 0 0 0; color: #888; font-size: 14px;">Your consultation is ready</p>
         </div>
+        
+        <!-- Content -->
+        <div style="padding: 30px;">
+          <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.6;">
+            Hey ${clientName},<br><br>
+            Great news! Your consultation has been approved. Here's everything you need to join:
+          </p>
+          
+          <!-- Details Box -->
+          <div style="background: #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+            <div style="display: flex; margin-bottom: 15px;">
+              <span style="color: #00ff41; font-size: 18px; margin-right: 12px;">📅</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Date & Time</p>
+                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${timeStr}</p>
+              </div>
+            </div>
+            <div style="display: flex;">
+              <span style="color: #00ff41; font-size: 18px; margin-right: 12px;">⏱️</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Duration</p>
+                <p style="margin: 4px 0 0 0; color: #fff; font-size: 15px;">${duration} minutes</p>
+              </div>
+            </div>
+          </div>
 
-        <div class="meeting-link">
-          <p style="margin: 0 0 10px 0; font-weight: bold;">📹 Join the Video Call</p>
-          <p style="margin: 0 0 15px 0; color: #666; font-size: 14px;">Click the button below at your scheduled time:</p>
-          <a href="${meetingLink}" class="button">Join Call</a>
-          <p style="margin: 15px 0 0 0; font-size: 12px; color: #666;">
-            Or copy this link: <code style="background: #e5e7eb; padding: 4px 8px; border-radius: 4px;">${meetingLink}</code>
+          <!-- Meeting Link Box -->
+          <div style="background: rgba(0, 255, 65, 0.1); border: 2px solid rgba(0, 255, 65, 0.4); border-radius: 12px; padding: 25px; margin-bottom: 25px; text-align: center;">
+            <p style="margin: 0 0 5px 0; color: #00ff41; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">📹 Video Call Link</p>
+            <p style="margin: 0 0 20px 0; color: #888; font-size: 13px;">Click the button at your scheduled time</p>
+            <a href="${meetingLink}" style="display: inline-block; background: #00ff41; color: #000; padding: 16px 40px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 16px;">
+              Join Call →
+            </a>
+            <p style="margin: 15px 0 0 0; color: #666; font-size: 12px;">
+              or copy: <code style="background: #1a1a1a; padding: 6px 10px; border-radius: 4px; color: #888; font-size: 11px;">${meetingLink}</code>
+            </p>
+          </div>
+
+          <!-- Tips -->
+          <div style="background: #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+            <p style="margin: 0 0 12px 0; color: #fff; font-size: 14px; font-weight: 600;">💡 Tips for a great call</p>
+            <div style="color: #999; font-size: 13px; line-height: 1.8;">
+              <div>• Join a few minutes early to test audio/video</div>
+              <div>• Find a quiet spot with good lighting</div>
+              <div>• Have any questions or materials ready</div>
+            </div>
+          </div>
+          
+          <!-- Help Text -->
+          <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.6; text-align: center;">
+            Need to reschedule? Just reply to this email.
           </p>
         </div>
-        
-        <p><strong>Tips for a great call:</strong></p>
-        <ul>
-          <li>Join a few minutes early to test your audio/video</li>
-          <li>Find a quiet space with good lighting</li>
-          <li>Have any questions or materials ready</li>
-        </ul>
-        
-        <p>Looking forward to speaking with you!</p>
-        
-        <div class="footer">
-          <p>Need to reschedule? Reply to this email and we'll work something out.</p>
-          <p>&copy; 2026 Dominick's Portfolio. All rights reserved.</p>
-        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="text-align: center; padding: 30px 20px;">
+        <p style="margin: 0 0 10px 0; color: #444; font-size: 12px;">
+          <a href="${baseUrl}" style="color: #00ff41; text-decoration: none;">dev-dominick.com</a>
+        </p>
+        <p style="margin: 0; color: #333; font-size: 11px;">
+          © ${new Date().getFullYear()} Dominick. All rights reserved.
+        </p>
       </div>
     </div>
   </body>
@@ -529,44 +728,79 @@ export function appointmentRejectedEmail({
 <html>
   <head>
     <meta charset="utf-8">
-    <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; color: #333; }
-      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-      .header { background: linear-gradient(135deg, #64748b 0%, #475569 100%); color: #fff; padding: 20px; border-radius: 8px 8px 0 0; }
-      .content { background: #f5f5f5; padding: 30px 20px; border-radius: 0 0 8px 8px; }
-      .details { background: white; padding: 15px; border-radius: 4px; margin: 15px 0; border-left: 4px solid #64748b; }
-      .button { display: inline-block; background: #38bdf8; color: #000; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; margin-top: 10px; }
-      .footer { color: #666; font-size: 12px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>Booking Update</h1>
+  <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background-color: #0a0a0a;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+      
+      <!-- Logo/Brand -->
+      <div style="text-align: center; margin-bottom: 30px;">
+        <span style="font-size: 24px; font-weight: 700; color: #00ff41; letter-spacing: -0.5px;">dev-dominick</span>
       </div>
-      <div class="content">
-        <p>Hi ${clientName},</p>
-        <p>Unfortunately, I'm unable to accommodate the consultation you requested for:</p>
+      
+      <!-- Main Card -->
+      <div style="background: linear-gradient(180deg, #111111 0%, #0d0d0d 100%); border: 1px solid #222; border-radius: 16px; overflow: hidden;">
         
-        <div class="details">
-          <strong>📅 Requested Time:</strong> ${timeStr}
+        <!-- Header -->
+        <div style="padding: 30px; text-align: center; border-bottom: 1px solid #222;">
+          <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #ffffff;">
+            Booking Update
+          </h1>
         </div>
+        
+        <!-- Content -->
+        <div style="padding: 30px;">
+          <p style="color: #ccc; font-size: 16px; margin: 0 0 25px 0; line-height: 1.6;">
+            Hey ${clientName},<br><br>
+            Unfortunately, I'm unable to accommodate your consultation request for this time slot.
+          </p>
+          
+          <!-- Original Request -->
+          <div style="background: #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+            <div style="display: flex;">
+              <span style="color: #888; font-size: 18px; margin-right: 12px;">📅</span>
+              <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Requested Time</p>
+                <p style="margin: 4px 0 0 0; color: #999; font-size: 15px; text-decoration: line-through;">${timeStr}</p>
+              </div>
+            </div>
+          </div>
 
-        ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
-        
-        <p>This could be due to a scheduling conflict or limited availability. I apologize for any inconvenience.</p>
-        
-        <p><strong>Would you like to try a different time?</strong></p>
-        <p>
-          <a href="${baseUrl}/bookings" class="button">Book Another Time</a>
-        </p>
-        
-        <p>Or feel free to reply to this email and we can find a time that works for both of us.</p>
-        
-        <div class="footer">
-          <p>Thank you for your understanding!</p>
-          <p>&copy; 2026 Dominick's Portfolio. All rights reserved.</p>
+          ${reason ? `
+          <!-- Reason -->
+          <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; padding: 16px; margin-bottom: 25px;">
+            <p style="margin: 0; color: #ef4444; font-size: 13px; font-weight: 500;">Reason</p>
+            <p style="margin: 8px 0 0 0; color: #ccc; font-size: 14px; line-height: 1.5;">${reason}</p>
+          </div>
+          ` : ''}
+
+          <p style="color: #ccc; font-size: 15px; margin: 0 0 25px 0; line-height: 1.6;">
+            This could be due to a scheduling conflict or limited availability. I apologize for any inconvenience.
+          </p>
+          
+          <!-- CTA -->
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="margin: 0 0 15px 0; color: #888; font-size: 14px;">Would you like to try a different time?</p>
+            <a href="${baseUrl}/bookings" style="display: inline-block; background: #00ff41; color: #000; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+              Book Another Time →
+            </a>
+          </div>
+          
+          <!-- Help Text -->
+          <p style="color: #666; font-size: 13px; margin: 0; line-height: 1.6; text-align: center;">
+            Or just reply to this email and we'll find a time that works.
+          </p>
         </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="text-align: center; padding: 30px 20px;">
+        <p style="margin: 0 0 10px 0; color: #444; font-size: 12px;">
+          <a href="${baseUrl}" style="color: #00ff41; text-decoration: none;">dev-dominick.com</a>
+        </p>
+        <p style="margin: 0; color: #333; font-size: 11px;">
+          © ${new Date().getFullYear()} Dominick. All rights reserved.
+        </p>
       </div>
     </div>
   </body>
