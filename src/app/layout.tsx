@@ -10,6 +10,7 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/footer';
 import { CookieConsent } from '@/components/cookie-consent';
 import { DevAdminToggle } from '@/components/dev-admin-toggle';
+import { AnalyticsTracker } from '@/components/analytics-tracker';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -50,6 +51,7 @@ export default function RootLayout({
               Skip to main content
             </a>
             <DevAdminToggle />
+            <AnalyticsTracker />
             <Navigation />
             <SessionTimeout />
             <Toaster position="top-right" toastOptions={{

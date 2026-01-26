@@ -480,3 +480,32 @@ model ApprovalAttachment {
   
   @@index([approvalRequestId])
 }
+
+// Analytics - Page views and site traffic tracking
+model PageView {
+  id          String    @id @default(cuid())
+  
+  // Page info
+  path        String    // e.g., "/", "/contact", "/admin"
+  referrer    String?   // Where they came from
+  
+  // User info
+  userId      String?   // Optional - if logged in
+  sessionId   String    // Browser session identifier
+  
+  // Technical details
+  userAgent   String?
+  country     String?
+  city        String?
+  device      String?   // mobile, desktop, tablet
+  browser     String?   // chrome, safari, firefox
+  os          String?   // windows, macos, ios
+  
+  // Timing
+  createdAt   DateTime  @default(now())
+  
+  @@index([path])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([createdAt])
+}
