@@ -246,10 +246,10 @@ export default function BookingsPage() {
           </div>
 
           <p className="text-[var(--text-secondary)] mb-2 text-lg">
-            Our booking system is coming very soon!
+            Bookings coming soon!
           </p>
           <p className="text-[var(--text-muted)] mb-6">
-            In the meantime, let's connect through our contact form. We'll get back to you within 24 hours.
+            Please send me a message and I'll get back to you as soon as possible.
           </p>
 
           <div className="space-y-3">
