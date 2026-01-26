@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/api-auth";
+import { generalRateLimiter } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/request-utils";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -10,6 +13,21 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth required
+    const user = await requireAuth(request);
+    if (!user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+
+    // Rate limiting by IP
+    const ip = getClientIp(request);
+    const rl = generalRateLimiter.check(`agent:post:${ip}`);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
     const body = await request.json();
     const { prompt, model = "mistral", system = "", temperature = 0.7 } = body;
 
@@ -61,6 +79,21 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Auth required for model listing as well
+    const user = await requireAuth(request);
+    if (!user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+
+    // Rate limiting by IP
+    const ip = getClientIp(request);
+    const rl = generalRateLimiter.check(`agent:get:${ip}`);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
     // Get available models from backend
     const backendUrl = `${BACKEND_URL}/api/agent/models`;
 

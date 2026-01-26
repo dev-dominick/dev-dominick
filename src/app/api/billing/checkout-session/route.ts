@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextRequest, NextResponse } from "next/server";
+import { generalRateLimiter } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/request-utils";
 
 /**
  * POST /api/billing/checkout-session
@@ -9,6 +11,16 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function POST(req: NextRequest) {
   try {
+    // SECURITY: Rate limit checkout session creation to prevent abuse
+    const ip = getClientIp(req);
+    const rl = generalRateLimiter.check(`billing:checkout:${ip}`);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Too many checkout attempts. Please try again later." },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } }
+      );
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {

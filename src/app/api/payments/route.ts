@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 
@@ -16,18 +16,60 @@ import { apiSuccess, apiError } from "@/lib/api-response";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Require admin authentication
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
-    if (!token || !token.sub) {
-      return apiError("Authentication required", 401);
+    // Require admin authentication (supports dev bypass)
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      return apiError("Admin access required", 401);
     }
 
-    if (token.role !== "admin" && token.role !== "admin-main") {
-      return apiError("Admin access required", 403);
+    // Dev fallback: return mock receipts when admin toggle is enabled
+    if (process.env.NODE_ENV === "development" && request.cookies.get("dev_admin_mode")?.value === "true") {
+      const now = new Date();
+      const receipts = [
+        {
+          id: "dev-r-1",
+          method: "CASH",
+          amountUsd: 5000,
+          amountCents: 500000,
+          currency: "USD",
+          status: "RECEIVED",
+          receivedAt: now.toISOString(),
+          clientName: "Alice",
+          clientEmail: "alice@example.com",
+          description: "Cash payment",
+          notes: "",
+          externalRef: "",
+          createdAt: now.toISOString(),
+          treasuryTransfers: [],
+        },
+        {
+          id: "dev-r-2",
+          method: "STRIPE",
+          amountUsd: 299,
+          amountCents: 29900,
+          currency: "USD",
+          status: "RECEIVED",
+          receivedAt: now.toISOString(),
+          clientName: "Bob",
+          clientEmail: "bob@example.com",
+          description: "Stripe checkout",
+          notes: "",
+          externalRef: "",
+          createdAt: now.toISOString(),
+          treasuryTransfers: [],
+        },
+      ];
+
+      const summary = {
+        totalReceived: receipts.reduce((s, r) => s + r.amountUsd, 0),
+        totalPending: 0,
+        byMethod: {
+          CASH: { count: 1, amountUsd: 5000 },
+          STRIPE: { count: 1, amountUsd: 299 },
+        },
+      };
+
+      return apiSuccess({ receipts, summary, count: receipts.length });
     }
 
     // Parse query params

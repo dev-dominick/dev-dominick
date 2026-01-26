@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+import { requireAdmin } from '@/lib/api-auth'
 import { prisma } from '@/lib/prisma'
 import { generalRateLimiter } from '@/lib/rate-limit'
 import { getClientIp } from '@/lib/request-utils'
@@ -63,6 +63,37 @@ async function findNextAvailableSlot(durationMinutes = 60) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Dev fallback: return mock orders when admin toggle is on
+    if (process.env.NODE_ENV === 'development' && request.cookies.get('dev_admin_mode')?.value === 'true') {
+      const now = new Date()
+      const orders = [
+        { 
+          id: 'dev-order-1', 
+          total: 25000, 
+          status: 'paid', 
+          createdAt: now.toISOString(),
+          customerEmail: 'alice@example.com',
+          items: [{ id: 'item-1', name: 'Web Development Package', quantity: 1, price: 25000 }]
+        },
+        { 
+          id: 'dev-order-2', 
+          total: 5000, 
+          status: 'pending', 
+          createdAt: new Date(now.getTime() - 86400000).toISOString(),
+          customerEmail: 'bob@example.com',
+          items: [{ id: 'item-2', name: 'Consulting Hour', quantity: 2, price: 2500 }]
+        },
+        { 
+          id: 'dev-order-3', 
+          total: 15000, 
+          status: 'paid', 
+          createdAt: new Date(now.getTime() - 3 * 86400000).toISOString(),
+          customerEmail: 'carol@startup.io',
+          items: [{ id: 'item-3', name: 'API Integration', quantity: 1, price: 15000 }]
+        },
+      ]
+      return apiSuccess({ orders })
+    }
     const { searchParams } = new URL(request.url)
     const email = searchParams.get('email')
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100) // Cap at 100
@@ -70,12 +101,8 @@ export async function GET(request: NextRequest) {
 
     // SECURITY: Require admin auth for querying orders
     // Users should only see their own orders through /api/me/orders
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    })
-
-    if (!token || (token.role !== 'admin' && token.role !== 'admin-main')) {
+    const token = await requireAdmin(request)
+    if (!token) {
       return apiError('Unauthorized - admin access required', 401)
     }
 

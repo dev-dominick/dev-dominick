@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { requireAdmin } from "@/lib/api-auth";
 import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import {
@@ -61,6 +62,50 @@ async function slotIsAvailable(startTime: Date, endTime: Date) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Dev fallback: if admin toggle is on, return mock data to avoid DB issues
+    if (process.env.NODE_ENV === "development" && request.cookies.get("dev_admin_mode")?.value === "true") {
+      const now = new Date();
+      const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      return apiSuccess({
+        appointments: [
+          {
+            id: "dev-apt-1",
+            clientName: "Alice Johnson",
+            clientEmail: "alice@example.com",
+            startTime: now.toISOString(),
+            endTime: new Date(now.getTime() + 60 * 60 * 1000).toISOString(),
+            status: "pending_approval",
+            billableHours: 1,
+            notes: "Initial consultation about web app",
+          },
+          {
+            id: "dev-apt-2",
+            clientName: "Bob Smith",
+            clientEmail: "bob@example.com",
+            startTime: tomorrow.toISOString(),
+            endTime: new Date(tomorrow.getTime() + 90 * 60 * 1000).toISOString(),
+            status: "confirmed",
+            billableHours: 1.5,
+            notes: "Follow-up on project scope",
+          },
+          {
+            id: "dev-apt-3",
+            clientName: "Carol White",
+            clientEmail: "carol@startup.io",
+            startTime: nextWeek.toISOString(),
+            endTime: new Date(nextWeek.getTime() + 60 * 60 * 1000).toISOString(),
+            status: "pending_approval",
+            billableHours: 1,
+            notes: "Technical architecture review",
+          },
+        ],
+      });
+    }
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      return apiError("Admin access required", 401);
+    }
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get("sessionId");
     const startDate = searchParams.get("startDate");
@@ -245,6 +290,25 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    // Dev fallback: acknowledge updates without DB when in dev admin mode
+    if (process.env.NODE_ENV === "development" && request.cookies.get("dev_admin_mode")?.value === "true") {
+      const body = await request.json();
+      const { id, status } = body;
+      const now = new Date();
+      return apiSuccess({
+        appointment: {
+          id: id || "dev-apt-1",
+          status: status || "confirmed",
+          approvedAt: now.toISOString(),
+          meetingLink: `https://meet.jit.si/dev-dominick-${id || "dev-apt-1"}`,
+        },
+        success: true,
+      });
+    }
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      return apiError("Admin access required", 401);
+    }
     const ip = getClientIp(request);
     const rl = generalRateLimiter.check(`appointments:update:${ip}`);
     if (!rl.allowed) {

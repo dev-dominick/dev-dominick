@@ -9,6 +9,7 @@ import SessionTimeout from '@/components/session-timeout';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/footer';
 import { CookieConsent } from '@/components/cookie-consent';
+import { DevAdminToggle } from '@/components/dev-admin-toggle';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   title: "dev-dominick | Full-Stack Development",
   description: "Principal-level engineering for modern web applications. TypeScript, React, Next.js, and Node.js expertise.",
   icons: {
-    icon: '/code-cloud-logo.svg',
+    icon: '/dev.svg',
   },
 };
 
@@ -48,6 +49,7 @@ export default function RootLayout({
             >
               Skip to main content
             </a>
+            <DevAdminToggle />
             <Navigation />
             <SessionTimeout />
             <Toaster position="top-right" toastOptions={{

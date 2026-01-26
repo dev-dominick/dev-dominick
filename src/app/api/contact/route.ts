@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { sendEmail, contactReplyEmail } from '@/lib/email'
+import { sendEmail, contactReplyEmail, escapeHtml, escapeHtmlWithLineBreaks } from '@/lib/email'
 import { generalRateLimiter } from '@/lib/rate-limit'
 import { getClientIp } from '@/lib/request-utils'
 import { apiSuccess, apiError, apiRateLimitError } from '@/lib/api-response'
@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Send notification to admin (you)
+    // SECURITY: Escape all user-provided content to prevent HTML injection
     const adminNotificationHtml = `
 <!DOCTYPE html>
 <html>
@@ -75,14 +76,14 @@ export async function POST(request: NextRequest) {
       </div>
       <div class="content">
         <div class="details">
-          <strong>Name:</strong> ${name}<br>
-          <strong>Email:</strong> ${email}<br>
-          ${phone ? `<strong>Phone:</strong> ${phone}<br>` : ''}
-          <strong>Subject:</strong> ${subject || 'Website Inquiry'}<br>
+          <strong>Name:</strong> ${escapeHtml(name)}<br>
+          <strong>Email:</strong> ${escapeHtml(email)}<br>
+          ${phone ? `<strong>Phone:</strong> ${escapeHtml(phone)}<br>` : ''}
+          <strong>Subject:</strong> ${escapeHtml(subject || 'Website Inquiry')}<br>
         </div>
         
         <h3>Message:</h3>
-        <p>${message.replace(/\n/g, '<br>')}</p>
+        <p>${escapeHtmlWithLineBreaks(message)}</p>
         
         <a href="${process.env.NEXTAUTH_URL}/app/contact-messages/${contact.id}" class="button">View in Dashboard</a>
       </div>
@@ -110,6 +111,16 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Auth check - only allow in dev mode with dev_admin_mode cookie
+    const isDevAdmin = process.env.NODE_ENV === 'development' && 
+      request.cookies.get('dev_admin_mode')?.value === 'true'
+    
+    if (!isDevAdmin) {
+      // In production, require proper authentication
+      // TODO: Add proper auth check when auth system is integrated
+      return apiError('Unauthorized', 401)
+    }
+
     const messages = await prisma.contactMessage.findMany({
       orderBy: { createdAt: 'desc' },
       take: 50,

@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 
@@ -24,18 +24,10 @@ export async function PATCH(
   try {
     const { id } = await params;
 
-    // Require admin authentication
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
-    if (!token || !token.sub) {
-      return apiError("Authentication required", 401);
-    }
-
-    if (token.role !== "admin" && token.role !== "admin-main") {
-      return apiError("Admin access required", 403);
+    // Require admin authentication (supports dev bypass)
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      return apiError("Admin access required", 401);
     }
 
     // Find existing transfer
@@ -49,6 +41,28 @@ export async function PATCH(
 
     const body = await request.json();
     const { status, bankRef, krakenRef, notes } = body;
+
+    // Dev fallback: acknowledge updates without DB when dev toggle is set
+    if (process.env.NODE_ENV === "development" && request.cookies.get("dev_admin_mode")?.value === "true") {
+      const now = new Date();
+      const upperStatus = (status || existing.status).toUpperCase();
+      return apiSuccess({
+        transfer: {
+          id,
+          sourceAccount: existing.sourceAccount,
+          destinationAccount: existing.destinationAccount,
+          method: existing.method,
+          amountUsd: existing.amountCents / 100,
+          status: upperStatus,
+          plannedAt: existing.plannedAt,
+          submittedAt: upperStatus === "SUBMITTED" ? now.toISOString() : existing.submittedAt,
+          confirmedAt: upperStatus === "CONFIRMED" ? now.toISOString() : existing.confirmedAt,
+          bankRef: bankRef ?? existing.bankRef,
+          krakenRef: krakenRef ?? existing.krakenRef,
+          notes: notes ?? existing.notes,
+        },
+      });
+    }
 
     // Build update data
     const updateData: Record<string, unknown> = {};
@@ -134,17 +148,9 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
-    if (!token || !token.sub) {
-      return apiError("Authentication required", 401);
-    }
-
-    if (token.role !== "admin" && token.role !== "admin-main") {
-      return apiError("Admin access required", 403);
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      return apiError("Admin access required", 401);
     }
 
     const transfer = await prisma.treasuryTransfer.findUnique({

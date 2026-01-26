@@ -49,7 +49,8 @@ export function Topbar({ onMenuClick, isAdmin = false, userEmail: userEmailProp,
   }, []);
 
   const userEmail = mounted ? userEmailProp || session?.user?.email || "user@example.com" : "user@example.com";
-  const actualRole = ((session?.user as { role?: string })?.role || userRole) as StaffRole;
+  // Use role from prop to keep SSR/CSR consistent; session role is handled upstream
+  const actualRole = userRole as StaffRole;
   const roleLabel = roleLabels[actualRole] || "Member";
 
   const breadcrumbs: Crumb[] = useMemo(() => {
@@ -112,7 +113,9 @@ export function Topbar({ onMenuClick, isAdmin = false, userEmail: userEmailProp,
               <span className="text-xs font-semibold text-[var(--text-primary)] truncate max-w-[140px]">
                 {userEmail}
               </span>
-              <span className="text-[11px] text-[var(--text-muted)]">{roleLabel}</span>
+              <span className="text-[11px] text-[var(--text-muted)]" suppressHydrationWarning>
+                {roleLabel}
+              </span>
             </div>
             <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center text-[var(--surface-base)] text-sm font-semibold">
               {(userEmail || "U")[0]?.toUpperCase()}

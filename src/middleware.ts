@@ -8,7 +8,7 @@ const PUBLIC_ROUTES = [
   "/api/auth",
   "/_next",
   "/favicon.ico",
-  "/code-cloud-logo.svg",
+  "/dev.svg",
 ];
 
 // Auth routes - hidden from public, only accessible directly (for admin setup)
@@ -37,6 +37,17 @@ function isAppRoute(path: string): boolean {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // DEV MODE ONLY: Check for dev_admin_mode cookie FIRST (bypass all auth)
+  if (process.env.NODE_ENV === "development") {
+    const devAdminCookie = request.cookies.get("dev_admin_mode")?.value;
+    console.log(`[MIDDLEWARE] Path: ${pathname}, Dev cookie: ${devAdminCookie}, NODE_ENV: ${process.env.NODE_ENV}`);
+    
+    if (devAdminCookie === "true") {
+      console.log(`[DEV ADMIN] ✅ Bypassing all auth for ${pathname}`);
+      return NextResponse.next();
+    }
+  }
 
   // Get auth token
   const token = await getToken({
@@ -98,6 +109,7 @@ export async function middleware(request: NextRequest) {
 
     const userRole = (token as { role?: string })?.role;
     const staffRoles = ["admin", "admin-main", "lawyer", "accountant", "ops"];
+    
     if (!userRole || !staffRoles.includes(userRole)) {
       const url = request.nextUrl.clone();
       url.pathname = "/";

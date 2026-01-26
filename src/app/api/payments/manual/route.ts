@@ -1,10 +1,10 @@
 import { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { validateAmount } from "@/lib/validators";
 
-const VALID_METHODS = ["CASH", "ACH", "WIRE", "CHECK", "OTHER"];
+const VALID_METHODS = ["CASH", "ACH", "WIRE", "CHECK", "OTHER", "OWNER_DRAW", "CAPITAL_CONTRIBUTION", "INTERNAL_TRANSFER"];
 const MIN_AMOUNT = 1; // $1 minimum
 const MAX_AMOUNT = 1000000; // $1M maximum
 
@@ -17,22 +17,13 @@ const MAX_AMOUNT = 1000000; // $1M maximum
  */
 export async function POST(request: NextRequest) {
   try {
-    // Require admin authentication
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
-    if (!token || !token.sub) {
-      return apiError("Authentication required", 401);
+    // Require admin authentication (supports dev bypass)
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      return apiError("Admin access required", 401);
     }
 
-    // Only admins can record manual payments
-    if (token.role !== "admin" && token.role !== "admin-main") {
-      return apiError("Admin access required", 403);
-    }
-
-    const userId = token.sub;
+    const userId = admin.sub as string;
     const body = await request.json();
     
     const {
@@ -77,6 +68,23 @@ export async function POST(request: NextRequest) {
 
     const amountCents = Math.round(validatedAmount * 100);
 
+    // Dev fallback: return mock receipt without DB when dev toggle is set
+    if (process.env.NODE_ENV === "development" && request.cookies.get("dev_admin_mode")?.value === "true") {
+      const now = new Date();
+      return apiSuccess({
+        receipt: {
+          id: "dev-r-new",
+          method: upperMethod,
+          amountUsd: amountCents / 100,
+          amountCents,
+          status: "RECEIVED",
+          receivedAt: now.toISOString(),
+          clientName: clientName || null,
+          description: description || `${upperMethod} payment - $${validatedAmount.toFixed(2)}`,
+        },
+      }, 201);
+    }
+
     // Create payment receipt as RECEIVED (manual payments are recorded after receipt)
     const receipt = await prisma.paymentReceipt.create({
       data: {
@@ -94,7 +102,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log(`[PAYMENT] Manual ${upperMethod} receipt created: $${validatedAmount.toFixed(2)} by admin ${token.email}`);
+    console.log(`[PAYMENT] Manual ${upperMethod} receipt created: $${validatedAmount.toFixed(2)} by admin ${admin.email}`);
 
     return apiSuccess({
       receipt: {

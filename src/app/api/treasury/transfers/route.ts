@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { validateAmount } from "@/lib/validators";
@@ -17,21 +17,13 @@ const VALID_METHODS = ["ACH", "WIRE"];
  */
 export async function POST(request: NextRequest) {
   try {
-    // Require admin authentication
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
-    if (!token || !token.sub) {
-      return apiError("Authentication required", 401);
+    // Require admin authentication (supports dev bypass)
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      return apiError("Admin access required", 401);
     }
 
-    if (token.role !== "admin" && token.role !== "admin-main") {
-      return apiError("Admin access required", 403);
-    }
-
-    const userId = token.sub;
+    const userId = admin.sub as string;
     const body = await request.json();
 
     const {
@@ -93,6 +85,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Dev fallback: return mock transfer when dev toggle is set
+    if (process.env.NODE_ENV === "development" && request.cookies.get("dev_admin_mode")?.value === "true") {
+      const now = new Date();
+      return apiSuccess({
+        transfer: {
+          id: "dev-t-new",
+          sourceAccount: upperSource,
+          destinationAccount: upperDest,
+          method: upperMethod,
+          amountUsd: amountCents / 100,
+          amountCents,
+          status: "PLANNED",
+          plannedAt: now.toISOString(),
+        },
+      }, 201);
+    }
+
     // Create transfer with PLANNED status
     const transfer = await prisma.treasuryTransfer.create({
       data: {
@@ -135,17 +144,35 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
-    if (!token || !token.sub) {
-      return apiError("Authentication required", 401);
+    const admin = await requireAdmin(request);
+    if (!admin) {
+      return apiError("Admin access required", 401);
     }
 
-    if (token.role !== "admin" && token.role !== "admin-main") {
-      return apiError("Admin access required", 403);
+    // Dev fallback: return mock transfers when dev toggle is set
+    if (process.env.NODE_ENV === "development" && request.cookies.get("dev_admin_mode")?.value === "true") {
+      const now = new Date();
+      const transfers = [
+        {
+          id: "dev-t-1",
+          sourceAccount: "FULTON_BANK",
+          destinationAccount: "KRAKEN",
+          method: "ACH",
+          amountUsd: 10000,
+          amountCents: 1000000,
+          status: "PLANNED",
+          plannedAt: now.toISOString(),
+          submittedAt: null,
+          confirmedAt: null,
+          bankRef: null,
+          krakenRef: null,
+          notes: "",
+          paymentReceipt: null,
+          createdAt: now.toISOString(),
+        },
+      ];
+      const summary = { planned: 10000, submitted: 0, confirmed: 0 };
+      return apiSuccess({ transfers, summary, count: transfers.length });
     }
 
     const { searchParams } = new URL(request.url);

@@ -3,9 +3,8 @@ import type { NextConfig } from "next";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const nextConfig: NextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  // TypeScript errors must be fixed before deployment
+  // typescript: { ignoreBuildErrors: false }, // default behavior
   async rewrites() {
     const isProd = process.env.NODE_ENV === "production";
 

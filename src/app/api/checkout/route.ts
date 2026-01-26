@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +11,19 @@ export async function POST(request: NextRequest) {
     if (!priceId || !productName) {
       return NextResponse.json(
         { error: "Missing priceId or productName" },
+        { status: 400 }
+      );
+    }
+
+    // Validate price id against catalog to prevent misuse
+    const product = await prisma.product.findFirst({
+      where: { stripePriceId: priceId },
+      select: { id: true, name: true },
+    });
+
+    if (!product) {
+      return NextResponse.json(
+        { error: "Invalid product priceId" },
         { status: 400 }
       );
     }

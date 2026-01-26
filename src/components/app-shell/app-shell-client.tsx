@@ -26,7 +26,7 @@ export function AppShellClient({ children, userEmail, userRole = "user" }: AppSh
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Get role from session if available, fallback to prop
-  const actualRole = ((session?.user as { role?: string })?.role || userRole) as StaffRole;
+  const actualRole = (((session?.user as { role?: string })?.role) || userRole) as StaffRole;
   const isAdminMain = actualRole === "admin-main";
   const isAdmin = actualRole === "admin" || isAdminMain;
   

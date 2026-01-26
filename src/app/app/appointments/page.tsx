@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Calendar, Clock, CheckCircle, XCircle, AlertCircle, Trash2, Plus, User } from 'lucide-react'
+import { Calendar, Clock, CheckCircle, XCircle, AlertCircle, Trash2, Plus, User, X } from 'lucide-react'
 import { Button, Input, Textarea, ConfirmModal } from '@/components/ui'
 import { formatters } from '@/lib/formatters'
 
@@ -131,6 +131,68 @@ export default function AdminAppointmentsPage() {
       }
     } catch (error) {
       console.error('Error deleting availability:', error)
+    }
+  }
+
+  const handleQuickSetup = async (preset: string) => {
+    try {
+      // Clear existing availability
+      const deletePromises = availability.map(slot => 
+        fetch(`/api/availability?id=${slot.id}`, { method: 'DELETE' })
+      )
+      await Promise.all(deletePromises)
+
+      // Define preset configurations
+      const presets: Record<string, Array<{ dayOfWeek: number; startTime: string; endTime: string }>> = {
+        'weekdays-9to5': [
+          { dayOfWeek: 1, startTime: '09:00', endTime: '17:00' }, // Mon
+          { dayOfWeek: 2, startTime: '09:00', endTime: '17:00' }, // Tue
+          { dayOfWeek: 3, startTime: '09:00', endTime: '17:00' }, // Wed
+          { dayOfWeek: 4, startTime: '09:00', endTime: '17:00' }, // Thu
+          { dayOfWeek: 5, startTime: '09:00', endTime: '17:00' }, // Fri
+        ],
+        'weekdays-10to6': [
+          { dayOfWeek: 1, startTime: '10:00', endTime: '18:00' },
+          { dayOfWeek: 2, startTime: '10:00', endTime: '18:00' },
+          { dayOfWeek: 3, startTime: '10:00', endTime: '18:00' },
+          { dayOfWeek: 4, startTime: '10:00', endTime: '18:00' },
+          { dayOfWeek: 5, startTime: '10:00', endTime: '18:00' },
+        ],
+        'mon-wed-fri': [
+          { dayOfWeek: 1, startTime: '09:00', endTime: '17:00' },
+          { dayOfWeek: 3, startTime: '09:00', endTime: '17:00' },
+          { dayOfWeek: 5, startTime: '09:00', endTime: '17:00' },
+        ],
+        'tue-thu': [
+          { dayOfWeek: 2, startTime: '09:00', endTime: '17:00' },
+          { dayOfWeek: 4, startTime: '09:00', endTime: '17:00' },
+        ],
+      }
+
+      if (preset === 'clear') {
+        setAvailability([])
+        return
+      }
+
+      const slots = presets[preset]
+      if (!slots) return
+
+      // Create new slots
+      const createPromises = slots.map(slot =>
+        fetch('/api/availability', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...slot,
+            timezone: formData.timezone || 'UTC',
+          }),
+        }).then(res => res.json())
+      )
+
+      const newSlots = await Promise.all(createPromises)
+      setAvailability(newSlots.filter(Boolean))
+    } catch (error) {
+      console.error('Error applying quick setup:', error)
     }
   }
 
@@ -388,6 +450,58 @@ export default function AdminAppointmentsPage() {
       {/* Availability Tab */}
       {tab === 'availability' && (
         <div className="space-y-6">
+          {/* Quick Setup Presets */}
+          <div className="p-6 rounded-lg border border-[var(--border-default)] bg-[var(--surface-raised)]">
+            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Quick Setup</h3>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={() => handleQuickSetup('weekdays-9to5')}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Clock className="w-4 h-4" />
+                Weekdays 9-5
+              </Button>
+              <Button
+                onClick={() => handleQuickSetup('weekdays-10to6')}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Clock className="w-4 h-4" />
+                Weekdays 10-6
+              </Button>
+              <Button
+                onClick={() => handleQuickSetup('mon-wed-fri')}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Clock className="w-4 h-4" />
+                Mon/Wed/Fri
+              </Button>
+              <Button
+                onClick={() => handleQuickSetup('tue-thu')}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Clock className="w-4 h-4" />
+                Tue/Thu
+              </Button>
+              <Button
+                onClick={() => handleQuickSetup('clear')}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 text-red-600 hover:text-red-700"
+              >
+                <X className="w-4 h-4" />
+                Clear All
+              </Button>
+            </div>
+          </div>
+
           <div className="flex justify-end">
             <Button
               onClick={() => setShowAddAvailability(!showAddAvailability)}

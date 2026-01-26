@@ -11,6 +11,8 @@ import {
 import { Button, BookingCalendar, ConfirmModal } from '@/components/ui'
 import { formatters } from '@/lib/formatters'
 import { LawyerDashboard, AccountantDashboard, OpsDashboard } from '@/components/app/dashboards'
+import { TreasuryWidget } from '@/components/app/treasury-widget'
+import { BanksWidget } from '@/components/app/banks-widget'
 
 interface Appointment {
   id: string
@@ -205,11 +207,16 @@ export default function DashboardPage() {
     appointmentId: null,
   })
 
-  // Get user role from session
-  const userRole = (session?.user as { role?: string })?.role || 'user'
+  // Get user role from session or dev admin cookie
+  const isDevAdmin = typeof document !== 'undefined' && document.cookie.includes('dev_admin_mode=true')
+  const userRole = isDevAdmin ? 'admin-main' : ((session?.user as { role?: string })?.role || 'user')
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    // Check for dev admin mode cookie
+    const isDevAdmin = typeof document !== 'undefined' && 
+      document.cookie.includes('dev_admin_mode=true')
+    
+    if (status === 'unauthenticated' && !isDevAdmin) {
       router.push('/')
     }
   }, [status, router])
@@ -305,7 +312,8 @@ export default function DashboardPage() {
     )
   }
 
-  if (status === 'unauthenticated') {
+  // In dev admin mode, skip unauthenticated check
+  if (status === 'unauthenticated' && !isDevAdmin) {
     return null
   }
 
@@ -399,8 +407,8 @@ export default function DashboardPage() {
               showTimeSlots={true}
               adminMode={true}
               onAppointmentClick={(apt) => {
-                // Could open a modal or navigate to detail page
-                console.log('Clicked appointment:', apt)
+                // TODO: Open appointment detail modal or navigate
+                // For now, no-op to avoid leaking data to console
               }}
             />
           </div>
@@ -408,6 +416,12 @@ export default function DashboardPage() {
 
         {/* Sidebar Column */}
         <div className="space-y-6">
+          {/* Treasury Widget - Admin Main Only */}
+          {userRole === 'admin-main' && <TreasuryWidget />}
+
+          {/* Banks Widget - Admin Main Only */}
+          {userRole === 'admin-main' && <BanksWidget />}
+
           {/* Quick Actions */}
           <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-5">
             <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Quick Actions</h3>

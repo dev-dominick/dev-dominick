@@ -87,6 +87,14 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // SECURITY: Require dev admin mode - this endpoint could enable email enumeration
+    const isDevAdmin = process.env.NODE_ENV === 'development' && 
+      request.cookies.get('dev_admin_mode')?.value === 'true'
+    
+    if (!isDevAdmin) {
+      return apiError('Unauthorized', 401)
+    }
+
     const { searchParams } = new URL(request.url);
     const email = searchParams.get("email");
 
