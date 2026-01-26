@@ -86,7 +86,7 @@ export function getNavItemsForUser(isAdmin: boolean = false): NavSection[] {
           icon: Calendar,
         },
         {
-          href: "/app/scheduler",
+          href: "/scheduler",
           label: "Scheduler",
           icon: Calendar,
         },
@@ -101,12 +101,12 @@ export function getNavItemsForUser(isAdmin: boolean = false): NavSection[] {
             icon: ShoppingCart,
           },
         {
-          href: "/app/cart",
+          href: "/cart",
           label: "Cart",
           icon: ShoppingCart,
         },
         {
-          href: "/app/checkout",
+          href: "/checkout",
           label: "Checkout",
           icon: ShoppingCart,
         },
