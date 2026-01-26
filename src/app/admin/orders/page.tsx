@@ -114,11 +114,11 @@ export default function OrdersPage() {
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-2 text-sm">
-                  <Link href="/app/appointments" className="text-matrix-primary hover:underline">
+                  <Link href="/admin/appointments" className="text-matrix-primary hover:underline">
                     View appointments
                   </Link>
                   <span className="text-matrix-text-muted">·</span>
-                  <Link href="/app/contact-messages" className="text-matrix-primary hover:underline">
+                  <Link href="/admin/contact-messages" className="text-matrix-primary hover:underline">
                     Messages
                   </Link>
                 </div>

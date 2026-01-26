@@ -391,7 +391,7 @@ export default function DashboardPage() {
           <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-[var(--text-primary)]">Calendar</h2>
-              <Link href="/app/appointments">
+              <Link href="/admin/appointments">
                 <Button variant="secondary" size="sm">Manage All</Button>
               </Link>
             </div>
@@ -426,10 +426,10 @@ export default function DashboardPage() {
           <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-5">
             <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Quick Actions</h3>
             <div className="space-y-2">
-              <QuickAction href="/app/appointments" icon={Calendar} label="Appointments" />
-              <QuickAction href="/app/orders" icon={ShoppingCart} label="Orders" />
-              <QuickAction href="/app/contact-messages" icon={MessageSquare} label="Messages" />
-              <QuickAction href="/app/settings" icon={Settings} label="Settings" />
+              <QuickAction href="/admin/appointments" icon={Calendar} label="Appointments" />
+              <QuickAction href="/admin/orders" icon={ShoppingCart} label="Orders" />
+              <QuickAction href="/admin/contact-messages" icon={MessageSquare} label="Messages" />
+              <QuickAction href="/admin/settings" icon={Settings} label="Settings" />
             </div>
           </div>
 
@@ -453,7 +453,7 @@ export default function DashboardPage() {
               </li>
             </ul>
             {!hasAvailability && (
-              <Link href="/app/appointments#availability" className="block mt-4">
+              <Link href="/admin/appointments#availability" className="block mt-4">
                 <Button size="sm" className="w-full">Add Availability</Button>
               </Link>
             )}
@@ -464,7 +464,7 @@ export default function DashboardPage() {
             <div className="p-5 border-b border-[var(--border-default)]">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-[var(--text-primary)]">Recent Orders</h3>
-                <Link href="/app/orders">
+                <Link href="/admin/orders">
                   <Button variant="secondary" size="sm">View All</Button>
                 </Link>
               </div>
@@ -529,7 +529,7 @@ export default function DashboardPage() {
                 Confirmed sessions
               </p>
             </div>
-            <Link href="/app/appointments">
+            <Link href="/admin/appointments">
               <Button variant="secondary" size="sm">View All</Button>
             </Link>
           </div>

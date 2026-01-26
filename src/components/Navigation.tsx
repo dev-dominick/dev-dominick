@@ -19,7 +19,7 @@ export function Navigation({ siteName = 'dev-dominick' }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const simpleMode = SIMPLE_CONSULTING_MODE
 
-  const isAppSection = pathname.startsWith('/app')
+  const isAdminSection = pathname.startsWith('/admin')
   const isLoggedIn = status === 'authenticated'
   const isLoadingSession = status === 'loading'
 
@@ -61,8 +61,8 @@ export function Navigation({ siteName = 'dev-dominick' }: NavigationProps) {
     { href: '/contact', label: 'Contact' },
   ]
 
-  // Don't show nav on app section (it has its own shell)
-  if (isAppSection) {
+  // Don't show nav on admin section (it has its own shell)
+  if (isAdminSection) {
     return null
   }
 
@@ -91,7 +91,7 @@ export function Navigation({ siteName = 'dev-dominick' }: NavigationProps) {
           <div className="flex h-14 items-center justify-between">
             {/* Logo - simplified, no box */}
             <Link
-              href={isLoggedIn ? '/app' : '/'}
+              href={isLoggedIn ? '/admin' : '/'}
               className="flex items-center gap-2.5 group"
             >
               <span className="text-[var(--accent)] text-lg">●</span>

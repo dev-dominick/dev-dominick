@@ -20,8 +20,8 @@ const AUTH_ROUTES = [
   "/reset-password",
 ];
 
-// Protected app routes - require admin login
-const APP_ROUTES = ["/app"];
+// Protected admin routes - require admin login
+const ADMIN_ROUTES = ["/admin"];
 
 function isPublicRoute(path: string): boolean {
   return PUBLIC_ROUTES.some((route) => path.startsWith(route));
@@ -31,8 +31,8 @@ function isAuthRoute(path: string): boolean {
   return AUTH_ROUTES.some((route) => path.startsWith(route));
 }
 
-function isAppRoute(path: string): boolean {
-  return APP_ROUTES.some((route) => path.startsWith(route));
+function isAdminRoute(path: string): boolean {
+  return ADMIN_ROUTES.some((route) => path.startsWith(route));
 }
 
 export async function middleware(request: NextRequest) {
@@ -77,14 +77,14 @@ export async function middleware(request: NextRequest) {
   if (isAuthRoute(pathname)) {
     if (isAuthenticated) {
       const url = request.nextUrl.clone();
-      // Respect the 'next' param if present, otherwise default to /app
+      // Respect the 'next' param if present, otherwise default to /admin
       const nextParam = request.nextUrl.searchParams.get('next');
       // Validate: must start with /, must not be a login route (prevent loops)
       const isValidNext = nextParam && 
         nextParam.startsWith('/') && 
         !nextParam.startsWith('/login') &&
         !nextParam.startsWith('/signup');
-      url.pathname = isValidNext ? nextParam.split('?')[0] : '/app';
+      url.pathname = isValidNext ? nextParam.split('?')[0] : '/admin';
       // Preserve query string from next param if present
       if (isValidNext && nextParam.includes('?')) {
         const queryPart = nextParam.split('?')[1];
@@ -97,8 +97,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. App routes - require staff login (admin, admin-main, lawyer, accountant, ops)
-  if (isAppRoute(pathname)) {
+  // 3. Admin routes - require staff login (admin, admin-main, lawyer, accountant, ops)
+  if (isAdminRoute(pathname)) {
     if (!isAuthenticated) {
       // Not logged in - redirect to login with next param
       const url = request.nextUrl.clone();
@@ -119,11 +119,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. Legacy admin redirect - redirect to /app equivalent (preserve path + query)
-  if (pathname.startsWith("/admin")) {
+  // 4. Legacy /app redirect - redirect to /admin equivalent (preserve path + query)
+  if (pathname.startsWith("/app")) {
     const url = request.nextUrl.clone();
-    // Replace /admin with /app, preserving everything after
-    url.pathname = pathname.replace(/^\/admin/, "/app");
+    // Replace /app with /admin, preserving everything after
+    url.pathname = pathname.replace(/^\/app/, "/admin");
     return NextResponse.redirect(url, 308);
   }
 

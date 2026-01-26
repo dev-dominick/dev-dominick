@@ -120,7 +120,7 @@ export const authOptions: NextAuthOptions = {
       if (url.startsWith('/')) {
         // Prevent redirect loops to login/signup
         if (url.startsWith('/login') || url.startsWith('/signup')) {
-          return `${baseUrl}/app`;
+          return `${baseUrl}/admin`;
         }
         return `${baseUrl}${url}`;
       }
@@ -129,7 +129,7 @@ export const authOptions: NextAuthOptions = {
         return url;
       }
       // Default fallback
-      return `${baseUrl}/app`;
+      return `${baseUrl}/admin`;
     },
     async jwt({ token, user }) {
       if (user) {

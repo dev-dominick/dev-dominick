@@ -190,7 +190,7 @@ export function TreasuryWidget({ onPaymentRecorded }: TreasuryWidgetProps) {
               Draw
             </Button>
           </div>
-          <Link href="/app/treasury" className="block">
+          <Link href="/admin/treasury" className="block">
             <Button variant="ghost" size="sm" className="w-full text-[var(--accent)]">
               Full Treasury <ArrowRight className="w-4 h-4 ml-1" />
             </Button>

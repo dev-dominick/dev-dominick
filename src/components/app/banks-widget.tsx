@@ -151,7 +151,7 @@ export function BanksWidget({ onConnectClick }: BanksWidgetProps) {
               Track transactions automatically like Monarch
             </p>
           </div>
-          <Link href="/app/banks" className="block">
+          <Link href="/admin/banks" className="block">
             <Button className="w-full" variant="secondary">
               <Plus className="w-4 h-4 mr-2" />
               Connect Bank
@@ -219,7 +219,7 @@ export function BanksWidget({ onConnectClick }: BanksWidgetProps) {
 
           {/* Actions */}
           <div className="flex gap-2">
-            <Link href="/app/banks" className="flex-1">
+            <Link href="/admin/banks" className="flex-1">
               <Button variant="ghost" size="sm" className="w-full text-[var(--accent)]">
                 Manage Banks <ArrowRight className="w-4 h-4 ml-1" />
               </Button>

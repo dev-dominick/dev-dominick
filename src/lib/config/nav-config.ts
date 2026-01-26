@@ -45,7 +45,7 @@ export function getNavItemsForUser(isAdmin: boolean = false): NavSection[] {
       title: "Main",
       items: [
         {
-          href: "/app",
+          href: "/admin",
           label: "Dashboard",
           icon: LayoutDashboard,
           exact: true,
@@ -56,22 +56,22 @@ export function getNavItemsForUser(isAdmin: boolean = false): NavSection[] {
       title: "Business",
       items: [
         {
-          href: "/app/analytics",
+          href: "/admin/analytics",
           label: "Analytics",
           icon: TrendingUp,
         },
         {
-          href: "/app/business-ops",
+          href: "/admin/business-ops",
           label: "Operations",
           icon: Package,
         },
         {
-          href: "/app/invoices",
+          href: "/admin/invoices",
           label: "Invoices",
           icon: FileText,
         },
         {
-          href: "/app/subscribers",
+          href: "/admin/subscribers",
           label: "Subscribers",
           icon: Mail,
         },
@@ -81,7 +81,7 @@ export function getNavItemsForUser(isAdmin: boolean = false): NavSection[] {
       title: "Services",
       items: [
         {
-          href: "/app/appointments",
+          href: "/admin/appointments",
           label: "Appointments",
           icon: Calendar,
         },
@@ -96,7 +96,7 @@ export function getNavItemsForUser(isAdmin: boolean = false): NavSection[] {
       title: "Ecommerce",
       items: [
           {
-            href: "/app/orders",
+            href: "/admin/orders",
             label: "Orders",
             icon: ShoppingCart,
           },
@@ -116,7 +116,7 @@ export function getNavItemsForUser(isAdmin: boolean = false): NavSection[] {
       title: "Account",
       items: [
         {
-          href: "/app/settings",
+          href: "/admin/settings",
           label: "Settings",
           icon: Settings,
         },

@@ -24,8 +24,8 @@ export function DevAdminToggle() {
       // Create dev admin session
       await fetch('/api/dev/admin-session', { method: 'POST' });
       
-      // Force redirect to /app
-      window.location.href = '/app';
+      // Force redirect to /admin
+      window.location.href = '/admin';
     } else {
       // Disable admin mode
       localStorage.removeItem('dev_admin_mode');

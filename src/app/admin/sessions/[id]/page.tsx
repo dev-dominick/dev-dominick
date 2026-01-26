@@ -92,7 +92,7 @@ export default function SessionPage({ params }: PageProps) {
       <div className="flex items-center justify-center min-h-screen bg-matrix-black">
         <div className="text-center max-w-md">
           <div className="text-red-400 text-xl mb-4">⚠️ {error}</div>
-          <Link href="/app">
+          <Link href="/admin">
             <Button variant="outline" className="gap-2">
               <ArrowLeft className="w-4 h-4" />
               Back to Dashboard

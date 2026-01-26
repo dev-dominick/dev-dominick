@@ -125,7 +125,7 @@ export function Topbar({ onMenuClick, isAdmin = false, userEmail: userEmailProp,
           {isUserMenuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-[var(--surface-raised)] border border-[var(--border-default)] rounded-lg shadow-[var(--shadow-lg)] overflow-hidden z-50">
               <Link
-                href="/app/settings"
+                href="/admin/settings"
                 className="flex items-center gap-2 px-4 py-3 text-sm text-[var(--text-secondary)] hover:bg-[var(--surface-overlay)] hover:text-[var(--text-primary)] transition-colors"
                 onClick={() => setIsUserMenuOpen(false)}
               >

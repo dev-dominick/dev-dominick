@@ -43,13 +43,13 @@ export default function HomepageHeroClient() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {isLoggedIn || isDevUser ? (
                 <>
-                    <Link href="/app">
+                    <Link href="/admin">
                         <Button size="lg" className="flex items-center gap-2">
                             Open Dashboard
                             <ArrowRight className="w-5 h-5" />
                         </Button>
                     </Link>
-                    <Link href="/app">
+                    <Link href="/admin">
                         <Button variant="secondary" size="lg" className="flex items-center gap-2">
                             <LogIn className="w-5 h-5" />
                             Account

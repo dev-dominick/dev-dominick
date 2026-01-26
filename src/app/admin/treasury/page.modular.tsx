@@ -40,7 +40,7 @@ export default function TreasuryPage() {
             <RefreshCw className={`w-4 h-4 ${treasury.ledgerLoading ? 'animate-spin' : ''}`} />
           </Button>
           <Button asChild size="sm" variant="secondary">
-            <a href="/app/banks">
+            <a href="/admin/banks">
               <Building2 className="w-4 h-4 mr-1" /> Connect Banks
             </a>
           </Button>
