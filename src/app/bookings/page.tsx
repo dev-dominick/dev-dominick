@@ -3,9 +3,11 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Calendar, Clock, ArrowLeft, CheckCircle2, AlertCircle, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { SIMPLE_CONSULTING_MODE } from '@/lib/config/flags'
+
+const BOOKING_LOCKED = true
 
 interface TimeSlot {
     dayOfWeek: number
@@ -26,6 +28,7 @@ export default function BookingsPage() {
     const fromProduct = searchParams.get('from') === 'product'
     const simpleMode = SIMPLE_CONSULTING_MODE
 
+    const [showComingSoonModal, setShowComingSoonModal] = useState(BOOKING_LOCKED)
     const [availabilitySlots, setAvailabilitySlots] = useState<TimeSlot[]>([])
     const [bookedAppointments, setBookedAppointments] = useState<BookedAppointment[]>([])
     const [loading, setLoading] = useState(true)
@@ -222,6 +225,48 @@ export default function BookingsPage() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (showComingSoonModal) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="bg-[var(--surface-raised)] rounded-2xl border border-[var(--border-default)] p-8 max-w-md w-full shadow-xl">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Calendar className="h-8 w-8 text-[var(--accent)]" />
+              <h2 className="text-2xl font-bold text-[var(--text-primary)]">Coming Soon</h2>
+            </div>
+            <button
+              onClick={() => setShowComingSoonModal(false)}
+              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              aria-label="Close modal"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <p className="text-[var(--text-secondary)] mb-2 text-lg">
+            Our booking system is coming very soon!
+          </p>
+          <p className="text-[var(--text-muted)] mb-6">
+            In the meantime, let's connect through our contact form. We'll get back to you within 24 hours.
+          </p>
+
+          <div className="space-y-3">
+            <Link href="/contact" className="block w-full">
+              <Button variant="primary" className="w-full">
+                Go to contact form
+              </Button>
+            </Link>
+            <Link href="/" className="block w-full">
+              <Button variant="secondary" className="w-full">
+                Back to home
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (success) {
