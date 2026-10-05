@@ -1,32 +1,11 @@
 # Dominick Albano
 
-Full-Stack Software Engineer
+Full-stack software engineer.
 
-I’m a software engineer with 3+ years of professional experience, including work at Comcast building and modernizing web applications.
+I spent 3+ years at Comcast working on web applications and internal tools. Most of my work has been around React, TypeScript, Node.js, Java, APIs, and frontend architecture.
 
-I work across React, TypeScript, Node.js, Java, APIs, frontend architecture, performance, and developer tooling.
+Lately I’ve been building Albano Coding Agent, a Tauri desktop app that connects my development workflow with a Linux machine I use for remote compute and local AI tooling.
 
-Right now I’m building a Tauri desktop development app and working with self-hosted Linux infrastructure for remote compute and development workflows.
+I like working across the stack and understanding how the whole system fits together.
 
-## Selected Projects
-
-### weather-app-nextjs
-A Next.js and TypeScript weather dashboard focused on typed frontend architecture, responsive UI, and application state.
-
-### lets-go
-A full-stack event application using React, GraphQL, Apollo, MongoDB, and authentication.
-
-### internet-retail-back-end
-An Express API for products, categories, and inventory using Sequelize and MySQL.
-
-### textEditor
-A progressive web text editor with offline storage, browser persistence, and installable PWA behavior.
-
-## Technologies
-
-TypeScript · JavaScript · Java · React · Next.js · Node.js · Express · GraphQL · MongoDB · MySQL · Git · Linux · Tauri
-
-## Links
-
-[Portfolio](https://dev-dominick.com)  
-[LinkedIn](https://www.linkedin.com/in/dominick-albano)
+[Portfolio](https://dev-dominick.com) · [LinkedIn](https://www.linkedin.com/in/dominick-albano)
