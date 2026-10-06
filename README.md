@@ -2,14 +2,9 @@
   <img src="./assets/albano-github-hero.svg" width="100%" alt="Dominick Albano — Full-Stack Software Engineer" />
 </p>
 
-<h1 align="center">Dominick Albano</h1>
-
 <p align="center">
-  <strong>Full-Stack Software Engineer · Developer Tools</strong>
-</p>
-
-<p align="center">
-  React · TypeScript · Node.js · Java
+  <strong>Full-Stack Software Engineer</strong><br />
+  React · TypeScript · Node.js · Java · Tauri
 </p>
 
 <p align="center">
@@ -20,30 +15,22 @@
 
 ---
 
-## Comcast · Software Engineer II
+## What I’ve worked on
 
-Worked on large web applications and customer-facing workflows across frontend, backend, and APIs.
+At Comcast, I modernized legacy web applications with React and TypeScript, helped build shared frontend components used across multiple teams, worked across Node.js and Java services, improved middleware and authentication performance, and built customer-facing flows involving maps, subscriptions, and cancellations.
 
-- Modernized legacy application workflows with React and TypeScript.
-- Worked on shared React components and frontend patterns used across teams.
-- Built customer workflows involving APIs, maps, subscriptions, and cancellations.
-- Improved middleware and authentication performance.
-
----
-
-## Building now
+## What I’m building now
 
 ### Albano Coding Agent
 
-A desktop development environment for code, terminal workflows, Git, browser tooling, AI-assisted workflows, and remote compute.
+A private Tauri desktop development environment built around my actual workflow.
 
-```text
-LOCAL DEVELOPMENT  ─────►  ALBANO CODING AGENT  ─────►  REMOTE COMPUTE
-```
+It brings code, terminal, Git, browser tooling, AI-assisted workflows, and remote compute into one application.
 
-I’m building it around the development workflow I actually use, with a focus on desktop tooling, system boundaries, and making multiple tools work together without hiding what the system is doing.
+The part I’m most interested in is the boundary between the desktop app, external tools, and remote execution — making the workflow feel integrated without hiding what the system is doing.
 
 ---
+
 <p align="center">
   <a href="https://dev-dominick.com">dev-dominick.com</a>
 </p>
