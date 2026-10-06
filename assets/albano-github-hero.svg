@@ -1,69 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="420" viewBox="0 0 1400 420" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="520" viewBox="0 0 1400 520" role="img" aria-labelledby="title desc">
   <title id="title">Dominick Albano GitHub Hero</title>
-  <desc id="desc">A dark terminal-inspired engineering dashboard for Dominick Albano featuring the Mac to Albano Coding Agent to white-node system flow.</desc>
+  <desc id="desc">Clean profile hero for Dominick Albano with name, title, and three engineering domains.</desc>
+
   <defs>
-    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#060b12"/>
-      <stop offset="1" stop-color="#0d1724"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070d14"/>
+      <stop offset="100%" stop-color="#0f1b2b"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" x2="1">
-      <stop offset="0" stop-color="#7dd3fc"/>
-      <stop offset="1" stop-color="#34d399"/>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7dd3fc"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.35"/>
     </filter>
   </defs>
 
-  <rect width="1400" height="420" fill="url(#bg)"/>
-  <g opacity="0.18" stroke="#7dd3fc" stroke-width="1">
-    <path d="M0,80H1400 M0,160H1400 M0,240H1400 M0,320H1400"/>
-    <path d="M180,0V420 M360,0V420 M540,0V420 M720,0V420 M900,0V420 M1080,0V420"/>
+  <rect width="1400" height="520" fill="url(#bg)"/>
+
+  <g opacity="0.14" stroke="#7dd3fc" stroke-width="1">
+    <path d="M0 72H1400M0 144H1400M0 216H1400M0 288H1400M0 360H1400M0 432H1400"/>
+    <path d="M116 0V520M232 0V520M348 0V520M464 0V520M580 0V520M696 0V520M812 0V520M928 0V520M1044 0V520M1160 0V520M1276 0V520"/>
   </g>
 
-  <rect x="38" y="34" width="1324" height="352" rx="18" fill="none" stroke="#23456d" stroke-width="1.2"/>
-  <rect x="60" y="58" width="164" height="28" rx="14" fill="#0c1521" stroke="#1d3d5d"/>
-  <text x="82" y="77" fill="#7dd3fc" font-family="monospace" font-size="13" letter-spacing="1.4">SYSTEM</text>
+  <rect x="44" y="34" width="1312" height="452" rx="22" fill="none" stroke="#2a4364" stroke-width="1.2"/>
 
-  <text x="72" y="125" fill="#e5f5ff" font-family="Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="2">DOMINICK ALBANO</text>
-  <text x="72" y="165" fill="#81e6d9" font-family="Arial, sans-serif" font-size="23" letter-spacing="1.8">FULL-STACK SOFTWARE ENGINEER</text>
-  <text x="72" y="200" fill="#b8d8eb" font-family="monospace" font-size="18">React • TypeScript • Node.js • Java • Tauri • Linux</text>
+  <text x="80" y="122" fill="#e7f1fb" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="64" font-weight="800" letter-spacing="2.2">DOMINICK ALBANO</text>
+  <text x="82" y="166" fill="#8fd3ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="600" letter-spacing="3.4">FULL-STACK SOFTWARE ENGINEER</text>
 
-  <g stroke="url(#accent)" stroke-width="2.2" fill="none" stroke-linecap="round">
-    <path d="M200 300 L360 300 L360 240 L430 240" opacity="0.9"/>
-    <path d="M430 240 L580 240 L580 300 L760 300" opacity="0.9"/>
-    <path d="M760 300 L980 300 L980 242 L1060 242" opacity="0.9"/>
+  <rect x="80" y="194" width="520" height="4" rx="2" fill="url(#accent)"/>
+
+  <g filter="url(#softShadow)">
+    <rect x="80" y="236" width="396" height="212" rx="18" fill="#0d1724" stroke="#31506f"/>
+    <rect x="502" y="236" width="396" height="212" rx="18" fill="#0d1724" stroke="#31506f"/>
+    <rect x="924" y="236" width="396" height="212" rx="18" fill="#0d1724" stroke="#31506f"/>
   </g>
 
-  <g>
-    <rect x="120" y="260" width="160" height="80" rx="14" fill="#0b1724" stroke="#2a4a66"/>
-    <text x="150" y="292" fill="#a7f3d0" font-family="monospace" font-size="12">MAC</text>
-    <text x="150" y="318" fill="#d9ecff" font-family="monospace" font-size="14">development</text>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <text x="112" y="286" fill="#b8e6ff" font-size="20" font-weight="700" letter-spacing="1.2">DEVELOPER TOOLS</text>
+    <text x="112" y="326" fill="#d9e7f4" font-size="19">Desktop Automation</text>
+    <text x="112" y="356" fill="#d9e7f4" font-size="19">Workflow Tooling</text>
+    <text x="112" y="386" fill="#d9e7f4" font-size="19">Build Systems</text>
 
-    <rect x="430" y="200" width="220" height="96" rx="14" fill="#0b1724" stroke="#2a4a66"/>
-    <text x="455" y="232" fill="#7dd3fc" font-family="monospace" font-size="12">ALBANO CODING AGENT</text>
-    <text x="455" y="258" fill="#d9ecff" font-family="monospace" font-size="14">desktop control plane</text>
-    <text x="455" y="278" fill="#d9ecff" font-family="monospace" font-size="14">Git • terminal • AI • tools</text>
+    <text x="534" y="286" fill="#b8e6ff" font-size="20" font-weight="700" letter-spacing="1.2">AI SYSTEMS</text>
+    <text x="534" y="326" fill="#d9e7f4" font-size="19">Platform State</text>
+    <text x="534" y="356" fill="#d9e7f4" font-size="19">AI-Assisted Workflows</text>
+    <text x="534" y="386" fill="#d9e7f4" font-size="19">Developer Interfaces</text>
 
-    <rect x="1060" y="200" width="220" height="96" rx="14" fill="#0b1724" stroke="#2a4a66"/>
-    <text x="1088" y="232" fill="#7dd3fc" font-family="monospace" font-size="12">WHITE-NODE</text>
-    <text x="1088" y="258" fill="#d9ecff" font-family="monospace" font-size="14">Ubuntu • remote compute</text>
-    <text x="1088" y="278" fill="#d9ecff" font-family="monospace" font-size="14">local models • workers</text>
-  </g>
-
-  <g fill="#8ec5ff" font-family="monospace" font-size="12">
-    <text x="72" y="360">BUILDING SOFTWARE ACROSS THE WHOLE SYSTEM</text>
-    <text x="1110" y="360" fill="#7dd3fc">STATUS: ONLINE</text>
-  </g>
-
-  <g filter="url(#glow)" stroke="#7dd3fc" stroke-width="1.2">
-    <circle cx="200" cy="300" r="6" fill="#7dd3fc"/>
-    <circle cx="430" cy="240" r="6" fill="#7dd3fc"/>
-    <circle cx="760" cy="300" r="6" fill="#7dd3fc"/>
-    <circle cx="1060" cy="242" r="6" fill="#7dd3fc"/>
+    <text x="956" y="286" fill="#b8e6ff" font-size="20" font-weight="700" letter-spacing="1.2">PRODUCT SYSTEMS</text>
+    <text x="956" y="326" fill="#d9e7f4" font-size="19">React Applications</text>
+    <text x="956" y="356" fill="#d9e7f4" font-size="19">API Integrations</text>
+    <text x="956" y="386" fill="#d9e7f4" font-size="19">Full-Stack Delivery</text>
   </g>
 </svg>
