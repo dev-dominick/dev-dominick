@@ -6,9 +6,13 @@
 </p>
 
 <p align="center">
-  <a href="https://dev-dominick.com">Portfolio</a>
+  <a href="https://dev-dominick.com"><b>Portfolio</b></a>
   ·
-  <a href="https://www.linkedin.com/in/dominick-albano">LinkedIn</a>
+  <a href="https://www.linkedin.com/in/dominick-albano"><b>LinkedIn</b></a>
+</p>
+
+<p align="center">
+  <img src="./assets/albano-github-hero.svg" width="100%" alt="Dominick Albano — Full-Stack Software Engineer" />
 </p>
 
 ---
@@ -19,30 +23,19 @@ At Comcast I worked on large web applications, internal tooling, shared frontend
 
 These days most of my side-project energy is going into developer tooling and the machines behind it.
 
-## What I'm working on
+## Current build
 
 ### Albano Coding Agent
 
-A Tauri desktop development app I'm building around the way I actually work: code, terminal, Git, browser tooling, AI assistance, and remote compute in one place.
+A Tauri desktop development app built around the way I actually work: code, terminal, Git, browser tooling, AI assistance, and remote compute in one place.
 
 ```text
-        Mac
-         │
-   Albano Coding Agent
-         │
-      Tailscale
-         │
-    ┌────▼─────┐
-    │white-node│
-    │  Ubuntu  │
-    └────┬─────┘
-         │
-   local models
-   remote compute
-   backend workers
+Mac ──► Albano Coding Agent ──► white-node
+         │                         │
+         └──── desktop workflow ───┘
 ```
 
-The interesting part to me isn't just the UI. It's figuring out where desktop code stops, where remote services begin, and how to make the whole system feel like one tool.
+The interesting part is not just the UI. It is figuring out where desktop work ends, where remote compute starts, and how to make the whole system feel like one tool.
 
 ## Public work
 <table>
@@ -93,4 +86,4 @@ I eventually left law enforcement, taught myself to code, went through a full-st
 That path is probably why I like understanding the entire system instead of staying inside one layer of it.
 
 ---
-**Philadelphia, PA** · [dev-dominick.com](https://dev-dominick.com/?utm_source=chatgpt.com)
+**Philadelphia, PA** · <a href="https://dev-dominick.com">dev-dominick.com</a>
