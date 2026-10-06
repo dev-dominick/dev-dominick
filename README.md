@@ -1,9 +1,6 @@
 <h1 align="center">Dominick Albano</h1>
 
-<p align="center">
-  <strong>Full-Stack Software Engineer</strong><br />
-  React · TypeScript · Node.js · Java · Developer Tools · Linux
-</p>
+<p align="center"><strong>Full-Stack Software Engineer</strong></p>
 
 <p align="center">
   <a href="https://dev-dominick.com"><b>Portfolio</b></a>
@@ -15,75 +12,32 @@
   <img src="./assets/albano-github-hero.svg" width="100%" alt="Dominick Albano — Full-Stack Software Engineer" />
 </p>
 
----
+## Current Engineering
 
-I build across the browser, backend, and development environment.
+| DEVELOPER TOOLS | AI SYSTEMS | PRODUCT SYSTEMS |
+| --- | --- | --- |
+| Desktop automation<br>Workflow tooling<br>Build systems | Platform state<br>AI-assisted workflows<br>Developer interfaces | React applications<br>API integrations<br>Full-stack delivery |
 
-At Comcast I worked on large web applications, internal tooling, shared frontend systems, APIs, and customer-facing workflows.
+## Comcast · Software Engineer II
 
-These days most of my side-project energy is going into developer tooling and the machines behind it.
+| APPLICATION MODERNIZATION | FRONTEND SYSTEMS | CUSTOMER WORKFLOWS | PERFORMANCE ENGINEERING |
+| --- | --- | --- | --- |
+| React + TypeScript migration<br>Legacy app modernization | Shared React components<br>Internal frontend systems | APIs, maps, and subscriptions<br>Customer-facing workflow delivery | Middleware integration<br>Auth and request performance |
 
-## Current build
+## Current Build
 
 ### Albano Coding Agent
 
-A Tauri desktop development app built around the way I actually work: code, terminal, Git, browser tooling, AI assistance, and remote compute in one place.
+Desktop development environment for code, terminal, Git, browser tooling, AI-assisted workflows, and remote compute.
 
 ```text
-Mac ──► Albano Coding Agent ──► white-node
-         │                         │
-         └──── desktop workflow ───┘
+LOCAL DEVELOPMENT  ─────►  ALBANO CODING AGENT  ─────►  REMOTE COMPUTE
 ```
 
-The interesting part is not just the UI. It is figuring out where desktop work ends, where remote compute starts, and how to make the whole system feel like one tool.
+## Stack
 
-## Public work
-<table>
-<tr>
-<td width="50%" valign="top">
+`React` · `TypeScript` · `Node.js` · `Java` · `PostgreSQL` · `Linux`
 
-### weather-app-nextjs
-Next.js + TypeScript frontend built around typed application state and responsive UI.
+## Public Code
 
-`Next.js` `TypeScript` `React` `Tailwind`
-
-</td>
-<td width="50%" valign="top">
-
-### lets-go
-Full-stack event app with authentication, GraphQL APIs, and MongoDB-backed data.
-
-`React` `GraphQL` `Apollo` `MongoDB`
-
-</td>
-</tr>
-
-<tr>
-<td width="50%" valign="top">
-
-### internet-retail-back-end
-E-commerce API with relational models for products, categories, and inventory.
-
-`Node.js` `Express` `Sequelize` `MySQL`
-
-</td>
-<td width="50%" valign="top">
-
-### textEditor
-Installable PWA with offline behavior and browser-side persistence.
-
-`PWA` `IndexedDB` `Webpack` `Express`
-
-</td>
-</tr>
-</table>
-
-## How I got here
-Before software, I was a Virginia State Trooper.
-
-I eventually left law enforcement, taught myself to code, went through a full-stack program, and ended up engineering at Comcast.
-
-That path is probably why I like understanding the entire system instead of staying inside one layer of it.
-
----
-**Philadelphia, PA** · <a href="https://dev-dominick.com">dev-dominick.com</a>
+[weather-app-nextjs](https://github.com/dev-dominick/weather-app-nextjs) · [textEditor](https://github.com/dev-dominick/textEditor) · [internet-retail-back-end](https://github.com/dev-dominick/internet-retail-back-end)
