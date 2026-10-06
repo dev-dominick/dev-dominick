@@ -1,55 +1,64 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="520" viewBox="0 0 1400 520" role="img" aria-labelledby="title desc">
   <title id="title">Dominick Albano GitHub Hero</title>
-  <desc id="desc">Clean profile hero for Dominick Albano with name, title, and three engineering domains.</desc>
+  <desc id="desc">Minimal high-contrast hero with identity text and an abstract software-systems schematic.</desc>
 
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#070d14"/>
-      <stop offset="100%" stop-color="#0f1b2b"/>
+      <stop offset="0%" stop-color="#05080f"/>
+      <stop offset="100%" stop-color="#0b1220"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#7dd3fc"/>
-      <stop offset="100%" stop-color="#60a5fa"/>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
     </linearGradient>
-    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.35"/>
+    <radialGradient id="pulse" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
   </defs>
 
   <rect width="1400" height="520" fill="url(#bg)"/>
 
-  <g opacity="0.14" stroke="#7dd3fc" stroke-width="1">
-    <path d="M0 72H1400M0 144H1400M0 216H1400M0 288H1400M0 360H1400M0 432H1400"/>
-    <path d="M116 0V520M232 0V520M348 0V520M464 0V520M580 0V520M696 0V520M812 0V520M928 0V520M1044 0V520M1160 0V520M1276 0V520"/>
+  <g opacity="0.1" stroke="#38bdf8" stroke-width="1">
+    <path d="M0 74H1400M0 148H1400M0 222H1400M0 296H1400M0 370H1400M0 444H1400"/>
+    <path d="M100 0V520M200 0V520M300 0V520M400 0V520M500 0V520M600 0V520M700 0V520M800 0V520M900 0V520M1000 0V520M1100 0V520M1200 0V520M1300 0V520"/>
   </g>
 
-  <rect x="44" y="34" width="1312" height="452" rx="22" fill="none" stroke="#2a4364" stroke-width="1.2"/>
+  <rect x="44" y="34" width="1312" height="452" rx="20" fill="none" stroke="#1f3652" stroke-width="1.2"/>
 
-  <text x="80" y="122" fill="#e7f1fb" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="64" font-weight="800" letter-spacing="2.2">DOMINICK ALBANO</text>
-  <text x="82" y="166" fill="#8fd3ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="600" letter-spacing="3.4">FULL-STACK SOFTWARE ENGINEER</text>
+  <text x="80" y="126" fill="#e6f3ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="66" font-weight="800" letter-spacing="2.4">DOMINICK ALBANO</text>
+  <text x="82" y="172" fill="#8fdcff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="600" letter-spacing="3.2">FULL-STACK SOFTWARE ENGINEER</text>
+  <text x="82" y="208" fill="#b9d9ee" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" letter-spacing="2.2">REACT · TYPESCRIPT · NODE.JS · JAVA · TAURI</text>
 
-  <rect x="80" y="194" width="520" height="4" rx="2" fill="url(#accent)"/>
+  <g transform="translate(80 250)">
+    <g stroke="#67e8f9" stroke-opacity="0.5" stroke-width="1.2" fill="none">
+      <path d="M48 82H232V128H414V90H600V136H786V84H972V124H1158"/>
+      <path d="M48 124H186V168H372V126H556V174H744V128H930V170H1158"/>
+      <path d="M232 128V168M414 90V126M600 136V174M786 84V128M972 124V170"/>
+    </g>
 
-  <g filter="url(#softShadow)">
-    <rect x="80" y="236" width="396" height="212" rx="18" fill="#0d1724" stroke="#31506f"/>
-    <rect x="502" y="236" width="396" height="212" rx="18" fill="#0d1724" stroke="#31506f"/>
-    <rect x="924" y="236" width="396" height="212" rx="18" fill="#0d1724" stroke="#31506f"/>
-  </g>
+    <path d="M48 82H232V128H414V90H600V136H786V84H972V124H1158" stroke="url(#line)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#softGlow)"/>
 
-  <g font-family="Inter, Segoe UI, Arial, sans-serif">
-    <text x="112" y="286" fill="#b8e6ff" font-size="20" font-weight="700" letter-spacing="1.2">DEVELOPER TOOLS</text>
-    <text x="112" y="326" fill="#d9e7f4" font-size="19">Desktop Automation</text>
-    <text x="112" y="356" fill="#d9e7f4" font-size="19">Workflow Tooling</text>
-    <text x="112" y="386" fill="#d9e7f4" font-size="19">Build Systems</text>
+    <g fill="#08111f" stroke="#38bdf8" stroke-width="1.5">
+      <circle cx="48" cy="82" r="7"/>
+      <circle cx="232" cy="128" r="7"/>
+      <circle cx="414" cy="90" r="7"/>
+      <circle cx="600" cy="136" r="7"/>
+      <circle cx="786" cy="84" r="7"/>
+      <circle cx="972" cy="124" r="7"/>
+      <circle cx="1158" cy="124" r="7"/>
+    </g>
 
-    <text x="534" y="286" fill="#b8e6ff" font-size="20" font-weight="700" letter-spacing="1.2">AI SYSTEMS</text>
-    <text x="534" y="326" fill="#d9e7f4" font-size="19">Platform State</text>
-    <text x="534" y="356" fill="#d9e7f4" font-size="19">AI-Assisted Workflows</text>
-    <text x="534" y="386" fill="#d9e7f4" font-size="19">Developer Interfaces</text>
-
-    <text x="956" y="286" fill="#b8e6ff" font-size="20" font-weight="700" letter-spacing="1.2">PRODUCT SYSTEMS</text>
-    <text x="956" y="326" fill="#d9e7f4" font-size="19">React Applications</text>
-    <text x="956" y="356" fill="#d9e7f4" font-size="19">API Integrations</text>
-    <text x="956" y="386" fill="#d9e7f4" font-size="19">Full-Stack Delivery</text>
+    <g opacity="0.55">
+      <circle cx="414" cy="90" r="34" fill="url(#pulse)"/>
+      <circle cx="786" cy="84" r="36" fill="url(#pulse)"/>
+    </g>
   </g>
 </svg>
